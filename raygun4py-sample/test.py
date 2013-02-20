@@ -1,6 +1,6 @@
 import sys
 from provider import raygunprovider
 
-cl = raygunprovider.RaygunSender("etc")
+cl = raygunprovider.RaygunSender("onPbQXtZKqJX38IuN4AQKA==")
 
-cl.send("fake exception")
+print cl.send("fake exception")
