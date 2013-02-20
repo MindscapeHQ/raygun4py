@@ -1,6 +1,6 @@
 import sys, os, socket
 import jsonpickle, httplib
-from provider import raygunmessages as rgmsgs
+from provider import raygunmsgs
 
 class RaygunSender:
 
@@ -17,19 +17,23 @@ class RaygunSender:
         except ImportError:
             print >> sys.stderr, ("RaygunProvider error: No SSL support available, cannot send. Please"
                                   "compile the socket module with SSL support.")
+        self.userversion = "Not defined"
 
+    def set_version(self, version):
+        if isinstance(version, basestring):
+            self.userversion = version
 
-    def send(self, exception):        
-        self.post(self.create_message(exception))
-
+    def send(self, exception):
+        return self.post(self.create_message(exception))
 
     def create_message(self, exception):
-        return RaygunMessageBuilder().new() \
+        return raygunmsgs.RaygunMessageBuilder().new() \
             .set_machine_name(socket.gethostname()) \
-            .set_version() \
+            .set_version(self.userversion) \
+            .set_client_details() \
+            .set_exception_details(exception) \
             .build()
             
-
     def post(self, raygunMessage):
         json = jsonpickle.encode(raygunMessage, unpicklable=False)
         try:
@@ -37,45 +41,9 @@ class RaygunSender:
             headers = {"X-ApiKey": self.apiKey,
                        "Content-Type": "application/json",
                        "User-Agent": "raygun4py"}
-            # cert = os.path.join(os.path.dirname(os.path.realpath(__file__)), "cert.pem")
             conn = httplib.HTTPSConnection('api.raygun.io', '443')
             conn.request("POST", "/entries", json, headers)
             response = conn.getresponse()
         except Exception as e:
             print e
-        return response
-                   
-
-class RaygunMessageBuilder:
-
-    def __init__(self):
-        self.raygunMessage = rgmsgs.RaygunMessage()
-
-    def new(self):
-        return RaygunMessageBuilder()
-
-    def build(self):
-        return self.raygunMessage
-
-    def set_machine_name(self, name):
-        self.raygunMessage.details.machineName = name
-        return self
-
-    def set_environment_details(self):
-        raise NotImplementedException()
-
-    def set_exception_details(self, exception):
-        raise NotImplementedException()
-
-    def set_client_details(self):
-        raise NotImplementedException()
-
-    def set_user_custom_data(self):
-        raise NotImplementedException()
-
-    def set_http_details(self):
-        raise NotImplementedException()
-
-    def set_version(self):
-        self.raygunMessage.details.version = "1.0"
-        return self
+        return response.status, response.reason
