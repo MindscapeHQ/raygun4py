@@ -1,4 +1,4 @@
-import sys
+import sys, traceback
 from datetime import datetime
 
 class RaygunMessageBuilder:
@@ -19,8 +19,8 @@ class RaygunMessageBuilder:
     def set_environment_details(self):
         raise NotImplementedException()
 
-    def set_exception_details(self, exception):
-        self.raygunMessage.details.error = RaygunErrorMessage(exception)
+    def set_exception_details(self, raygunExceptionMessage):
+        self.raygunMessage.details.error = raygunExceptionMessage
         return self
 
     def set_client_details(self):
@@ -55,20 +55,22 @@ class RaygunClientMessage:
 
 class RaygunErrorMessage:
 
-      def __init__(self, exception):
-            print sys.exc_info()
-            self.message = exception.message
-            self.stacktrace = [RaygunErrorStackTraceLineMessage(0, "myclass", "myfile", "mymethod")]
-            self.classname = "fuh"
+      def __init__(self, exc_type, exc_value, exc_traceback, className):
+            self.message = "%s: %s" % (exc_type.__name__, exc_value)
+            self.stacktrace = []
+            for trace in traceback.extract_tb(exc_traceback):
+                  self.stacktrace.append(RaygunErrorStackTraceLineMessage(trace))
+
+            self.classname = className
             self.data = "wah"
 
 class RaygunErrorStackTraceLineMessage:
       
-      def __init__(self, lineName, className, fileName, methodName):
-            self.linenumber = lineName
-            self.classname = className
-            self.filename = fileName
-            self.methodname = methodName
+      def __init__(self, trace):
+            self.linenumber = trace[1]
+            self.classname = ""
+            self.filename = trace[0]
+            self.methodname = trace[2]
 
 class RaygunRequestMessage:
       pass
