@@ -1,4 +1,7 @@
-import sys, traceback
+import sys
+import traceback
+import multiprocessing
+import platform
 from datetime import datetime
 
 class RaygunMessageBuilder:
@@ -17,7 +20,8 @@ class RaygunMessageBuilder:
         return self
 
     def set_environment_details(self):
-        raise NotImplementedException()
+        self.raygunMessage.details.environment = RaygunEnvironmentMessage()
+        return self
 
     def set_exception_details(self, raygunExceptionMessage):
         self.raygunMessage.details.error = raygunExceptionMessage
@@ -27,8 +31,15 @@ class RaygunMessageBuilder:
         self.raygunMessage.details.client = RaygunClientMessage()
         return self
 
-    def set_user_custom_data(self):
-        self.raygunMessage
+    def set_customdata(self, userCustomData):
+          if type(userCustomData) is dict:
+                self.raygunMessage.details.userCustomData = userCustomData
+          return self
+
+    def set_tags(self, tags):
+          if type(tags) is list or tuple:
+                self.raygunMessage.details.tags = tags
+          return self
 
     def set_http_details(self):
         self.raygunMessage.details.request = RaygunRequestMessage()
@@ -74,3 +85,11 @@ class RaygunErrorStackTraceLineMessage:
 
 class RaygunRequestMessage:
       pass
+
+class RaygunEnvironmentMessage:
+
+      def __init__(self):
+            self.processorCount = multiprocessing.cpu_count()
+            self.architecture = platform.architecture()[0]
+            self.cpu = platform.processor()
+            self.osVersion = "%s %s" % (platform.system(), platform.release())

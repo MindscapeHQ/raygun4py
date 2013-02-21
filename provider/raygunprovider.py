@@ -23,16 +23,19 @@ class RaygunSender:
         if isinstance(version, basestring):
             self.userversion = version
 
-    def send(self, exc_type, exc_value, exc_traceback, className = "Not provided"):
+    def send(self, exc_type, exc_value, exc_traceback, className = "Not provided", tags = None, userCustomData = None):
         rgExcept = raygunmsgs.RaygunErrorMessage(exc_type, exc_value, exc_traceback, className)
-        return self.post(self.create_message(rgExcept))
+        return self.post(self.create_message(rgExcept, tags, userCustomData))
 
-    def create_message(self, raygunExceptionMessage):
+    def create_message(self, raygunExceptionMessage, tags, userCustomData):
         return raygunmsgs.RaygunMessageBuilder().new() \
             .set_machine_name(socket.gethostname()) \
             .set_version(self.userversion) \
             .set_client_details() \
             .set_exception_details(raygunExceptionMessage) \
+            .set_environment_details() \
+            .set_tags(tags) \
+            .set_customdata(userCustomData) \
             .build()
             
     def post(self, raygunMessage):
