@@ -41,8 +41,9 @@ class RaygunMessageBuilder:
                 self.raygunMessage.details.tags = tags
           return self
 
-    def set_http_details(self):
-        self.raygunMessage.details.request = RaygunRequestMessage()
+    def set_request_details(self, request):
+        self.raygunMessage.details.request = RaygunRequestMessage(request)
+        return self
 
     def set_version(self, version):
         self.raygunMessage.details.version = version
@@ -73,7 +74,7 @@ class RaygunErrorMessage:
                   self.stackTrace.append(RaygunErrorStackTraceLineMessage(trace))
 
             self.className = className
-            self.data = "wah"
+            self.data = ""
 
 class RaygunErrorStackTraceLineMessage:
       
@@ -84,7 +85,16 @@ class RaygunErrorStackTraceLineMessage:
             self.methodName = trace[2]
 
 class RaygunRequestMessage:
-      pass
+      
+      def __init__(self, request):
+            self.hostName = request['hostName']
+            self.url = request['url']
+            self.httpMethod = request['httpMethod']
+            self.ipAddress = request['ipAddress']
+            self.queryString = request['queryString']
+            self.form = request['form']
+            self.headers = request['headers']
+            self.rawData = request['rawData']
 
 class RaygunEnvironmentMessage:
 
