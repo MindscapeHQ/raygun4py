@@ -3,7 +3,7 @@ import traceback
 from provider import raygunprovider
 
 def handle_exception(exc_type, exc_value, exc_traceback):
-    cl = raygunprovider.RaygunSender("onPbQXtZKqJX38IuN4AQKA==") # Place your API key here
+    cl = raygunprovider.RaygunSender("{{Place your API key here}}")
     cl.set_version("1.2")
 
     # If we're handling a request in a web server environment, we can send the HTTP request data 

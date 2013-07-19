@@ -1,10 +1,12 @@
-import sys, os, socket
+import sys, os, socket, logging
 import jsonpickle, httplib
 from provider import raygunmsgs
 
 class RaygunSender:
 
-    apiKey = None    
+    apiKey = None
+    endpointhost = 'api.raygun.io'
+    endpointpath = '/entries'
 
     def __init__(self, apiKey):
         if (apiKey):
@@ -46,9 +48,26 @@ class RaygunSender:
             headers = {"X-ApiKey": self.apiKey,
                        "Content-Type": "application/json",
                        "User-Agent": "raygun4py"}
-            conn = httplib.HTTPSConnection('api.raygun.io', '443')
-            conn.request("POST", "/entries", json, headers)
+            conn = httplib.HTTPSConnection(self.endpointhost, '443')
+            conn.request('POST', self.endpointpath, json, headers)
             response = conn.getresponse()
         except Exception as e:
             print e
+            return 400, "Exception: Could not send"
         return response.status, response.reason
+
+class RaygunHandler(logging.Handler):
+    def __init__(self, apiKey, version = None):
+        logging.Handler.__init__(self)        
+        self.sender = RaygunSender(apiKey)
+        self.version = version
+
+    def emit(self, record):        
+        if record.exc_info:
+            exc = record.exc_info
+        
+        tags = None
+        userCustomData = { "Logger Message" : record.msg }
+        request = None
+        className = None
+        self.sender.send(exc[0], exc[1], exc[2], className, tags, userCustomData, request)

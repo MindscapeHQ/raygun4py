@@ -26,4 +26,6 @@ you'll want to provide a callback function to sys.excepthook. This will pick up 
 
 == Troubleshooting
 
+To see the HTTP response code from sending the message to raygun, `print client.send()` (as in line 27 of test.py). It will be 403 if an invalid API key was entered, and 202 if successful.
+
 [Create a thread in the official support forums](http://raygun.io/forums), and we'll help you out.
