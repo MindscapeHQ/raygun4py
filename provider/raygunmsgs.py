@@ -73,8 +73,8 @@ class RaygunErrorMessage:
             self.stackTrace = []
             for trace in traceback.extract_tb(exc_traceback):         
                   self.stackTrace.append(RaygunErrorStackTraceLineMessage(trace))            
-            self.className = "classhere"
-            self.data = "datahere"
+            self.className = trace[2]
+            self.data = ""
 
 class RaygunErrorStackTraceLineMessage:
       
