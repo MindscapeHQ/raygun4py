@@ -4,7 +4,7 @@ from provider import raygunmsgs
 
 class RaygunSender:
 
-    apiKey = None
+    apiKey = None    
 
     def __init__(self, apiKey):
         if (apiKey):
@@ -21,13 +21,13 @@ class RaygunSender:
 
     def set_version(self, version):
         if isinstance(version, basestring):
-            self.userversion = version
+            self.userversion = version    
 
-    def send(self, exc_type, exc_value, exc_traceback, className = "Not provided", tags = None, userCustomData = None):
+    def send(self, exc_type, exc_value, exc_traceback, className = "Not provided", tags = None, userCustomData = None, httpRequest = None):
         rgExcept = raygunmsgs.RaygunErrorMessage(exc_type, exc_value, exc_traceback, className)
-        return self.post(self.create_message(rgExcept, tags, userCustomData))
+        return self._post(self._create_message(rgExcept, tags, userCustomData, httpRequest))
 
-    def create_message(self, raygunExceptionMessage, tags, userCustomData):
+    def _create_message(self, raygunExceptionMessage, tags, userCustomData, httpRequest):
         return raygunmsgs.RaygunMessageBuilder().new() \
             .set_machine_name(socket.gethostname()) \
             .set_version(self.userversion) \
@@ -36,9 +36,10 @@ class RaygunSender:
             .set_environment_details() \
             .set_tags(tags) \
             .set_customdata(userCustomData) \
+            .set_request_details(httpRequest) \
             .build()
             
-    def post(self, raygunMessage):
+    def _post(self, raygunMessage):
         json = jsonpickle.encode(raygunMessage, unpicklable=False)
         try:
             auth_header = 'Basic %s' % (":".join(["myusername","mypassword"]).encode('Base64').strip('\r\n'))
