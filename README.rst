@@ -36,7 +36,7 @@ Create a thread in the official support forums at http://raygun.io/forums, and w
 Changelog
 ---------
 
-0.2
+1.0.0
 
 - **Breaking change:** changed module name to raygun4py. Now use *from raygun4py import raygunprovider*
 
