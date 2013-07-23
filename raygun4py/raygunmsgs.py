@@ -42,7 +42,8 @@ class RaygunMessageBuilder:
           return self
 
     def set_request_details(self, request):
-        self.raygunMessage.details.request = RaygunRequestMessage(request)
+        if request:
+          self.raygunMessage.details.request = RaygunRequestMessage(request)                  
         return self
 
     def set_version(self, version):
@@ -70,23 +71,22 @@ class RaygunErrorMessage:
       def __init__(self, exc_type, exc_value, exc_traceback, className):
             self.message = "%s: %s" % (exc_type.__name__, exc_value)
             self.stackTrace = []
-            for trace in traceback.extract_tb(exc_traceback):
-                  self.stackTrace.append(RaygunErrorStackTraceLineMessage(trace))
-
-            self.className = className
+            for trace in traceback.extract_tb(exc_traceback):         
+                  self.stackTrace.append(RaygunErrorStackTraceLineMessage(trace))            
+            self.className = trace[2]
             self.data = ""
 
 class RaygunErrorStackTraceLineMessage:
       
       def __init__(self, trace):
             self.lineNumber = trace[1]
-            self.className = ""
+            self.className = trace[2]
             self.fileName = trace[0]
-            self.methodName = trace[2]
+            self.methodName = trace[3]                                
 
 class RaygunRequestMessage:
       
-      def __init__(self, request):
+      def __init__(self, request):            
             self.hostName = request['hostName']
             self.url = request['url']
             self.httpMethod = request['httpMethod']
