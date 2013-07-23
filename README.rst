@@ -17,7 +17,7 @@ Run raygun4py-sample/test.py to see a basic sample. You'll need to replace the A
 In general, after importing the module with::
 
 
-    from provider import raygunprovider
+    from raygun4py import raygunprovider
 
 
 you'll want to provide a callback function to sys.excepthook. This will pick up all uncaught exceptions that your program throws. It needs three parameters: the type, value and traceback. In the function, create a new raygunprovider.RaygunSender, then call send() on that object, passing in the parameters.
@@ -37,13 +37,16 @@ Changelog
 ---------
 
 0.2
+
 - **Breaking change:** changed module name to raygun4py. Now use *from raygun4py import raygunprovider*
 
 - Added ability to send HTTP request data
 
-* 0.1.2
+0.1.2
+
 - PyPi package
 - RST file
 
-* 0.1
+0.1
+
 - Initial release; basic message creation and transport functionality
