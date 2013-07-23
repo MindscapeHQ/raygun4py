@@ -1,15 +1,14 @@
 import sys, logging, os
-from provider import raygunprovider
+from raygun4py import raygunprovider
 
 logger = logging.getLogger("mylogger")
 
 rgHandler = raygunprovider.RaygunHandler("{{Place your API key here}}")
-ch = logging.StreamHandler()
 
-handler = logger.addHandler(rgHandler)
-logger.addHandler(ch)
+logger.addHandler(rgHandler)
 
 def log_exception(exc_type, exc_value, exc_traceback):
+    print "Logging: %s" % exc_value
     logger.error("A python error occurred", exc_info = (exc_type, exc_value, exc_traceback))
 
 sys.excepthook = log_exception

@@ -1,6 +1,6 @@
 import sys, os, socket, logging
 import jsonpickle, httplib
-from provider import raygunmsgs
+from raygun4py import raygunmsgs
 
 class RaygunSender:
 

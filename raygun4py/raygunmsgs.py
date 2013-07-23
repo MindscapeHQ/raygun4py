@@ -82,9 +82,7 @@ class RaygunErrorStackTraceLineMessage:
             self.lineNumber = trace[1]
             self.className = trace[2]
             self.fileName = trace[0]
-            self.methodName = trace[3]            
-            print "Class ", trace[2]
-            print "Method ", trace[3]
+            self.methodName = trace[3]                                
 
 class RaygunRequestMessage:
       

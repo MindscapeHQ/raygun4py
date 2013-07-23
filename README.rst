@@ -32,3 +32,18 @@ Troubleshooting
 To see the HTTP response code from sending the message to raygun, `print client.send()` (as in line 27 of test.py). It will be 403 if an invalid API key was entered, and 202 if successful.
 
 Create a thread in the official support forums at http://raygun.io/forums, and we'll help you out.
+
+Changelog
+---------
+
+0.2
+- **Breaking change:** changed module name to raygun4py. Now use *from raygun4py import raygunprovider*
+
+- Added ability to send HTTP request data
+
+* 0.1.2
+- PyPi package
+- RST file
+
+* 0.1
+- Initial release; basic message creation and transport functionality

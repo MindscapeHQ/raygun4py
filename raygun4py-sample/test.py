@@ -1,6 +1,6 @@
 import sys, os, urllib2
 import traceback
-from provider import raygunprovider
+from raygun4py import raygunprovider
 
 def handle_exception(exc_type, exc_value, exc_traceback):
     cl = raygunprovider.RaygunSender("{{Place your API key here}}")
@@ -22,7 +22,6 @@ def handle_exception(exc_type, exc_value, exc_traceback):
     headers['user-Agent'] = "Mozilla bleg"
 
     request['headers'] = headers
-
 
     print cl.send(exc_type, exc_value, exc_traceback, "myclass", ["tag1", "tag2"], {"key1": 1111, "key2": 2222}, request)
 
