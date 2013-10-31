@@ -20,6 +20,7 @@ class RaygunSender:
             print >> sys.stderr, ("RaygunProvider error: No SSL support available, cannot send. Please"
                                   "compile the socket module with SSL support.")
         self.userversion = "Not defined"
+        self.user = None
 
     def set_version(self, version):
         if isinstance(version, basestring):
@@ -53,7 +54,7 @@ class RaygunSender:
             headers = {"X-ApiKey": self.apiKey,
                        "Content-Type": "application/json",
                        "User-Agent": "raygun4py"}
-            conn = httplib.HTTPSConnection(self.endpointhost, '80')
+            conn = httplib.HTTPSConnection(self.endpointhost, '443')
             conn.request('POST', self.endpointpath, json, headers)
             response = conn.getresponse()            
         except Exception as e:

@@ -69,7 +69,8 @@ class RaygunMessageBuilder:
         return self
 
     def set_user(self, user):
-        self.raygunMessage.details['user'] = { "identifier": user }
+        if user is not None:
+            self.raygunMessage.details['user'] = { "identifier": user }
         return self
 
 class RaygunMessage:

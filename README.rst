@@ -48,6 +48,10 @@ Create a thread in the official support forums at http://raygun.io/forums, and w
 Changelog
 ---------
 
+1.1.1
+
+- Fixed a critical bug in 1.1.0; the previous version is not recommended - use this instead.
+
 1.1.0
 
 - Added set_user function for unique user tracking; internal refactor to make module more pythonic

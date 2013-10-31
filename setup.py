@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='raygun4py',
-    version='1.1.0',
+    version='1.1.1',
     packages=['raygun4py',],
     license='LICENSE',
     url='http://raygun.io',
