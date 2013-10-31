@@ -16,90 +16,81 @@ class RaygunMessageBuilder:
         return self.raygunMessage
 
     def set_machine_name(self, name):
-        self.raygunMessage.details.machineName = name
+        self.raygunMessage.details['machineName'] = name
         return self
 
     def set_environment_details(self):
-        self.raygunMessage.details.environment = RaygunEnvironmentMessage()
+        self.raygunMessage.details['environment'] = {
+            "processorCount": multiprocessing.cpu_count(),
+            "architecture": platform.architecture()[0],
+            "cpu": platform.processor(),
+            "osVersion": "%s %s" % (platform.system(), platform.release())
+        }
         return self
 
     def set_exception_details(self, raygunExceptionMessage):
-        self.raygunMessage.details.error = raygunExceptionMessage
+        self.raygunMessage.details['error'] = raygunExceptionMessage
         return self
 
     def set_client_details(self):
-        self.raygunMessage.details.client = RaygunClientMessage()
+        self.raygunMessage.details['client'] = {
+            "name": "raygun4py",            
+            "version": "1.1",
+            "clientUrl": "https://github.com/MindscapeHQ/raygun4py"
+        }
         return self
 
     def set_customdata(self, userCustomData):
           if type(userCustomData) is dict:
-                self.raygunMessage.details.userCustomData = userCustomData
+                self.raygunMessage.details['userCustomData'] = userCustomData
           return self
 
     def set_tags(self, tags):
           if type(tags) is list or tuple:
-                self.raygunMessage.details.tags = tags
+                self.raygunMessage.details['tags'] = tags
           return self
 
     def set_request_details(self, request):
         if request:
-          self.raygunMessage.details.request = RaygunRequestMessage(request)                  
+          self.raygunMessage.details['request'] = {
+            "hostName": request['hostName'],
+            "url": request['url'],
+            "httpMethod": request['httpMethod'],
+            "ipAddress": request['ipAddress'],
+            "queryString": request['queryString'],
+            "form": request['form'],
+            "headers": request['headers'],
+            "rawData": request['rawData'],
+        }                  
         return self
 
     def set_version(self, version):
-        self.raygunMessage.details.version = version
+        self.raygunMessage.details['version'] = version
+        return self
+
+    def set_user(self, user):
+        self.raygunMessage.details['user'] = { "identifier": user }
         return self
 
 class RaygunMessage:
 
       def __init__(self):
             self.occurredOn = datetime.utcnow() 
-            self.details = RaygunMessageDetails()
-
-class RaygunMessageDetails:
-      pass
-
-class RaygunClientMessage:
-
-      def __init__(self):
-            self.name = "raygun4py"
-            self.version = "0.1"
-            self.clientUrl = "https://github.com/MindscapeHQ/raygun4py"
+            self.details = { }
 
 class RaygunErrorMessage:
 
       def __init__(self, exc_type, exc_value, exc_traceback, className):
             self.message = "%s: %s" % (exc_type.__name__, exc_value)
             self.stackTrace = []
+
             for trace in traceback.extract_tb(exc_traceback):         
-                  self.stackTrace.append(RaygunErrorStackTraceLineMessage(trace))            
+                  self.stackTrace.append({
+                        "lineNumber": trace[1],
+                        "className": trace[2],
+                        "fileName": trace[0],
+                        "methodName": trace[3],
+                    })
+
             self.className = trace[2]
             self.data = ""
-
-class RaygunErrorStackTraceLineMessage:
-      
-      def __init__(self, trace):
-            self.lineNumber = trace[1]
-            self.className = trace[2]
-            self.fileName = trace[0]
-            self.methodName = trace[3]                                
-
-class RaygunRequestMessage:
-      
-      def __init__(self, request):            
-            self.hostName = request['hostName']
-            self.url = request['url']
-            self.httpMethod = request['httpMethod']
-            self.ipAddress = request['ipAddress']
-            self.queryString = request['queryString']
-            self.form = request['form']
-            self.headers = request['headers']
-            self.rawData = request['rawData']
-
-class RaygunEnvironmentMessage:
-
-      def __init__(self):
-            self.processorCount = multiprocessing.cpu_count()
-            self.architecture = platform.architecture()[0]
-            self.cpu = platform.processor()
-            self.osVersion = "%s %s" % (platform.system(), platform.release())

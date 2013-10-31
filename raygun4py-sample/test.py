@@ -4,7 +4,8 @@ from raygun4py import raygunprovider
 
 def handle_exception(exc_type, exc_value, exc_traceback):
     cl = raygunprovider.RaygunSender("{{Place your API key here}}")
-    cl.set_version("1.2")
+    cl.set_version("1.0.0.0")
+    cl.set_user('email@example.com')
 
     # If we're handling a request in a web server environment, we can send the HTTP request data 
     request = {}
@@ -29,7 +30,7 @@ def very_buggy_request():
     methodtwo()
 
 def methodtwo():
-    urllib2.urlopen("gopher://test.edu/resource").read()
+    urllib2.urlopen("gopher://invalid.address").read()
 
 sys.excepthook = handle_exception
 

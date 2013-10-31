@@ -12,6 +12,7 @@ The easiest way to install this is as a pip package, as it is available from PyP
 
 Usage
 -----
+
 Run raygun4py-sample/test.py to see a basic sample. You'll need to replace the API key with one of your own.
 
 In general, after importing the module with::
@@ -26,6 +27,17 @@ You can also attach the logging handler in raygunprovider.RaygunHandler then cal
 
 * If you are in a web server environment and have HTTP request details available, you can pass these and the headers through in a dictionary (as in test.py).
 
+Documentation
+-------------
+
+**Version tracking**
+
+Call `client.set_version("x.x.x.x")` to attach an app version to each message that is sent. This will be visible on the dashboard and can be used for filtering.
+
+**Unique User Tracking**
+
+New in 1.1: users can now be specified by calling `client.set_user(string)`, which will transmit the data with each message sent. This can be a user name or email address - if it is the latter and the user has a Gravatar associated with it, it will be displayed on the dashboard in the error group view. If you call this and the user context changes (log in/out), be sure to call it again to update it. If this method isn't called, user tracking will not be enabled.
+
 Troubleshooting
 ---------------
 
@@ -35,6 +47,10 @@ Create a thread in the official support forums at http://raygun.io/forums, and w
 
 Changelog
 ---------
+
+1.1.0
+
+- Added set_user function for unique user tracking; internal refactor to make module more pythonic
 
 1.0.0
 
