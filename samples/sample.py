@@ -3,7 +3,7 @@ import traceback
 from raygun4py import raygunprovider
 
 def handle_exception(exc_type, exc_value, exc_traceback):
-    cl = raygunprovider.RaygunSender("place_your_api_key_here")
+    cl = raygunprovider.RaygunSender("paste_your_api_key_here")
     cl.set_version("1.0.0.0")
     cl.set_user('example@email_or_user_id.com')
 
