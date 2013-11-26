@@ -2,8 +2,8 @@ from distutils.core import setup
 
 setup(
     name='raygun4py',
-    version='1.1.1',
-    packages=['raygun4py',],
+    version='1.1.2',
+    packages=['raygun4py'],
     license='LICENSE',
     url='http://raygun.io',
     author='Mindscape',

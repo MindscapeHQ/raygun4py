@@ -3,7 +3,7 @@ from raygun4py import raygunprovider
 
 logger = logging.getLogger("mylogger")
 
-rgHandler = raygunprovider.RaygunHandler("{{Place your API key here}}")
+rgHandler = raygunprovider.RaygunHandler("paste_your_api_key_here")
 
 logger.addHandler(rgHandler)
 
@@ -17,6 +17,6 @@ def firstMethod():
 	secondMethod()
 
 def secondMethod():
-	raise StandardError("A test exception")	
+	raise StandardError("Test exception sent via built-in handler")	
 
 firstMethod()

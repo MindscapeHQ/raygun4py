@@ -76,4 +76,4 @@ class RaygunHandler(logging.Handler):
         userCustomData = { "Logger Message" : record.msg }
         request = None
         className = None
-        print self.sender.send(exc[0], exc[1], exc[2], className, tags, userCustomData, request)
+        self.sender.send(exc[0], exc[1], exc[2], className, tags, userCustomData, request)

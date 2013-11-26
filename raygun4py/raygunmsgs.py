@@ -35,33 +35,38 @@ class RaygunMessageBuilder:
     def set_client_details(self):
         self.raygunMessage.details['client'] = {
             "name": "raygun4py",            
-            "version": "1.1",
+            "version": "1.1.2",
             "clientUrl": "https://github.com/MindscapeHQ/raygun4py"
         }
         return self
 
     def set_customdata(self, userCustomData):
-          if type(userCustomData) is dict:
-                self.raygunMessage.details['userCustomData'] = userCustomData
-          return self
+        if type(userCustomData) is dict:
+            self.raygunMessage.details['userCustomData'] = userCustomData
+        return self
 
     def set_tags(self, tags):
-          if type(tags) is list or tuple:
-                self.raygunMessage.details['tags'] = tags
-          return self
+        if type(tags) is list or tuple:
+            self.raygunMessage.details['tags'] = tags
+        return self
 
     def set_request_details(self, request):
         if request:
-          self.raygunMessage.details['request'] = {
-            "hostName": request['hostName'],
-            "url": request['url'],
-            "httpMethod": request['httpMethod'],
-            "ipAddress": request['ipAddress'],
-            "queryString": request['queryString'],
-            "form": request['form'],
-            "headers": request['headers'],
-            "rawData": request['rawData'],
-        }                  
+            self.raygunMessage.details['request'] = {
+              "hostName": request['hostName'],
+              "url": request['url'],
+              "httpMethod": request['httpMethod'],
+              "queryString": request['queryString'],
+              "form": request['form'],
+              "headers": request['headers'],
+              "rawData": request['rawData'],
+            }
+
+            if 'ipAddress' in request:
+              self.raygunMessage.details['request']['iPAddress'] = request['ipAddress']
+            elif 'iPAddress' in request:
+              self.raygunMessage.details['request']['iPAddress'] = request['iPAddress']
+
         return self
 
     def set_version(self, version):
@@ -75,23 +80,23 @@ class RaygunMessageBuilder:
 
 class RaygunMessage:
 
-      def __init__(self):
-            self.occurredOn = datetime.utcnow() 
-            self.details = { }
+    def __init__(self):
+          self.occurredOn = datetime.utcnow() 
+          self.details = { }
 
 class RaygunErrorMessage:
 
-      def __init__(self, exc_type, exc_value, exc_traceback, className):
-            self.message = "%s: %s" % (exc_type.__name__, exc_value)
-            self.stackTrace = []
+    def __init__(self, exc_type, exc_value, exc_traceback, className):
+        self.message = "%s: %s" % (exc_type.__name__, exc_value)
+        self.stackTrace = []
 
-            for trace in traceback.extract_tb(exc_traceback):         
-                  self.stackTrace.append({
-                        "lineNumber": trace[1],
-                        "className": trace[2],
-                        "fileName": trace[0],
-                        "methodName": trace[3],
-                    })
+        for trace in traceback.extract_tb(exc_traceback):         
+              self.stackTrace.append({
+                    "lineNumber": trace[1],
+                    "className": trace[2],
+                    "fileName": trace[0],
+                    "methodName": trace[3],
+                })
 
-            self.className = trace[2]
-            self.data = ""
+        self.className = trace[2]
+        self.data = ""

@@ -13,7 +13,7 @@ The easiest way to install this is as a pip package, as it is available from PyP
 Usage
 -----
 
-Run raygun4py-sample/test.py to see a basic sample. You'll need to replace the API key with one of your own.
+Run raygun4py-sample/sample.py to see a basic sample. You'll need to replace the API key with one of your own.
 
 In general, after importing the module with::
 
@@ -23,9 +23,9 @@ In general, after importing the module with::
 
 you'll want to provide a callback function to sys.excepthook. This will pick up all uncaught exceptions that your program throws. It needs three parameters: the type, value and traceback. In the function, create a new raygunprovider.RaygunSender, then call send() on that object, passing in the parameters.
 
-You can also attach the logging handler in raygunprovider.RaygunHandler then calling a logging method in a function that is provided to sys.except hook. This requires much less setup than the above alternative. **See testWithLogging.py**.
+You can also attach the logging handler in raygunprovider.RaygunHandler then calling a logging method in a function that is provided to sys.except hook. This requires much less setup than the above alternative. **See sampleWithLogging.py**.
 
-* If you are in a web server environment and have HTTP request details available, you can pass these and the headers through in a dictionary (as in test.py).
+* If you are in a web server environment and have HTTP request details available, you can pass these and the headers through in a dictionary (as in sample.py).
 
 Documentation
 -------------
@@ -47,6 +47,12 @@ Create a thread in the official support forums at http://raygun.io/forums, and w
 
 Changelog
 ---------
+
+1.1.2
+
+- Fixed a bug where the IP address had invalid casing resulting in it being unable to be read by the API
+- Fixed a bug if set_user wasn't called leading to a error
+- Renamed samples from test.py to sample.py
 
 1.1.1
 
