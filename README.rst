@@ -52,7 +52,8 @@ Changelog
 
 - Fixed a bug where the IP address had invalid casing resulting in it being unable to be read by the API
 - Fixed a bug if set_user wasn't called leading to a error
-- Renamed samples from test.py to sample.py
+- Renamed samples and moved them to a more appropriate folder
+- Added unit tests
 
 1.1.1
 
