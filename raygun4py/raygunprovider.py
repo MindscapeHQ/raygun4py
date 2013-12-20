@@ -1,5 +1,6 @@
 import sys, os, socket, logging
 import jsonpickle, httplib
+from threading import Thread
 from raygun4py import raygunmsgs
 
 class RaygunSender:
@@ -24,15 +25,23 @@ class RaygunSender:
 
     def set_version(self, version):
         if isinstance(version, basestring):
-            self.userversion = version   
+            self.userversion = version
 
     def set_user(self, user):
         if isinstance(user, basestring):
-            self.user = user; 
+            self.user = user;
 
     def send(self, exc_type, exc_value, exc_traceback, className = "Not provided", tags = None, userCustomData = None, httpRequest = None):
         rgExcept = raygunmsgs.RaygunErrorMessage(exc_type, exc_value, exc_traceback, className)
         return self._post(self._create_message(rgExcept, tags, userCustomData, httpRequest))
+
+    def send_async(self, exc_type, exc_value, exc_traceback, className = "Not provided", tags = None, userCustomData = None, httpRequest = None):
+        rgExcept = raygunmsgs.RaygunErrorMessage(exc_type, exc_value, exc_traceback, className)
+        messageArgs = (self._create_message(rgExcept, tags, userCustomData, httpRequest), )
+
+        thread = Thread(target = self._post, group = None, args = messageArgs)
+        thread.start()
+        return 0
 
     def _create_message(self, raygunExceptionMessage, tags, userCustomData, httpRequest):
         return raygunmsgs.RaygunMessageBuilder().new() \
@@ -46,7 +55,7 @@ class RaygunSender:
             .set_request_details(httpRequest) \
             .set_user(self.user) \
             .build()
-            
+
     def _post(self, raygunMessage):
         json = jsonpickle.encode(raygunMessage, unpicklable=False)
         try:
@@ -56,7 +65,7 @@ class RaygunSender:
                        "User-Agent": "raygun4py"}
             conn = httplib.HTTPSConnection(self.endpointhost, '443')
             conn.request('POST', self.endpointpath, json, headers)
-            response = conn.getresponse()            
+            response = conn.getresponse()
         except Exception as e:
             print e
             return 400, "Exception: Could not send"
@@ -64,14 +73,14 @@ class RaygunSender:
 
 class RaygunHandler(logging.Handler):
     def __init__(self, apiKey, version = None):
-        logging.Handler.__init__(self)        
+        logging.Handler.__init__(self)
         self.sender = RaygunSender(apiKey)
         self.version = version
 
-    def emit(self, record):        
+    def emit(self, record):
         if record.exc_info:
             exc = record.exc_info
-        
+
         tags = None
         userCustomData = { "Logger Message" : record.msg }
         request = None
