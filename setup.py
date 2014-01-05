@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='raygun4py',
-    version='1.1.2',
+    version='1.1.3',
     packages=['raygun4py'],
     license='LICENSE',
     url='http://raygun.io',
@@ -10,6 +10,6 @@ setup(
     author_email='contact@mindscape.co.nz',
     long_description=open('README.rst').read(),
     install_requires=[
-        "jsonpickle == 0.4.0"       
+        "jsonpickle == 0.4.0"
     ],
 )

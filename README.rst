@@ -30,6 +30,27 @@ You can also attach the logging handler in raygunprovider.RaygunHandler then cal
 Documentation
 -------------
 
+**API**
+
+*class* raygunprovider.**send**(exc_type, exc_value, exc_traceback, [className[, tags[, userCustomData[, httpRequest]]]])
+
+This method performs the actual sending of exception data to Raygun. The first three parameters are required and can be accessed using sys.exc_info()::
+
+
+    try:
+       # LOC which raises an exception
+    except:
+       exc_type, exc_value, exc_traceback = sys.exc_info()
+       client.send(exc_type, exc_value, exc_traceback)
+
+
+The remaining parameters are optional:
+
+* className is the name of the class
+* tags is a list of tags relating to the current context which you can define
+* userCustomData is a dict containing custom key-values also of your choosing.
+* httpRequest is HTTP Request data - see sample.py for the expected format of the object.
+
 **Version tracking**
 
 Call `client.set_version("x.x.x.x")` to attach an app version to each message that is sent. This will be visible on the dashboard and can be used for filtering.
@@ -47,6 +68,10 @@ Create a thread in the official support forums at http://raygun.io/forums, and w
 
 Changelog
 ---------
+
+1.1.3
+
+- Fixed bug when logging with RaygunHandler attached but not passing exception data crashes program
 
 1.1.2
 
