@@ -12,13 +12,13 @@ class RaygunSender:
         if (apiKey):
             self.apiKey = apiKey
         else:
-            print("RaygunProvider error: ApiKey not set, errors will not be transmitted", file=sys.stderr)
+            print("RaygunProvider error: ApiKey not set, errors will not be transmitted", end="\n", file=sys.stderr)
 
         try:
             import ssl
         except ImportError:
             print(("RaygunProvider error: No SSL support available, cannot send. Please"
-                                  "compile the socket module with SSL support."), file=sys.stderr)
+                                  "compile the socket module with SSL support."), end="\n", file=sys.stderr)
 
         self.userversion = "Not defined"
         self.user = None
