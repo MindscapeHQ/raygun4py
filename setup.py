@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='raygun4py',
-    version='1.1.3',
+    version='3.0.0',
     packages=['raygun4py'],
     license='LICENSE',
     url='http://raygun.io',
