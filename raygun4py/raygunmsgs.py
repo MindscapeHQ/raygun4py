@@ -24,7 +24,7 @@ class RaygunMessageBuilder:
             "processorCount": multiprocessing.cpu_count(),
             "architecture": platform.architecture()[0],
             "cpu": platform.processor(),
-            "osVersion": "%s %s" % (platform.system(), platform.release())
+            "oSVersion": "%s %s" % (platform.system(), platform.release())
         }
         return self
 

@@ -28,7 +28,7 @@ class RaygunSender:
             self.userversion = version
 
     def set_user(self, user):
-        if isinstance(version, str):
+        if isinstance(user, str):
             self.user = user;
 
     def send(self, exc_type, exc_value, exc_traceback, className = "Not provided", tags = None, userCustomData = None, httpRequest = None):
@@ -64,7 +64,7 @@ class RaygunSender:
             response = conn.getresponse()
         except Exception as e:
             raise(e)
-            return 999, "Exception: Could not send"
+            return 400, "Exception: Could not send"
 
         return response.status, response.reason
 

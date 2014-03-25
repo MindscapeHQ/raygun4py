@@ -9,11 +9,11 @@ logger.addHandler(rgHandler)
 
 def log_exception(exc_type, exc_value, exc_traceback):
     logger.error("A python error occurred", exc_info = (exc_type, exc_value, exc_traceback))
-    print "Logging: %s" % exc_value
+    print("Logging: %s" % exc_value)
 
 sys.excepthook = log_exception
 
 def buggyMethod():
-    raise StandardError("Test exception sent via built-in handler")
+    raise Exception("Test exception sent via built-in handler")
 
 buggyMethod()
