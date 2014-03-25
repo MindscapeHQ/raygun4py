@@ -5,22 +5,22 @@ from raygun4py import raygunprovider
 class TestRaygun4PyFunctional(unittest.TestCase):
 
     def setUp(self):
-        self.apiKey = "apikey" # paste a valid API key here for these tests to pass
+        self.apiKey = "api_key" # paste a valid API key here for these tests to pass
 
     def test_sending(self):
         client = raygunprovider.RaygunSender(self.apiKey)
 
         try:
-            raise StandardError("Raygun4py manual sending test")
+            raise Exception("Raygun4py manual sending test")
         except:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             httpResult = client.send(exc_type, exc_value, exc_traceback)
 
-            self.assertEquals(httpResult[0], 202)
+            self.assertEqual(httpResult[0], 202)
 
     def log_send(self, logger):
         try:
-            raise StandardError("Raygun4py Logging Test")
+            raise Exception("Raygun4py Logging Test")
         except:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             logger.error("Logging with sending", exc_info = (exc_type, exc_value, exc_traceback))
@@ -30,7 +30,7 @@ class TestRaygun4PyFunctional(unittest.TestCase):
 
     def log_nosend(self, logger):
         try:
-            raise StandardError("Raygun4py Logging Test")
+            raise Exception("Raygun4py Logging Test")
         except:
             logger.error("Logging without sending")
             return 0
@@ -42,7 +42,7 @@ class TestRaygun4PyFunctional(unittest.TestCase):
         rgHandler = raygunprovider.RaygunHandler(self.apiKey)
         logger.addHandler(rgHandler)
 
-        self.assertEquals(0, self.log_send(logger))
+        self.assertEqual(0, self.log_send(logger))
 
 
     def test_log_without_sending(self):
@@ -50,4 +50,4 @@ class TestRaygun4PyFunctional(unittest.TestCase):
         rgHandler = raygunprovider.RaygunHandler(self.apiKey)
         logger.addHandler(rgHandler)
 
-        self.assertEquals(0, self.log_nosend(logger))
+        self.assertEqual(0, self.log_nosend(logger))
