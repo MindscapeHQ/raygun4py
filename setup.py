@@ -10,6 +10,6 @@ setup(
     author_email='contact@mindscape.co.nz',
     long_description=open('README.rst').read(),
     install_requires=[
-        "jsonpickle == 0.4.0"
+        "jsonpickle == 0.7.0"
     ],
 )

@@ -1,5 +1,5 @@
 import sys, os, socket, logging
-import jsonpickle, httplib
+import jsonpickle, http.client
 from raygun4py import raygunmsgs
 
 class RaygunSender:
@@ -12,26 +12,28 @@ class RaygunSender:
         if (apiKey):
             self.apiKey = apiKey
         else:
-            print >> sys.stderr, "RaygunProvider error: ApiKey not set, errors will not be transmitted"
+            print("RaygunProvider error: ApiKey not set, errors will not be transmitted", file=sys.stderr)
 
         try:
             import ssl
         except ImportError:
-            print >> sys.stderr, ("RaygunProvider error: No SSL support available, cannot send. Please"
-                                  "compile the socket module with SSL support.")
+            print(("RaygunProvider error: No SSL support available, cannot send. Please"
+                                  "compile the socket module with SSL support."), file=sys.stderr)
+
         self.userversion = "Not defined"
         self.user = None
 
     def set_version(self, version):
-        if isinstance(version, basestring):
+        if isinstance(version, str):
             self.userversion = version
 
     def set_user(self, user):
-        if isinstance(user, basestring):
+        if isinstance(version, str):
             self.user = user;
 
     def send(self, exc_type, exc_value, exc_traceback, className = "Not provided", tags = None, userCustomData = None, httpRequest = None):
         rgExcept = raygunmsgs.RaygunErrorMessage(exc_type, exc_value, exc_traceback, className)
+
         return self._post(self._create_message(rgExcept, tags, userCustomData, httpRequest))
 
     def _create_message(self, raygunExceptionMessage, tags, userCustomData, httpRequest):
@@ -48,18 +50,22 @@ class RaygunSender:
             .build()
 
     def _post(self, raygunMessage):
-        json = jsonpickle.encode(raygunMessage, unpicklable=False)
+        payload = jsonpickle.encode(raygunMessage, unpicklable=False)
+
         try:
-            auth_header = 'Basic %s' % (":".join(["myusername","mypassword"]).encode('Base64').strip('\r\n'))
-            headers = {"X-ApiKey": self.apiKey,
-                       "Content-Type": "application/json",
-                       "User-Agent": "raygun4py"}
-            conn = httplib.HTTPSConnection(self.endpointhost, '443')
-            conn.request('POST', self.endpointpath, json, headers)
+            headers = {
+              "X-ApiKey": self.apiKey,
+              "Content-Type": "application/json",
+              "User-Agent": "raygun4py"
+            }
+
+            conn = http.client.HTTPSConnection(self.endpointhost, '443')
+            conn.request('POST', self.endpointpath, payload, headers)
             response = conn.getresponse()
         except Exception as e:
-            print e
-            return 400, "Exception: Could not send"
+            raise(e)
+            return 999, "Exception: Could not send"
+
         return response.status, response.reason
 
 class RaygunHandler(logging.Handler):
