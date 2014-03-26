@@ -35,7 +35,7 @@ class RaygunMessageBuilder:
     def set_client_details(self):
         self.raygunMessage.details['client'] = {
             "name": "raygun4py",
-            "version": "1.1.3",
+            "version": "1.1.4",
             "clientUrl": "https://github.com/MindscapeHQ/raygun4py"
         }
         return self
