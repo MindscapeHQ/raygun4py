@@ -24,7 +24,7 @@ class RaygunMessageBuilder:
             "processorCount": multiprocessing.cpu_count(),
             "architecture": platform.architecture()[0],
             "cpu": platform.processor(),
-            "osVersion": "%s %s" % (platform.system(), platform.release())
+            "oSVersion": "%s %s" % (platform.system(), platform.release())
         }
         return self
 
@@ -34,8 +34,8 @@ class RaygunMessageBuilder:
 
     def set_client_details(self):
         self.raygunMessage.details['client'] = {
-            "name": "raygun4py",            
-            "version": "1.1.2",
+            "name": "raygun4py",
+            "version": "1.1.3",
             "clientUrl": "https://github.com/MindscapeHQ/raygun4py"
         }
         return self
@@ -81,7 +81,7 @@ class RaygunMessageBuilder:
 class RaygunMessage:
 
     def __init__(self):
-          self.occurredOn = datetime.utcnow() 
+          self.occurredOn = datetime.utcnow()
           self.details = { }
 
 class RaygunErrorMessage:
@@ -90,7 +90,7 @@ class RaygunErrorMessage:
         self.message = "%s: %s" % (exc_type.__name__, exc_value)
         self.stackTrace = []
 
-        for trace in traceback.extract_tb(exc_traceback):         
+        for trace in traceback.extract_tb(exc_traceback):
               self.stackTrace.append({
                     "lineNumber": trace[1],
                     "className": trace[2],
