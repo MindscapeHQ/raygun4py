@@ -1,7 +1,10 @@
 raygun4py
 =========
 
-Official Raygun provider for Python 2.6-2.7
+Official Raygun provider for **Python 2.6/2.7** and **Python 3+**
+
+This V2 release now contains code for both main Python versions, and should build automatically using your Python environment.
+
 
 Installation
 ------------
@@ -13,9 +16,9 @@ The easiest way to install this is as a pip package, as it is available from PyP
 Usage
 -----
 
-Run raygun4py-sample/sample.py to see a basic sample. You'll need to replace the API key with one of your own.
+Run python[2 or 3]/sample.py to see a basic sample. You'll need to replace the API key with one of your own.
 
-In general, after importing the module with::
+In your code, after importing the module with::
 
 
     from raygun4py import raygunprovider
@@ -69,8 +72,9 @@ Create a thread in the official support forums at http://raygun.io/forums, and w
 Changelog
 ---------
 
-1.1.4
+2.0.0
 
+- Added port of library to Python 3
 - Minor bugfix where OS version wasn't correctly transmitted (Environment tab in Dashboard)
 
 1.1.3
