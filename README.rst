@@ -69,6 +69,10 @@ Create a thread in the official support forums at http://raygun.io/forums, and w
 Changelog
 ---------
 
+1.1.4
+
+- Minor bugfix where OS version wasn't correctly transmitted (Environment tab in Dashboard)
+
 1.1.3
 
 - Fixed bug when logging with RaygunHandler attached but not passing exception data crashes program
