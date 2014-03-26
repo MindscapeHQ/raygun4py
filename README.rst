@@ -1,16 +1,10 @@
 raygun4py
 =========
 
-Official Raygun provider for Python 2.6/2.7 and Python 3+
+Official Raygun provider for **Python 2.6/2.7** and **Python 3+**
 
-Python 3
----------
+This V2 release now contains code for both main Python versions, and should build automatically using your Python environment.
 
-The code in the python3 directory supports that syntax, and naturally is a breaking change from the 1.x version.
-
-If you are using Python 2.6-2.7, clone the master branch, or grab raygun4py from PyPI with the latest version of **1.x.x.**
-
-If you are using Python 3.1+, clone the python3 branch, or grab raygun4py from PyPI with the latest version of **3.x.x.**
 
 Installation
 ------------
@@ -22,9 +16,9 @@ The easiest way to install this is as a pip package, as it is available from PyP
 Usage
 -----
 
-Run raygun4py-sample/sample.py to see a basic sample. You'll need to replace the API key with one of your own.
+Run python[2 or 3]/sample.py to see a basic sample. You'll need to replace the API key with one of your own.
 
-In general, after importing the module with::
+In your code, after importing the module with::
 
 
     from raygun4py import raygunprovider
