@@ -1,7 +1,16 @@
 raygun4py
 =========
 
-Official Raygun provider for Python 2.6-2.7
+Official Raygun provider for Python 2.6/2.7 and Python 3+
+
+Python 3
+---------
+
+The code in the python3 directory supports that syntax, and naturally is a breaking change from the 1.x version.
+
+If you are using Python 2.6-2.7, clone the master branch, or grab raygun4py from PyPI with the latest version of **1.x.x.**
+
+If you are using Python 3.1+, clone the python3 branch, or grab raygun4py from PyPI with the latest version of **3.x.x.**
 
 Installation
 ------------
@@ -69,8 +78,9 @@ Create a thread in the official support forums at http://raygun.io/forums, and w
 Changelog
 ---------
 
-1.1.4
+2.0.0
 
+- Added port of library to Python 3
 - Minor bugfix where OS version wasn't correctly transmitted (Environment tab in Dashboard)
 
 1.1.3
