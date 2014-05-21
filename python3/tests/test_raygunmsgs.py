@@ -40,6 +40,14 @@ class TestRaygunMessageBuilder(unittest.TestCase):
         self.assertEqual(self.builder.raygunMessage.details['user'], { 'identifier': 'user1' })
 
 
+class TestRaygunErrorMessage(unittest.TestCase):
+    def test_empty_exc_traceback(self):
+        raygunmsgs.RaygunErrorMessage(int, 1, [])
+
+    def test_exc_traceback_is_none(self):
+        raygunmsgs.RaygunErrorMessage(int, 1, None)
+
+
 def main():
     unittest.main()
 
