@@ -89,14 +89,19 @@ class RaygunErrorMessage:
     def __init__(self, exc_type, exc_value, exc_traceback, className):
         self.message = "%s: %s" % (exc_type.__name__, exc_value)
         self.stackTrace = []
+        traces = traceback.extract_tb(exc_traceback)
 
-        for trace in traceback.extract_tb(exc_traceback):
-              self.stackTrace.append({
-                    "lineNumber": trace[1],
-                    "className": trace[2],
-                    "fileName": trace[0],
-                    "methodName": trace[3],
+        if traces:
+            for t in traces:
+                self.stackTrace.append({
+                    "lineNumber": t[1],
+                    "className": t[2],
+                    "fileName": t[0],
+                    "methodName": t[3],
                 })
 
-        self.className = trace[2]
+            self.className = traces[-1][2] or className
+        else:
+            self.className = className
+
         self.data = ""
