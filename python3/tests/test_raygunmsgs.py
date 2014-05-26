@@ -42,7 +42,7 @@ class TestRaygunMessageBuilder(unittest.TestCase):
 
 class TestRaygunErrorMessage(unittest.TestCase):
     def test_exc_traceback_is_none(self):
-        raygunmsgs.RaygunErrorMessage(int, 1, None)
+        raygunmsgs.RaygunErrorMessage(int, 1, None, '')
 
 
 def main():

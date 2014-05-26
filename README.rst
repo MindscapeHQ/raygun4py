@@ -72,6 +72,10 @@ Create a thread in the official support forums at http://raygun.io/forums, and w
 Changelog
 ---------
 
+2.0.1
+
+- Fix bug when exceptions received from C++ libraries
+
 2.0.0
 
 - Added port of library to Python 3
