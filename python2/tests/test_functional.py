@@ -18,6 +18,24 @@ class TestRaygun4PyFunctional(unittest.TestCase):
 
             self.assertEquals(httpResult[0], 202)
 
+    def test_sending_user(self):
+        client = raygunprovider.RaygunSender(self.apiKey)
+        client.set_user({
+            'firstName': 'foo',
+            'fullName': 'foo bar',
+            'email': 'foo@bar.com',
+            'isAnonymous': False,
+            'identifier': 'foo@bar.com'
+          })
+
+        try:
+            raise Exception("Raygun4py manual sending test - user")
+        except:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            httpResult = client.send(exc_type, exc_value, exc_traceback)
+
+            self.assertEqual(httpResult[0], 202)
+
     def log_send(self, logger):
         try:
             raise StandardError("Raygun4py Logging Test")

@@ -27,8 +27,7 @@ class RaygunSender:
             self.userversion = version
 
     def set_user(self, user):
-        if isinstance(user, basestring):
-            self.user = user;
+        self.user = user;
 
     def send(self, exc_type, exc_value, exc_traceback, className = "Not provided", tags = None, userCustomData = None, httpRequest = None):
         rgExcept = raygunmsgs.RaygunErrorMessage(exc_type, exc_value, exc_traceback, className)

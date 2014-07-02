@@ -35,7 +35,7 @@ class RaygunMessageBuilder:
     def set_client_details(self):
         self.raygunMessage.details['client'] = {
             "name": "raygun4py",
-            "version": "2.0.0",
+            "version": "2.1.0",
             "clientUrl": "https://github.com/MindscapeHQ/raygun4py"
         }
         return self
@@ -75,7 +75,7 @@ class RaygunMessageBuilder:
 
     def set_user(self, user):
         if user is not None:
-            self.raygunMessage.details['user'] = { "identifier": user }
+            self.raygunMessage.details['user'] = user
         return self
 
 class RaygunMessage:
