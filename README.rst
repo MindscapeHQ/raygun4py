@@ -60,9 +60,8 @@ Call `client.set_version("x.x.x.x")` to attach an app version to each message th
 
 **Unique User Tracking**
 
-New in 2.1: More user data can now be passed in which will be displayed in the Raygun web app. Call `set_user` with the following:
+New in 2.1: More user data can now be passed in which will be displayed in the Raygun web app. Call `set_user` with the following::
 
-```python
 client.set_user({
     'firstName': 'Foo',
     'fullName': 'Foo Bar',
@@ -70,7 +69,6 @@ client.set_user({
     'isAnonymous': False,
     'identifier': 'foo@bar.com'
   })
-```
 
 `identifier` should be whatever unique key you use to identify users, for instance an email address. This will be used to create the count of unique affected users. If you wish to anonymize it, you can generate and store a UUID or hash one or more of their unique login data fields, if available.
 
