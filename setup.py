@@ -8,7 +8,7 @@ elif sys.version_info[0] == 3:
 
 setup(
     name='raygun4py',
-    version='2.0.1',
+    version='2.1.0',
     packages=['raygun4py'],
     package_dir= {
         "raygun4py": base_dir + "/raygun4py"
