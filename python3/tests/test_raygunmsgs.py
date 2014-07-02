@@ -35,9 +35,36 @@ class TestRaygunMessageBuilder(unittest.TestCase):
         self.builder.set_request_details(self.request)
         self.assertEqual(self.builder.raygunMessage.details['request']['iPAddress'], '127.0.0.1')
 
-    def test_user(self):
-        self.builder.set_user('user1')
-        self.assertEqual(self.builder.raygunMessage.details['user'], { 'identifier': 'user1' })
+    def test_user_fname(self):
+        self.builder.set_user({
+            'firstName': 'Foo',
+
+        })
+        self.assertEqual(self.builder.raygunMessage.details['user']['firstName'], 'Foo')
+
+    def test_user_fullname(self):
+        self.builder.set_user({
+            'fullName': 'Foo Bar',
+        })
+        self.assertEqual(self.builder.raygunMessage.details['user']['fullName'], 'Foo Bar')
+
+    def test_user_email(self):
+        self.builder.set_user({
+            'email': 'foo@bar.com',
+        })
+        self.assertEqual(self.builder.raygunMessage.details['user']['email'], 'foo@bar.com')
+
+    def test_user_identifier(self):
+        self.builder.set_user({
+            'identifier': 'foo@bar.com',
+        })
+        self.assertEqual(self.builder.raygunMessage.details['user']['identifier'], 'foo@bar.com')
+
+    def test_user_anon(self):
+        self.builder.set_user({
+            'isAnonymous': False
+        })
+        self.assertEqual(self.builder.raygunMessage.details['user']['isAnonymous'], False)
 
 
 class TestRaygunErrorMessage(unittest.TestCase):
