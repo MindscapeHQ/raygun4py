@@ -7,14 +7,14 @@ This V2 release now contains code for both main Python versions, and should buil
 
 
 Installation
-------------
+============
 
 The easiest way to install this is as a pip package, as it is available from PyPI. From your command line, run::
 
   pip install raygun4py
 
 Usage
------
+=====
 
 Run python[2 or 3]/sample.py to see a basic sample. You'll need to replace the API key with one of your own.
 
@@ -31,9 +31,10 @@ You can also attach the logging handler in raygunprovider.RaygunHandler then cal
 * If you are in a web server environment and have HTTP request details available, you can pass these and the headers through in a dictionary (as in sample.py).
 
 Documentation
--------------
+=============
 
-**API**
+API
+---
 
 *class* raygunprovider.**send**(exc_type, exc_value, exc_traceback, [className[, tags[, userCustomData[, httpRequest]]]])
 
@@ -54,11 +55,13 @@ The remaining parameters are optional:
 * userCustomData is a dict containing custom key-values also of your choosing.
 * httpRequest is HTTP Request data - see sample.py for the expected format of the object.
 
-**Version tracking**
+Version tracking
+----------------
 
 Call `client.set_version("x.x.x.x")` to attach an app version to each message that is sent. This will be visible on the dashboard and can be used for filtering.
 
-**Unique User Tracking**
+Unique User Tracking
+--------------------
 
 New in 2.1: More user data can now be passed in which will be displayed in the Raygun web app. Call `set_user` with the following::
 
@@ -73,14 +76,14 @@ New in 2.1: More user data can now be passed in which will be displayed in the R
 `identifier` should be whatever unique key you use to identify users, for instance an email address. This will be used to create the count of unique affected users. If you wish to anonymize it, you can generate and store a UUID or hash one or more of their unique login data fields, if available.
 
 Troubleshooting
----------------
+===============
 
 To see the HTTP response code from sending the message to raygun, `print client.send()` (as in line 27 of test.py). It will be 403 if an invalid API key was entered, and 202 if successful.
 
 Create a thread in the official support forums at http://raygun.io/forums, and we'll help you out.
 
 Changelog
----------
+=========
 
 2.0.1
 
