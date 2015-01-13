@@ -1,6 +1,11 @@
-import sys
 import traceback
-import multiprocessing
+
+try:
+    import multiprocessing
+    USE_MULTIPROCESSING = True
+except ImportError:
+    USE_MULTIPROCESSING = False
+
 import platform
 from datetime import datetime
 
@@ -21,7 +26,9 @@ class RaygunMessageBuilder:
 
     def set_environment_details(self):
         self.raygunMessage.details['environment'] = {
-            "processorCount": multiprocessing.cpu_count(),
+            "processorCount": (
+                multiprocessing.cpu_count() if USE_MULTIPROCESSING else "n/a"
+            ),
             "architecture": platform.architecture()[0],
             "cpu": platform.processor(),
             "oSVersion": "%s %s" % (platform.system(), platform.release())
