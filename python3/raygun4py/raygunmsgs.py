@@ -111,5 +111,13 @@ class RaygunErrorMessage:
 
         self.data = ""
 
-        if isinstance(exc_value, Exception) and exc_value.__context__:
-            self.innerError = RaygunErrorMessage(type(exc_value.__context__), exc_value.__context__, None)
+        if isinstance(exc_value, Exception):
+            nestedException = None
+
+            if exc_value.__cause__:
+                nestedException = exc_value.__cause__
+            elif exc_value.__context__:
+                nestedException = exc_value.__context__
+
+            if nestedException is not None:
+                self.innerError = RaygunErrorMessage(type(nestedException), nestedException, None)
