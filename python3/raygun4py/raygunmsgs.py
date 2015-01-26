@@ -95,6 +95,7 @@ class RaygunMessage:
 class RaygunErrorMessage:
 
     def __init__(self, exc_type, exc_value, exc_traceback, className):
+        self.className = exc_type.__name__
         self.message = "%s: %s" % (exc_type.__name__, exc_value)
         self.stackTrace = []
         traces = traceback.extract_tb(exc_traceback)
@@ -107,9 +108,5 @@ class RaygunErrorMessage:
                     "fileName": t[0],
                     "methodName": t[3],
                 })
-
-            self.className = traces[-1][2] or className
-        else:
-            self.className = className
 
         self.data = ""

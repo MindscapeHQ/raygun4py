@@ -81,7 +81,9 @@ class TestRaygunErrorMessage(unittest.TestCase):
             self.parent()
         except Exception as e:
             self.theException = e
-            self.exc_info = sys.exc_info()
+
+            exc_info = sys.exc_info()
+            self.msg = raygunmsgs.RaygunErrorMessage(exc_info[0], exc_info[1], exc_info[2], type(e))
 
     def parent(self):
             try:
@@ -99,9 +101,12 @@ class TestRaygunErrorMessage(unittest.TestCase):
         errorMessage = raygunmsgs.RaygunErrorMessage(int, 1, None, '')
         self.assertEqual(errorMessage.stackTrace, [])
 
-    def test_parameter_classname(self):
-        msg = raygunmsgs.RaygunErrorMessage(self.exc_info[0], self.exc_info[1], self.exc_info[2], type(self.theException))
-        self.assertEqual(msg.className, TestRaygunErrorMessage.ParentError)
+    def test_classname(self):
+        self.assertEqual(self.msg.className, 'ParentError')
+
+    def test_chained_exception_message_parent_has_nested_child(self):
+        #self.assertEqual(self.msg.innerError.className, 'child')
+        pass
 
     def test_chained_exception_last_exception_caught_is_parent(self):
         self.assertIsInstance(self.theException.__context__, TestRaygunErrorMessage.ChildError)

@@ -67,9 +67,28 @@ class TestRaygunMessageBuilder(unittest.TestCase):
         self.assertEqual(self.builder.raygunMessage.details['user']['isAnonymous'], False)
 
 class TestRaygunErrorMessage(unittest.TestCase):
+    class ParentError(Exception):
+        pass
+
+    def setUp(self):
+        try:
+            self.parent()
+        except Exception as e:
+            self.theException = e
+
+            exc_info = sys.exc_info()
+            self.msg = raygunmsgs.RaygunErrorMessage(exc_info[0], exc_info[1], exc_info[2], type(e))
+
+    def parent(self):
+            raise TestRaygunErrorMessage.ParentError("Parent message")
+
     def test_exc_traceback_none_generates_empty_array(self):
         errorMessage = raygunmsgs.RaygunErrorMessage(int, 1, None, '')
         self.assertEqual(errorMessage.stackTrace, [])
+
+    def test_classname(self):
+        self.assertEqual(self.msg.className, 'ParentError')
+
 
 def main():
     unittest.main()
