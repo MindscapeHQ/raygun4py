@@ -95,7 +95,7 @@ class TestRaygunErrorMessage(unittest.TestCase):
 
     def child(self):
         try:
-            raise TestRaygunErrorMessage.GrandchildError("GrandchildError")
+            raise TestRaygunErrorMessage.GrandchildError("Grandchild message")
         except Exception as ex:
             raise TestRaygunErrorMessage.ChildError("Child message")
 
@@ -112,6 +112,14 @@ class TestRaygunErrorMessage(unittest.TestCase):
 
     def test_chained_exception_message_child_has_nested_grandchild(self):
         self.assertEqual(self.msg.innerError.innerError.className, 'GrandchildError')
+        pass
+
+    def test_chained_exception_nested_child_message(self):
+        self.assertEqual(self.msg.innerError.message, 'ChildError: Child message')
+        pass
+
+    def test_chained_exception_nested_grandchild_message(self):
+        self.assertEqual(self.msg.innerError.innerError.message, 'GrandchildError: Grandchild message')
         pass
 
     def test_chained_exception_last_exception_caught_is_parent(self):
