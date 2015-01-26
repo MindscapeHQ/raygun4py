@@ -11,24 +11,65 @@ Installation
 
 The easiest way to install this is as a pip package, as it is available from PyPI. From your command line, run::
 
-  pip install raygun4py
+```
+$ pip install raygun4py
+```
+
+Then import and instantiate the module:
+
+```python
+from raygun4py import raygunprovider
+
+client = raygunprovider.RaygunSender('your_apikey')
+```
 
 Usage
 =====
 
-Run python[2 or 3]/sample.py to see a basic sample. You'll need to replace the API key with one of your own.
+Run python[2or3]/sample.py to see a basic implementation. You'll need to replace the API key with one of your own.
 
-In your code, after importing the module with::
+## Logging
 
+You can also attach the logging handler in raygunprovider.RaygunHandler then calling a logging method in a function that is provided to sys.except hook. This requires much less setup than the above alternative.
 
-    from raygun4py import raygunprovider
+**See sampleWithLogging.py** for an example implementation.
 
+## Uncaught exception handler
 
-you'll want to provide a callback function to sys.excepthook. This will pick up all uncaught exceptions that your program throws. It needs three parameters: the type, value and traceback. In the function, create a new raygunprovider.RaygunSender, then call send() on that object, passing in the parameters.
+To automatically pick up unhandled exceptions with custom logic, you can provide a callback function to sys.excepthook. This will send uncaught exceptions that your program throws. The function should take three parameters: the type, value and traceback. In the function, create a new raygunprovider.RaygunSender, then call send() on that object, passing in the parameters.
 
-You can also attach the logging handler in raygunprovider.RaygunHandler then calling a logging method in a function that is provided to sys.except hook. This requires much less setup than the above alternative. **See sampleWithLogging.py**.
+**See sample.py for an example implementation**.
 
-* If you are in a web server environment and have HTTP request details available, you can pass these and the headers through in a dictionary (as in sample.py).
+## Manual sending
+
+### Python 3
+
+Python 3 code can now use the new send_exception method, which simply takes an Exception object and sends it:
+
+```python
+try:
+    raise Exception("foo")
+except Exception as e:
+    client.send_exception(e)
+```
+
+### Python 2
+
+You can manually send the current exception in Python 2 by calling sys.exc_info first, and pass through the three values through to send():
+
+```python
+try:
+    raise StandardError("Raygun4py manual sending test")
+except:
+    exc_type, exc_value, exc_traceback = sys.exc_info()
+    client.send(exc_type, exc_value, exc_traceback)
+```
+
+## Web frameworks
+
+If you are in a web server environment and have HTTP request details available, you can pass these and the headers through in a dictionary (as in sample.py).
+
+Code running on Google App Engine should now be supported - you can test this locally, and has been reported working once deployed (the latter currently requires a paid account due to needed SSL support).
 
 Documentation
 =============
@@ -36,24 +77,21 @@ Documentation
 API
 ---
 
+*class* raygunprovider.**send_exception**(exception, [className[, tags[, userCustomData[, httpRequest]]]])
+
+This is the preferred method for manually sending from Python 3 code. The first parameter, _exception_, should be an object that inherits from Exception.
+
 *class* raygunprovider.**send**(exc_type, exc_value, exc_traceback, [className[, tags[, userCustomData[, httpRequest]]]])
 
-This method performs the actual sending of exception data to Raygun. The first three parameters are required and can be accessed using sys.exc_info()::
-
-
-    try:
-       # LOC which raises an exception
-    except:
-       exc_type, exc_value, exc_traceback = sys.exc_info()
-       client.send(exc_type, exc_value, exc_traceback)
-
+This method performs the actual sending of exception data to Raygun. This overload is available for both Python 2 and 3, but should be considered deprecated for Py3. The first three parameters are required and can be accessed using sys.exc_info (see the example under Manual Sending above).
 
 The remaining parameters are optional:
 
-* className is the name of the class
 * tags is a list of tags relating to the current context which you can define
 * userCustomData is a dict containing custom key-values also of your choosing.
 * httpRequest is HTTP Request data - see sample.py for the expected format of the object.
+
+* className was used prior to v2.2.0, but is now **deprecated** and can be removed from your code. This parameter may be deleted in a future release.
 
 Version tracking
 ----------------
@@ -63,7 +101,7 @@ Call `client.set_version("x.x.x.x")` to attach an app version to each message th
 Unique User Tracking
 --------------------
 
-New in 2.1: More user data can now be passed in which will be displayed in the Raygun web app. Call `set_user` with the following::
+User data can be passed in which will be displayed in the Raygun web app. Call `set_user` with the following::
 
   client.set_user({
       'firstName': 'Foo',
@@ -75,6 +113,13 @@ New in 2.1: More user data can now be passed in which will be displayed in the R
 
 `identifier` should be whatever unique key you use to identify users, for instance an email address. This will be used to create the count of unique affected users. If you wish to anonymize it, you can generate and store a UUID or hash one or more of their unique login data fields, if available.
 
+Chained exceptions
+------------------
+
+For Python 3, chained exceptions are now supported and automatically sent along with their traceback.
+
+This occurs when an exception is raised while handling another exception - see tests_functional.py for an example.
+
 Troubleshooting
 ===============
 
@@ -84,6 +129,13 @@ Create a thread in the official support forums at http://raygun.io/forums, and w
 
 Changelog
 =========
+
+2.2.0
+
+- Added new send_exception() method for Py3
+- Added support for chained exceptions for Py3
+- Automatically detect class name - this no longer needs to be provided on send() and as such this parameter is deprecated.
+- Support Google App Engine by disabling multiprocessing module if not available
 
 2.0.1
 
