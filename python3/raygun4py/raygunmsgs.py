@@ -94,7 +94,7 @@ class RaygunMessage:
 
 class RaygunErrorMessage:
 
-    def __init__(self, exc_type, exc_value, exc_traceback, className):
+    def __init__(self, exc_type, exc_value, exc_traceback):
         self.className = exc_type.__name__
         self.message = "%s: %s" % (exc_type.__name__, exc_value)
         self.stackTrace = []
@@ -110,3 +110,6 @@ class RaygunErrorMessage:
                 })
 
         self.data = ""
+
+        if isinstance(exc_value, Exception) and exc_value.__context__:
+            self.innerError = RaygunErrorMessage(type(exc_value.__context__), exc_value.__context__, None)

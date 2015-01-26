@@ -31,7 +31,7 @@ class RaygunSender:
         self.user = user;
 
     def send(self, exc_type, exc_value, exc_traceback, className = "Not provided", tags = None, userCustomData = None, httpRequest = None):
-        rgExcept = raygunmsgs.RaygunErrorMessage(exc_type, exc_value, exc_traceback, className)
+        rgExcept = raygunmsgs.RaygunErrorMessage(exc_type, exc_value, exc_traceback)
 
         return self._post(self._create_message(rgExcept, tags, userCustomData, httpRequest))
 

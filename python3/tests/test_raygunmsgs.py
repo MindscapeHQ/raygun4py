@@ -1,6 +1,8 @@
 import sys, unittest, socket
 from raygun4py import raygunmsgs
 
+from pprint import pprint
+
 class TestRaygunMessageBuilder(unittest.TestCase):
 
     def setUp(self):
@@ -83,7 +85,7 @@ class TestRaygunErrorMessage(unittest.TestCase):
             self.theException = e
 
             exc_info = sys.exc_info()
-            self.msg = raygunmsgs.RaygunErrorMessage(exc_info[0], exc_info[1], exc_info[2], type(e))
+            self.msg = raygunmsgs.RaygunErrorMessage(exc_info[0], exc_info[1], exc_info[2])
 
     def parent(self):
             try:
@@ -98,14 +100,18 @@ class TestRaygunErrorMessage(unittest.TestCase):
             raise TestRaygunErrorMessage.ChildError("Child message")
 
     def test_exc_traceback_none_generates_empty_array(self):
-        errorMessage = raygunmsgs.RaygunErrorMessage(int, 1, None, '')
+        errorMessage = raygunmsgs.RaygunErrorMessage(Exception, None, None)
         self.assertEqual(errorMessage.stackTrace, [])
 
     def test_classname(self):
         self.assertEqual(self.msg.className, 'ParentError')
 
     def test_chained_exception_message_parent_has_nested_child(self):
-        #self.assertEqual(self.msg.innerError.className, 'child')
+        self.assertEqual(self.msg.innerError.className, 'ChildError')
+        pass
+
+    def test_chained_exception_message_child_has_nested_grandchild(self):
+        self.assertEqual(self.msg.innerError.innerError.className, 'GrandchildError')
         pass
 
     def test_chained_exception_last_exception_caught_is_parent(self):
