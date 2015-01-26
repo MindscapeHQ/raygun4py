@@ -66,11 +66,31 @@ class TestRaygunMessageBuilder(unittest.TestCase):
         })
         self.assertEqual(self.builder.raygunMessage.details['user']['isAnonymous'], False)
 
-
 class TestRaygunErrorMessage(unittest.TestCase):
-    def test_exc_traceback_is_none(self):
-        raygunmsgs.RaygunErrorMessage(int, 1, None, '')
+    class ChildError(Exception):
+        pass
 
+    class ParentError(Exception):
+        pass
+
+    def setUp(self):
+        try:
+            try:
+                raise TestRaygunErrorMessage.ChildError("Child message")
+            except TestRaygunErrorMessage.ChildError as exc:
+                raise TestRaygunErrorMessage.ParentError("Parent message") from exc
+        except Exception as e:
+            self.theException = e
+
+    def test_exc_traceback_none_generates_empty_array(self):
+        errorMessage = raygunmsgs.RaygunErrorMessage(int, 1, None, '')
+        self.assertEqual(errorMessage.stackTrace, [])
+
+    def test_chained_exception_parent(self):
+        self.assertIsInstance(self.theException, TestRaygunErrorMessage.ParentError)
+
+    def test_chained_exception_cause_is_child(self):
+        self.assertIsInstance(self.theException.__cause__, TestRaygunErrorMessage.ChildError)
 
 def main():
     unittest.main()
