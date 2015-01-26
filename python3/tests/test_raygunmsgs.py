@@ -1,8 +1,6 @@
 import sys, unittest, socket
 from raygun4py import raygunmsgs
 
-from pprint import pprint
-
 class TestRaygunMessageBuilder(unittest.TestCase):
 
     def setUp(self):

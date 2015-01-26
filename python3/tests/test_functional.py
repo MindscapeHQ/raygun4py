@@ -18,6 +18,20 @@ class TestRaygun4PyFunctional(unittest.TestCase):
 
             self.assertEqual(httpResult[0], 202)
 
+    def test_sending_chained_exception(self):
+        client = raygunprovider.RaygunSender(self.apiKey)
+
+        try:
+            try:
+                raise Exception("Nested child")
+            except:
+                raise Exception("Nested parent")
+        except:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            httpResult = client.send(exc_type, exc_value, exc_traceback)
+
+            self.assertEqual(httpResult[0], 202)
+
     def test_sending_user(self):
         client = raygunprovider.RaygunSender(self.apiKey)
         client.set_user({
