@@ -1,4 +1,4 @@
-import unittest, socket
+import sys, unittest, socket
 from raygun4py import raygunmsgs
 
 class TestRaygunMessageBuilder(unittest.TestCase):
@@ -67,6 +67,9 @@ class TestRaygunMessageBuilder(unittest.TestCase):
         self.assertEqual(self.builder.raygunMessage.details['user']['isAnonymous'], False)
 
 class TestRaygunErrorMessage(unittest.TestCase):
+    class GrandchildError(Exception):
+        pass
+
     class ChildError(Exception):
         pass
 
@@ -75,22 +78,39 @@ class TestRaygunErrorMessage(unittest.TestCase):
 
     def setUp(self):
         try:
-            try:
-                raise TestRaygunErrorMessage.ChildError("Child message")
-            except TestRaygunErrorMessage.ChildError as exc:
-                raise TestRaygunErrorMessage.ParentError("Parent message") from exc
+            self.parent()
         except Exception as e:
             self.theException = e
+            self.exc_info = sys.exc_info()
+
+    def parent(self):
+            try:
+                self.child()
+            except TestRaygunErrorMessage.ChildError as exc:
+                raise TestRaygunErrorMessage.ParentError("Parent message") from exc
+
+    def child(self):
+        try:
+            raise TestRaygunErrorMessage.GrandchildError("GrandchildError")
+        except Exception as ex:
+            raise TestRaygunErrorMessage.ChildError("Child message")
 
     def test_exc_traceback_none_generates_empty_array(self):
         errorMessage = raygunmsgs.RaygunErrorMessage(int, 1, None, '')
         self.assertEqual(errorMessage.stackTrace, [])
 
-    def test_chained_exception_parent(self):
-        self.assertIsInstance(self.theException, TestRaygunErrorMessage.ParentError)
+    def test_parameter_classname(self):
+        msg = raygunmsgs.RaygunErrorMessage(self.exc_info[0], self.exc_info[1], self.exc_info[2], type(self.theException))
+        self.assertEqual(msg.className, TestRaygunErrorMessage.ParentError)
+
+    def test_chained_exception_last_exception_caught_is_parent(self):
+        self.assertIsInstance(self.theException.__context__, TestRaygunErrorMessage.ChildError)
 
     def test_chained_exception_cause_is_child(self):
         self.assertIsInstance(self.theException.__cause__, TestRaygunErrorMessage.ChildError)
+
+    def test_chained_exception_childs_cause_is_grandchild(self):
+        self.assertIsInstance(self.theException.__cause__.__context__, TestRaygunErrorMessage.GrandchildError)
 
 def main():
     unittest.main()
