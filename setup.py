@@ -17,6 +17,7 @@ setup(
     url='http://raygun.io',
     author='Mindscape',
     author_email='contact@mindscape.co.nz',
+    description='Official Raygun provider for Python 2.6/2.7 and Python 3+',
     long_description=open('README.rst').read(),
     install_requires=[
         "jsonpickle == 0.7.0"
