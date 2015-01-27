@@ -7,11 +7,35 @@ class TestRaygun4PyFunctional(unittest.TestCase):
     def setUp(self):
         self.apiKey = "apikey" # paste a valid API key here for these tests to pass
 
+    def test_python3_new_sending(self):
+        client = raygunprovider.RaygunSender(self.apiKey)
+
+        try:
+            raise Exception("Raygun4py Python3 send")
+        except Exception as e:
+            httpResult = client.send_exception(e)
+
+            self.assertEqual(httpResult[0], 202)
+
     def test_sending(self):
         client = raygunprovider.RaygunSender(self.apiKey)
 
         try:
             raise Exception("Raygun4py manual sending test")
+        except:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            httpResult = client.send(exc_type, exc_value, exc_traceback)
+
+            self.assertEqual(httpResult[0], 202)
+
+    def test_sending_chained_exception(self):
+        client = raygunprovider.RaygunSender(self.apiKey)
+
+        try:
+            try:
+                raise Exception("Nested child")
+            except:
+                raise Exception("Nested parent")
         except:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             httpResult = client.send(exc_type, exc_value, exc_traceback)

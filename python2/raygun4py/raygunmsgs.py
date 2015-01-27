@@ -1,6 +1,11 @@
-import sys
 import traceback
-import multiprocessing
+
+try:
+    import multiprocessing
+    USE_MULTIPROCESSING = True
+except ImportError:
+    USE_MULTIPROCESSING = False
+
 import platform
 from datetime import datetime
 
@@ -21,7 +26,9 @@ class RaygunMessageBuilder:
 
     def set_environment_details(self):
         self.raygunMessage.details['environment'] = {
-            "processorCount": multiprocessing.cpu_count(),
+            "processorCount": (
+                multiprocessing.cpu_count() if USE_MULTIPROCESSING else "n/a"
+            ),
             "architecture": platform.architecture()[0],
             "cpu": platform.processor(),
             "oSVersion": "%s %s" % (platform.system(), platform.release())
@@ -35,7 +42,7 @@ class RaygunMessageBuilder:
     def set_client_details(self):
         self.raygunMessage.details['client'] = {
             "name": "raygun4py",
-            "version": "2.1.0",
+            "version": "2.2.0",
             "clientUrl": "https://github.com/MindscapeHQ/raygun4py"
         }
         return self
@@ -87,6 +94,7 @@ class RaygunMessage:
 class RaygunErrorMessage:
 
     def __init__(self, exc_type, exc_value, exc_traceback, className):
+        self.className = exc_type.__name__
         self.message = "%s: %s" % (exc_type.__name__, exc_value)
         self.stackTrace = []
         traces = traceback.extract_tb(exc_traceback)
@@ -99,9 +107,5 @@ class RaygunErrorMessage:
                     "fileName": t[0],
                     "methodName": t[3],
                 })
-
-            self.className = traces[-1][2] or className
-        else:
-            self.className = className
 
         self.data = ""

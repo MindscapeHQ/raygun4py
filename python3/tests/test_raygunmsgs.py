@@ -1,4 +1,4 @@
-import unittest, socket
+import sys, unittest, socket
 from raygun4py import raygunmsgs
 
 class TestRaygunMessageBuilder(unittest.TestCase):
@@ -66,11 +66,68 @@ class TestRaygunMessageBuilder(unittest.TestCase):
         })
         self.assertEqual(self.builder.raygunMessage.details['user']['isAnonymous'], False)
 
-
 class TestRaygunErrorMessage(unittest.TestCase):
-    def test_exc_traceback_is_none(self):
-        raygunmsgs.RaygunErrorMessage(int, 1, None, '')
+    class GrandchildError(Exception):
+        pass
 
+    class ChildError(Exception):
+        pass
+
+    class ParentError(Exception):
+        pass
+
+    def setUp(self):
+        try:
+            self.parent()
+        except Exception as e:
+            self.theException = e
+
+            exc_info = sys.exc_info()
+            self.msg = raygunmsgs.RaygunErrorMessage(exc_info[0], exc_info[1], exc_info[2])
+
+    def parent(self):
+            try:
+                self.child()
+            except TestRaygunErrorMessage.ChildError as exc:
+                raise TestRaygunErrorMessage.ParentError("Parent message") from exc
+
+    def child(self):
+        try:
+            raise TestRaygunErrorMessage.GrandchildError("Grandchild message")
+        except Exception as ex:
+            raise TestRaygunErrorMessage.ChildError("Child message")
+
+    def test_exc_traceback_none_generates_empty_array(self):
+        errorMessage = raygunmsgs.RaygunErrorMessage(Exception, None, None)
+        self.assertEqual(errorMessage.stackTrace, [])
+
+    def test_classname(self):
+        self.assertEqual(self.msg.className, 'ParentError')
+
+    def test_chained_exception_message_parent_has_nested_child(self):
+        self.assertEqual(self.msg.innerError.className, 'ChildError')
+        pass
+
+    def test_chained_exception_message_child_has_nested_grandchild(self):
+        self.assertEqual(self.msg.innerError.innerError.className, 'GrandchildError')
+        pass
+
+    def test_chained_exception_nested_child_message(self):
+        self.assertEqual(self.msg.innerError.message, 'ChildError: Child message')
+        pass
+
+    def test_chained_exception_nested_grandchild_message(self):
+        self.assertEqual(self.msg.innerError.innerError.message, 'GrandchildError: Grandchild message')
+        pass
+
+    def test_chained_exception_last_exception_caught_is_parent(self):
+        self.assertIsInstance(self.theException.__context__, TestRaygunErrorMessage.ChildError)
+
+    def test_chained_exception_cause_is_child(self):
+        self.assertIsInstance(self.theException.__cause__, TestRaygunErrorMessage.ChildError)
+
+    def test_chained_exception_childs_cause_is_grandchild(self):
+        self.assertIsInstance(self.theException.__cause__.__context__, TestRaygunErrorMessage.GrandchildError)
 
 def main():
     unittest.main()
