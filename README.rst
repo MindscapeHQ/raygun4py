@@ -11,61 +11,57 @@ Installation
 
 The easiest way to install this is as a pip package, as it is available from PyPI. From your command line, run::
 
-```
-$ pip install raygun4py
-```
+    $ pip install raygun4py
 
-Then import and instantiate the module:
+Then import and instantiate the module::
 
-```python
-from raygun4py import raygunprovider
+    from raygun4py import raygunprovider
 
-client = raygunprovider.RaygunSender('your_apikey')
-```
+    client = raygunprovider.RaygunSender('your_apikey')
 
 Usage
 =====
 
 Run python[2or3]/sample.py to see a basic implementation. You'll need to replace the API key with one of your own.
 
-## Logging
+Logging
+-------
 
 You can also attach the logging handler in raygunprovider.RaygunHandler then calling a logging method in a function that is provided to sys.except hook. This requires much less setup than the above alternative.
 
 **See sampleWithLogging.py** for an example implementation.
 
-## Uncaught exception handler
+Uncaught exception handler
+--------------------------
 
 To automatically pick up unhandled exceptions with custom logic, you can provide a callback function to sys.excepthook. This will send uncaught exceptions that your program throws. The function should take three parameters: the type, value and traceback. In the function, create a new raygunprovider.RaygunSender, then call send() on that object, passing in the parameters.
 
 **See sample.py for an example implementation**.
 
-## Manual sending
+Manual sending
+--------------
 
-### Python 3
+**Python 3**
 
-Python 3 code can now use the new send_exception method, which simply takes an Exception object and sends it:
+Python 3 code can now use the new send_exception method, which simply takes an Exception object and sends it::
 
-```python
-try:
-    raise Exception("foo")
-except Exception as e:
-    client.send_exception(e)
-```
+    try:
+        raise Exception("foo")
+    except Exception as e:
+        client.send_exception(e)
 
-### Python 2
+**Python 2**
 
-You can manually send the current exception in Python 2 by calling sys.exc_info first, and pass through the three values through to send():
+You can manually send the current exception in Python 2 by calling sys.exc_info first, and pass through the three values through to send()::
 
-```python
-try:
-    raise StandardError("Raygun4py manual sending test")
-except:
-    exc_type, exc_value, exc_traceback = sys.exc_info()
-    client.send(exc_type, exc_value, exc_traceback)
-```
+    try:
+        raise StandardError("Raygun4py manual sending test")
+    except:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        client.send(exc_type, exc_value, exc_traceback)
 
-## Web frameworks
+Web frameworks
+--------------
 
 If you are in a web server environment and have HTTP request details available, you can pass these and the headers through in a dictionary (as in sample.py).
 
