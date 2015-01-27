@@ -18,6 +18,7 @@ setup(
     author='Mindscape',
     author_email='contact@mindscape.co.nz',
     long_description=open('README.rst').read(),
+    description='Raygun.io provider for Python',
     install_requires=[
         "jsonpickle == 0.7.0"
     ],classifiers=[
