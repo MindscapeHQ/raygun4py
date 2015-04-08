@@ -2,4 +2,6 @@ language: python
 
 python: ["2.6", "2.7", "3.2", "3.3", "3.4", "pypy"]
 
-script: nosetests
+script:
+  - if [[ $TRAVIS_PYTHON_VERSION == 2* ]] then cd python2; else cd python3; fi
+  - nosetests
