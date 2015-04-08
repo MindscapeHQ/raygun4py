@@ -21,7 +21,7 @@ class TestRaygunMessageBuilder(unittest.TestCase):
 
     def test_machinename(self):
         self.builder.set_machine_name(socket.gethostname())
-        self.assertIsNotNone(self.builder.raygunMessage.details['machineName'])
+        self.assertTrue(self.builder.raygunMessage.details['machineName'] != None)
 
     def test_customdata(self):
         self.builder.set_customdata({1: "one"})
