@@ -75,24 +75,28 @@ Code running on Google App Engine should now be supported - you can test this lo
 Documentation
 =============
 
-API
+Public API
 ---
 
-*class* raygunprovider.**send_exception**(exception, [className[, tags[, userCustomData[, httpRequest]]]])
+==============  =========================================================
+Function        Arguments
+==============  =========================================================
+send_exception  (exception, tags, userCustomData, httpRequest)
 
-This is the preferred method for manually sending from Python 3 code. The first parameter, _exception_, should be an object that inherits from Exception.
+This is the preferred method for manually sending from Python 3 code. The first parameter, _exception_, should be an object that inherits from Exception. The remaining three parameters in the tuple are optional.
 
-*class* raygunprovider.**send**(exc_type, exc_value, exc_traceback, [className[, tags[, userCustomData[, httpRequest]]]])
+==============  ==================================================================================
+Function        Arguments
+==============  ==================================================================================
+send            (exc_type, exc_value, exc_traceback, tags, userCustomData, httpRequest)
 
-This method performs the actual sending of exception data to Raygun. This overload is available for both Python 2 and 3, but should be considered deprecated for Py3. The first three parameters are required and can be accessed using sys.exc_info (see the example under Manual Sending above).
+This method performs the actual sending of exception data to Raygun. This overload should be used from Python 2 code. The first three parameters are required and can be accessed using sys.exc_info (see the example under Manual Sending above).
 
 The remaining parameters are optional:
 
 * tags is a list of tags relating to the current context which you can define
 * userCustomData is a dict containing custom key-values also of your choosing.
 * httpRequest is HTTP Request data - see sample.py for the expected format of the object.
-
-* className was used prior to v2.2.0, but is now **deprecated** and can be removed from your code. This parameter may be deleted in a future release.
 
 Version tracking
 ----------------
