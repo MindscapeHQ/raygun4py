@@ -3,6 +3,10 @@ raygun4py
 
 .. image:: https://travis-ci.org/MindscapeHQ/raygun4py.svg?branch=vnext
 
+.. image:: https://coveralls.io/repos/MindscapeHQ/raygun4py/badge.svg?branch=vnext
+  :target: https://coveralls.io/r/MindscapeHQ/raygun4py?branch=vnext
+  
+
 Official Raygun provider for **Python 2.6/2.7**, **Python 3+** and **Pypy**
 
 
