@@ -5,8 +5,6 @@ raygun4py
 
 Official Raygun provider for **Python 2.6/2.7** and **Python 3+**
 
-This V2 release now contains code for both main Python versions, and should build automatically using your Python environment.
-
 
 Installation
 ============

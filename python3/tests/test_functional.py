@@ -5,7 +5,7 @@ from raygun4py import raygunprovider
 class TestRaygun4PyFunctional(unittest.TestCase):
 
     def setUp(self):
-        self.apiKey = "apikey" # paste a valid API key here for these tests to pass
+        self.apiKey = "kImNMh/h98JZ233PUKv87g=="
 
     def test_python3_new_sending(self):
         client = raygunprovider.RaygunSender(self.apiKey)
