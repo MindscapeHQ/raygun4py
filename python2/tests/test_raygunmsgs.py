@@ -25,7 +25,7 @@ class TestRaygunMessageBuilder(unittest.TestCase):
 
     def test_customdata(self):
         self.builder.set_customdata({1: "one"})
-        self.assertEqual(self.builder.raygunMessage.details['userCustomData'], type(dict)
+        self.assertEqual(self.builder.raygunMessage.details['userCustomData'], type(dict))
 
     def test_tags(self):
         self.builder.set_tags([1, 2, 3])
