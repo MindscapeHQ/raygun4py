@@ -78,17 +78,17 @@ Documentation
 Public API
 ---
 
-==============  =========================================================
-Function        Arguments
-==============  =========================================================
-send_exception  (exception, tags, userCustomData, httpRequest)
+============== =========================================================
+Function       Arguments
+-------------- ----------------------------------------------
+send_exception (exception, tags, userCustomData, httpRequest)
 
 This is the preferred method for manually sending from Python 3 code. The first parameter, _exception_, should be an object that inherits from Exception. The remaining three parameters in the tuple are optional.
 
-==============  ==================================================================================
-Function        Arguments
-==============  ==================================================================================
-send            (exc_type, exc_value, exc_traceback, tags, userCustomData, httpRequest)
+============== =======================================================================
+Function       Arguments
+-------------- -----------------------------------------------------------------------
+send           (exc_type, exc_value, exc_traceback, tags, userCustomData, httpRequest)
 
 This method performs the actual sending of exception data to Raygun. This overload should be used from Python 2 code. The first three parameters are required and can be accessed using sys.exc_info (see the example under Manual Sending above).
 
