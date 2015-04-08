@@ -25,11 +25,11 @@ class TestRaygunMessageBuilder(unittest.TestCase):
 
     def test_customdata(self):
         self.builder.set_customdata({1: "one"})
-        self.assertIsInstance(self.builder.raygunMessage.details['userCustomData'], dict)
+        self.assertEqual(self.builder.raygunMessage.details['userCustomData'], type(dict)
 
     def test_tags(self):
         self.builder.set_tags([1, 2, 3])
-        self.assertIsInstance(self.builder.raygunMessage.details['tags'], list)
+        self.assertEqual(self.builder.raygunMessage.details['tags'], type(list))
 
     def test_request_ip(self):
         self.builder.set_request_details(self.request)

@@ -3,7 +3,7 @@ raygun4py
 
 .. image:: https://travis-ci.org/MindscapeHQ/raygun4py.svg?branch=vnext
 
-Official Raygun provider for **Python 2.6/2.7** and **Python 3+**
+Official Raygun provider for **Python 2.6/2.7**, **Python 3+** and **Pypy**
 
 
 Installation
