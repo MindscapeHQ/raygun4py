@@ -24,6 +24,17 @@ class TestRaygun4PyFunctional(unittest.TestCase):
 
             self.assertEqual(httpResult[0], 202)
 
+    def test_track_with_version(self):
+        client = raygunprovider.RaygunSender(self.apiKey)
+        client.set_version('v1.0.0')
+
+        try:
+            raise Exception("Raygun4py manual sending test - user")
+        except:
+            httpResult = client.track_exception(sys.exc_info())
+
+            self.assertEqual(httpResult[0], 202)
+
     def log_send(self, logger):
         try:
             raise StandardError("Raygun4py Logging Test")
