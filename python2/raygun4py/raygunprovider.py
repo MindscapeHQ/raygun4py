@@ -33,6 +33,23 @@ class RaygunSender:
         rgExcept = raygunmsgs.RaygunErrorMessage(exc_type, exc_value, exc_traceback, className)
         return self._post(self._create_message(rgExcept, tags, userCustomData, httpRequest))
 
+    def send_exception(self, exc_info = None, **args):
+        if exc_info is None:
+            exc_info = sys.exc_info();
+
+        exc_type, exc_value, exc_traceback = exc_info
+
+        raygunMessage = raygunmsgs.RaygunErrorMessage(exc_type, exc_value, exc_traceback)
+
+        try:
+            del exc_type, exc_value, exc_traceback
+        except Exception as e:
+            raise
+            
+        return self._post(self._create_message(rgExcept, tags, userCustomData, httpRequest))
+
+
+
     def _create_message(self, raygunExceptionMessage, tags, userCustomData, httpRequest):
         return raygunmsgs.RaygunMessageBuilder().new() \
             .set_machine_name(socket.gethostname()) \
@@ -50,9 +67,11 @@ class RaygunSender:
         json = jsonpickle.encode(raygunMessage, unpicklable=False)
         try:
             auth_header = 'Basic %s' % (":".join(["myusername","mypassword"]).encode('Base64').strip('\r\n'))
-            headers = {"X-ApiKey": self.apiKey,
-                       "Content-Type": "application/json",
-                       "User-Agent": "raygun4py"}
+            headers = {
+                "X-ApiKey": self.apiKey,
+                "Content-Type": "application/json",
+                "User-Agent": "raygun4py"
+            }
             conn = httplib.HTTPSConnection(self.endpointhost, '443')
             conn.request('POST', self.endpointpath, json, headers)
             response = conn.getresponse()

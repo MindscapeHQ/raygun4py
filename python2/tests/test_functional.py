@@ -69,3 +69,11 @@ class TestRaygun4PyFunctional(unittest.TestCase):
         logger.addHandler(rgHandler)
 
         self.assertEquals(0, self.log_nosend(logger))
+
+    def test_send_exception(self):
+        try:
+            raise Exception("Raygun4py functional test - Py2 send_exception")
+        except:
+            httpResult = client.send_exception()
+
+            self.assertEqual(httpResult[0], 202)
