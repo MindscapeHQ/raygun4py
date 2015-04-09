@@ -71,6 +71,8 @@ class TestRaygun4PyFunctional(unittest.TestCase):
         self.assertEquals(0, self.log_nosend(logger))
 
     def test_send_exception(self):
+        client = raygunprovider.RaygunSender(self.apiKey)
+        
         try:
             raise Exception("Raygun4py functional test - Py2 send_exception")
         except:

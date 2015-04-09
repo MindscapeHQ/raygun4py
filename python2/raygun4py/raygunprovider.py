@@ -29,8 +29,8 @@ class RaygunSender:
     def set_user(self, user):
         self.user = user;
 
-    def send(self, exc_type, exc_value, exc_traceback, className = "Not provided", tags = None, userCustomData = None, httpRequest = None):
-        rgExcept = raygunmsgs.RaygunErrorMessage(exc_type, exc_value, exc_traceback, className)
+    def send(self, exc_type, exc_value, exc_traceback, tags = None, userCustomData = None, httpRequest = None):
+        rgExcept = raygunmsgs.RaygunErrorMessage(exc_type, exc_value, exc_traceback)
         return self._post(self._create_message(rgExcept, tags, userCustomData, httpRequest))
 
     def send_exception(self, exc_info = None, **args):
@@ -39,15 +39,17 @@ class RaygunSender:
 
         exc_type, exc_value, exc_traceback = exc_info
 
-        raygunMessage = raygunmsgs.RaygunErrorMessage(exc_type, exc_value, exc_traceback)
+        errorMessage = raygunmsgs.RaygunErrorMessage(exc_type, exc_value, exc_traceback)
 
         try:
             del exc_type, exc_value, exc_traceback
         except Exception as e:
             raise
-            
-        return self._post(self._create_message(rgExcept, tags, userCustomData, httpRequest))
 
+        tags = args.tags if 'tags' in args else None
+        customData = args.userCustomData if 'userCustomData' in args else None
+        httpRequest = args.httpRequest if 'httpRequest' in args else None
+        return self._post(self._create_message(errorMessage, tags, customData, httpRequest))
 
 
     def _create_message(self, raygunExceptionMessage, tags, userCustomData, httpRequest):
@@ -94,4 +96,4 @@ class RaygunHandler(logging.Handler):
             userCustomData = { "Logger Message" : record.msg }
             request = None
             className = None
-            self.sender.send(exc[0], exc[1], exc[2], className, tags, userCustomData, request)
+            self.sender.send(exc[0], exc[1], exc[2], tags, userCustomData, request)
