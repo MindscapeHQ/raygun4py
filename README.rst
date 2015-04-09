@@ -99,12 +99,12 @@ Sending functions
 |                | httpRequest   | Dict               |
 +----------------+---------------+--------------------+
 
-This is the preferred method for manually sending from **Python 3** code. Only the first param is required. See below for a description of the arguments.
+This function manually sends an exception object to Raygun.
 
 +----------------+---------------+--------------------+
 | Function       | Arguments     | Type               |
 +================+===============+====================+
-| send           | exc_info      | Tuple              |
+| track_exception| exc_info      | Tuple              |
 +                +---------------+--------------------+
 |                | tags          | List               |
 +                +---------------+--------------------+
@@ -113,9 +113,10 @@ This is the preferred method for manually sending from **Python 3** code. Only t
 |                | httpRequest   | Dict               |
 +----------------+---------------+--------------------+
 
-This method performs the actual sending of exception data to Raygun. This overload should be used from Python 2 code. exc_info should be the value of sys.exc_info (see the example under Manual Sending above).
+This is the preferred method for sending exceptions. Call this function from within a catch block to send the current exception to Raygun::
 
-The remaining parameters are optional:
+
+The other arguments are optional:
 
 * tags is a list of tags relating to the current context which you can define.
 * userCustomData is a dict containing custom key-values also of your choosing.

@@ -21,7 +21,7 @@ class TestRaygunSender(unittest.TestCase):
             raise StandardError('test')
         except Exception as e:            
             info = sys.exc_info()
-            http_result = self.sender.send_exception(info)
+            http_result = self.sender.track_exception(info)
             self.assertEqual(http_result[0], 403)
 
 def main():
