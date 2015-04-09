@@ -1,3 +1,8 @@
+vnext
+
+- Py2: Added send_exception function
+- Py2: Removed className argument from send() (breaking change. send_exception should be used instead)
+
 2.2.0
 
 - Added new send_exception() method for Py3
