@@ -57,13 +57,22 @@ Python 3 code can now use the new send_exception method, which simply takes an E
 
 **Python 2**
 
-You can manually send the current exception in Python 2 by calling sys.exc_info first, and pass through the three values through to send()::
+In a catch block, you can automatically send the current exception to Raygun by calling send_exception()::
 
     try:
-        raise StandardError("Raygun4py manual sending test")
+        raise Exception("foo")
     except:
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        client.send(exc_type, exc_value, exc_traceback)
+        client.send_exception()
+
+The legacy send() function has been deprecated in favor of send_exception. If you wish you can pass through the tuple itself to send_exception::
+
+    try:
+        raise Exception("foo")
+    except:
+        exc_info = sys.exc_info()
+        client.send_exception(exc_info)
+
+
 
 Web frameworks
 --------------

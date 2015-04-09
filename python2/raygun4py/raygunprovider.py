@@ -29,11 +29,7 @@ class RaygunSender:
     def set_user(self, user):
         self.user = user;
 
-    def send(self, exc_type, exc_value, exc_traceback, tags = None, userCustomData = None, httpRequest = None):
-        rgExcept = raygunmsgs.RaygunErrorMessage(exc_type, exc_value, exc_traceback)
-        return self._post(self._create_message(rgExcept, tags, userCustomData, httpRequest))
-
-    def send_exception(self, exc_info = None, **args):
+    def send_exception(self, exc_info = None, **kwargs):
         if exc_info is None:
             exc_info = sys.exc_info();
 
@@ -46,9 +42,9 @@ class RaygunSender:
         except Exception as e:
             raise
 
-        tags = args.tags if 'tags' in args else None
-        customData = args.userCustomData if 'userCustomData' in args else None
-        httpRequest = args.httpRequest if 'httpRequest' in args else None
+        tags = kwargs['tags'] if 'tags' in kwargs else None
+        customData = kwargs['userCustomData'] if 'userCustomData' in kwargs else None
+        httpRequest = kwargs['httpRequest'] if 'httpRequest' in kwargs else None
         return self._post(self._create_message(errorMessage, tags, customData, httpRequest))
 
 
@@ -92,8 +88,5 @@ class RaygunHandler(logging.Handler):
         if record.exc_info:
             exc = record.exc_info
 
-            tags = None
             userCustomData = { "Logger Message" : record.msg }
-            request = None
-            className = None
-            self.sender.send(exc[0], exc[1], exc[2], tags, userCustomData, request)
+            self.sender.send_exception(exc, userCustomData = userCustomData)

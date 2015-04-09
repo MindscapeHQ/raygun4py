@@ -7,17 +7,6 @@ class TestRaygun4PyFunctional(unittest.TestCase):
     def setUp(self):
         self.apiKey = "kImNMh/h98JZ233PUKv87g=="
 
-    def test_sending(self):
-        client = raygunprovider.RaygunSender(self.apiKey)
-
-        try:
-            raise StandardError("Raygun4py manual sending test")
-        except:
-            exc_type, exc_value, exc_traceback = sys.exc_info()
-            httpResult = client.send(exc_type, exc_value, exc_traceback)
-
-            self.assertEquals(httpResult[0], 202)
-
     def test_sending_user(self):
         client = raygunprovider.RaygunSender(self.apiKey)
         client.set_user({
@@ -31,8 +20,7 @@ class TestRaygun4PyFunctional(unittest.TestCase):
         try:
             raise Exception("Raygun4py manual sending test - user")
         except:
-            exc_type, exc_value, exc_traceback = sys.exc_info()
-            httpResult = client.send(exc_type, exc_value, exc_traceback)
+            httpResult = client.send_exception(sys.exc_info())
 
             self.assertEqual(httpResult[0], 202)
 
@@ -70,12 +58,21 @@ class TestRaygun4PyFunctional(unittest.TestCase):
 
         self.assertEquals(0, self.log_nosend(logger))
 
-    def test_send_exception(self):
+    def test_send_exception_no_args(self):
         client = raygunprovider.RaygunSender(self.apiKey)
-        
+
         try:
             raise Exception("Raygun4py functional test - Py2 send_exception")
         except:
             httpResult = client.send_exception()
 
             self.assertEqual(httpResult[0], 202)
+
+    def test_send_exception_with_exc_info(self):
+        client = raygunprovider.RaygunSender(self.apiKey)
+
+        try:
+            raise StandardError("Raygun4py manual sending test")
+        except:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            httpResult = client.send_exception(sys.exc_info())
