@@ -58,7 +58,7 @@ class TestRaygun4PyFunctional(unittest.TestCase):
 
         self.assertEquals(0, self.log_nosend(logger))
 
-    def test_send_exception_no_args(self):
+    def test_track_exception_no_args(self):
         client = raygunprovider.RaygunSender(self.apiKey)
 
         try:
@@ -68,7 +68,7 @@ class TestRaygun4PyFunctional(unittest.TestCase):
 
             self.assertEqual(httpResult[0], 202)
 
-    def test_send_exception_with_exc_info(self):
+    def test_track_exception_with_exc_info(self):
         client = raygunprovider.RaygunSender(self.apiKey)
 
         try:
@@ -76,3 +76,24 @@ class TestRaygun4PyFunctional(unittest.TestCase):
         except:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             httpResult = client.track_exception(sys.exc_info())
+
+
+    def test_send_exception(self):
+        client = raygunprovider.RaygunSender(self.apiKey)
+
+        try:
+            raise Exception("Raygun4py functional test - Py2 send_exception")
+        except Exception as e:
+            httpResult = client.send_exception(e)
+
+            self.assertEqual(httpResult[0], 202)
+
+    def test_send_exception_with_exc_info(self):
+        client = raygunprovider.RaygunSender(self.apiKey)
+
+        try:
+            raise Exception("Raygun4py functional test - Py2 send_exception")
+        except Exception as e:
+            httpResult = client.send_exception(e, exc_info = sys.exc_info())
+
+            self.assertEqual(httpResult[0], 202)

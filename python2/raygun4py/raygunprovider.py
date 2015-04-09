@@ -45,7 +45,7 @@ class RaygunSender:
         tags, customData, httpRequest = self._parse_args(kwargs)
         return self._post(self._create_message(errorMessage, tags, customData, httpRequest))
 
-    def send_excepion(self, exception, exc_info = None, **kwargs):
+    def send_exception(self, exception, exc_info = None, **kwargs):
         if exc_info is None:
             exc_info = sys.exc_info();
 
