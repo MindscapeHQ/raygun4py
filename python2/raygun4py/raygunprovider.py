@@ -1,7 +1,12 @@
-import sys, os, socket, logging
-import jsonpickle, httplib
+import sys
+import os
+import socket
+import logging
+import jsonpickle
+import httplib
 from raygun4py import raygunmsgs
 from raygun4py import utilities
+
 
 class RaygunSender:
 
@@ -28,15 +33,15 @@ class RaygunSender:
             self.userversion = version
 
     def set_user(self, user):
-        self.user = user;
+        self.user = user
 
     def set_ignored_exceptions(self, exceptions):
         if isinstance(exceptions, list):
             self.ignoredExceptions = exceptions
 
-    def track_exception(self, exc_info = None, **kwargs):
+    def track_exception(self, exc_info=None, **kwargs):
         if exc_info is None:
-            exc_info = sys.exc_info();
+            exc_info = sys.exc_info()
 
         exc_type, exc_value, exc_traceback = exc_info
 
@@ -53,9 +58,9 @@ class RaygunSender:
 
         return self._post(message)
 
-    def send_exception(self, exception, exc_info = None, **kwargs):
+    def send_exception(self, exception, exc_info=None, **kwargs):
         if exc_info is None:
-            exc_info = sys.exc_info();
+            exc_info = sys.exc_info()
 
         exc_type, exc_value, exc_traceback = exc_info
 
@@ -99,7 +104,7 @@ class RaygunSender:
     def _post(self, raygunMessage):
         json = jsonpickle.encode(raygunMessage, unpicklable=False)
         try:
-            auth_header = 'Basic %s' % (":".join(["myusername","mypassword"]).encode('Base64').strip('\r\n'))
+            auth_header = 'Basic %s' % (":".join(["myusername", "mypassword"]).encode('Base64').strip('\r\n'))
             headers = {
                 "X-ApiKey": self.apiKey,
                 "Content-Type": "application/json",
@@ -114,8 +119,9 @@ class RaygunSender:
             return 400, "Exception: Could not send"
         return response.status, response.reason
 
+
 class RaygunHandler(logging.Handler):
-    def __init__(self, apiKey, version = None):
+    def __init__(self, apiKey, version=None):
         logging.Handler.__init__(self)
         self.sender = RaygunSender(apiKey)
         self.version = version
@@ -124,5 +130,7 @@ class RaygunHandler(logging.Handler):
         if record.exc_info:
             exc = record.exc_info
 
-            userCustomData = { "Logger Message" : record.msg }
-            self.sender.track_exception(exc, userCustomData = userCustomData)
+            userCustomData = {
+                "Logger Message": record.msg
+            }
+            self.sender.track_exception(exc, userCustomData=userCustomData)

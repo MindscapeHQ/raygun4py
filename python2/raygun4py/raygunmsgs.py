@@ -9,6 +9,7 @@ except ImportError:
 import platform
 from datetime import datetime
 
+
 class RaygunMessageBuilder:
 
     def __init__(self):
@@ -70,9 +71,9 @@ class RaygunMessageBuilder:
             }
 
             if 'ipAddress' in request:
-              self.raygunMessage.details['request']['iPAddress'] = request['ipAddress']
+                self.raygunMessage.details['request']['iPAddress'] = request['ipAddress']
             elif 'iPAddress' in request:
-              self.raygunMessage.details['request']['iPAddress'] = request['iPAddress']
+                self.raygunMessage.details['request']['iPAddress'] = request['iPAddress']
 
         return self
 
@@ -85,11 +86,13 @@ class RaygunMessageBuilder:
             self.raygunMessage.details['user'] = user
         return self
 
+
 class RaygunMessage:
 
     def __init__(self):
-          self.occurredOn = datetime.utcnow()
-          self.details = { }
+        self.occurredOn = datetime.utcnow()
+        self.details = {}
+
 
 class RaygunErrorMessage:
 

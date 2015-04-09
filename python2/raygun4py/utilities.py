@@ -1,8 +1,10 @@
 def ignored_exceptions(ignoredExceptions, message):
-	return message
+    return message
+
 
 def filter_data():
-	pass
+    pass
+
 
 def set_proxy():
-	pass
+    pass
