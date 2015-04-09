@@ -75,36 +75,61 @@ Code running on Google App Engine should now be supported - you can test this lo
 Documentation
 =============
 
-+----------------+--------------------------------------------------+
-| Function       | Arguments                                        |
-+================+==================================================+
-| send_exception | (exception, tags, userCustomData, httpRequest)   |
-+----------------+--------------------------------------------------+
+Sending functions
+-----------------
 
-This is the preferred method for manually sending from Python 3 code. The first parameter, _exception_, should be an object that inherits from Exception. The remaining three parameters in the tuple are optional.
++----------------+---------------+--------------------+
+| Function       | Arguments     | Type               |
++================+===============+====================+
+| send_exception | exception     | Exception          |
++                +---------------+--------------------+
+|                | tags          | List               |
++                +---------------+--------------------+
+|                | userCustomData| Dict               |
++                +---------------+--------------------+
+|                | httpRequest   | Dict               |
++----------------+---------------+--------------------+
 
-============== =======================================================================
-Function       Arguments
--------------- -----------------------------------------------------------------------
-send           (exc_type, exc_value, exc_traceback, tags, userCustomData, httpRequest)
+This is the preferred method for manually sending from **Python 3** code. Only the first param is required. See below for a description of the arguments.
 
-This method performs the actual sending of exception data to Raygun. This overload should be used from Python 2 code. The first three parameters are required and can be accessed using sys.exc_info (see the example under Manual Sending above).
++----------------+---------------+--------------------+
+| Function       | Arguments     | Type               |
++================+===============+====================+
+| send           | exc_info      | Tuple              |
++                +---------------+--------------------+
+|                | tags          | List               |
++                +---------------+--------------------+
+|                | userCustomData| Dict               |
++                +---------------+--------------------+
+|                | httpRequest   | Dict               |
++----------------+---------------+--------------------+
+
+This method performs the actual sending of exception data to Raygun. This overload should be used from Python 2 code. exc_info should be the value of sys.exc_info (see the example under Manual Sending above).
 
 The remaining parameters are optional:
 
-* tags is a list of tags relating to the current context which you can define
+* tags is a list of tags relating to the current context which you can define.
 * userCustomData is a dict containing custom key-values also of your choosing.
 * httpRequest is HTTP Request data - see sample.py for the expected format of the object.
 
-Version tracking
-----------------
+Data functions
+--------------
 
-Call `client.set_version("x.x.x.x")` to attach an app version to each message that is sent. This will be visible on the dashboard and can be used for filtering.
++----------------+---------------+--------------------+
+| Function       | Arguments     | Type               |
++================+===============+====================+
+| set_version    | version       | String             |
++----------------+---------------+--------------------+
 
-Affected User Tracking
---------------------
+Call this to attach a SemVer version to each message that is sent. This will be visible on the dashboard and can be used to filter exceptions to a particular version, deployment tracking etc.
 
-User data can be passed in which will be displayed in the Raygun web app. Call `set_user` with the following::
++----------------+---------------+--------------------+
+| Function       | Arguments     | Type               |
++================+===============+====================+
+| set_user       | user_info     | Dict               |
++----------------+---------------+--------------------+
+
+User data can be passed in which will be displayed in the Raygun web app. The dict you pass in should look this this:
 
   client.set_user({
       'firstName': 'Foo',
