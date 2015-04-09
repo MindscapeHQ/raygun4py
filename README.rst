@@ -129,7 +129,7 @@ Call this to attach a SemVer version to each message that is sent. This will be 
 | set_user       | user_info     | Dict               |
 +----------------+---------------+--------------------+
 
-User data can be passed in which will be displayed in the Raygun web app. The dict you pass in should look this this:
+User data can be passed in which will be displayed in the Raygun web app. The dict you pass in should look this this::
 
   client.set_user({
       'firstName': 'Foo',
