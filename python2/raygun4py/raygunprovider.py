@@ -1,6 +1,7 @@
 import sys, os, socket, logging
 import jsonpickle, httplib
 from raygun4py import raygunmsgs
+from raygun4py import utilities
 
 class RaygunSender:
 
@@ -29,6 +30,10 @@ class RaygunSender:
     def set_user(self, user):
         self.user = user;
 
+    def set_ignored_exceptions(self, exceptions):
+        if isinstance(exceptions, list):
+            self.ignoredExceptions = exceptions
+
     def track_exception(self, exc_info = None, **kwargs):
         if exc_info is None:
             exc_info = sys.exc_info();
@@ -43,7 +48,10 @@ class RaygunSender:
             raise
 
         tags, customData, httpRequest = self._parse_args(kwargs)
-        return self._post(self._create_message(errorMessage, tags, customData, httpRequest))
+        message = self._create_message(errorMessage, tags, customData, httpRequest)
+        message = self._transform_message(message)
+
+        return self._post(message)
 
     def send_exception(self, exception, exc_info = None, **kwargs):
         if exc_info is None:
@@ -59,7 +67,10 @@ class RaygunSender:
             raise
 
         tags, customData, httpRequest = self._parse_args(kwargs)
-        return self._post(self._create_message(errorMessage, tags, customData, httpRequest))
+        message = self._create_message(errorMessage, tags, customData, httpRequest)
+        message = self._transform_message(message)
+
+        return self._post(message)
 
     def _parse_args(errorMessage, kwargs):
         tags = kwargs['tags'] if 'tags' in kwargs else None
@@ -81,6 +92,10 @@ class RaygunSender:
             .set_user(self.user) \
             .build()
 
+    def _transform_message(self, message):
+        message = utilities.ignore_exceptions(self.ignoredExceptions, message)
+        return message
+
     def _post(self, raygunMessage):
         json = jsonpickle.encode(raygunMessage, unpicklable=False)
         try:
@@ -90,6 +105,7 @@ class RaygunSender:
                 "Content-Type": "application/json",
                 "User-Agent": "raygun4py"
             }
+
             conn = httplib.HTTPSConnection(self.endpointhost, '443')
             conn.request('POST', self.endpointpath, json, headers)
             response = conn.getresponse()

@@ -103,8 +103,24 @@ class TestRaygun4PyFunctional(unittest.TestCase):
         client = raygunprovider.RaygunSender(self.apiKey)
 
         try:
-            raise Exception("Raygun4py functional test - Py2 send_exception")
+            raise Exception("Raygun4py functional test - Py2 send_exception with exc_info")
         except Exception as e:
             httpResult = client.send_exception(e, exc_info = sys.exc_info())
 
             self.assertEqual(httpResult[0], 202)
+
+    def test_send_exception_subclass(self):
+        client = raygunprovider.RaygunSender(self.apiKey)
+
+        try:
+            raise CustomException("Raygun4py functional test - Py2 send_exception with custom exception")
+        except CustomException as e:
+            httpResult = client.send_exception(e)
+
+            self.assertEqual(httpResult[0], 202)
+
+class CustomException(Exception):
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return repr(self.value)
