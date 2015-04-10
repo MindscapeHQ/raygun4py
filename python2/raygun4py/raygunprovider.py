@@ -29,6 +29,7 @@ class RaygunSender:
         self.user = None
         self.ignoredExceptions = []
         self.filteredKeys = []
+        self.proxy = None
 
     def set_version(self, version):
         if isinstance(version, basestring):
@@ -45,8 +46,11 @@ class RaygunSender:
         if isinstance(keys, list):
             self.filteredKeys = keys
 
-    def use_proxy(self, proxy):
-        pass
+    def use_proxy(self, host, port):
+        self.proxy = {
+            'host': host,
+            'port': port
+        }
 
     def track_exception(self, exc_info=None, **kwargs):
         if exc_info is None:
@@ -112,7 +116,7 @@ class RaygunSender:
 
         if message is not None:
             message = utilities.filter_keys(self.filteredKeys, message)
-            
+
         return message
 
     def _post(self, raygunMessage):
@@ -126,7 +130,12 @@ class RaygunSender:
                 "User-Agent": "raygun4py"
             }
 
-            conn = httplib.HTTPSConnection(self.endpointhost, '443')
+            conn = None
+            if self.proxy is not None:
+                conn = httplib.HTTPConnection(self.proxy.host, self.proxy.port)
+            else:
+                conn = httplib.HTTPSConnection(self.endpointhost, '443')
+
             conn.request('POST', self.endpointpath, json, headers)
             response = conn.getresponse()
         except Exception as e:
