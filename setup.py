@@ -20,8 +20,14 @@ setup(
     description='Official Raygun provider for Python 2.6/2.7 and Python 3+',
     long_description=open('README.rst').read(),
     install_requires=[
-        "jsonpickle == 0.7.0"
-    ],classifiers=[
+        'jsonpickle == 0.7.0'
+    ],
+    entry_points={
+        'console_scripts': [
+            'raygun = raygun4py.cli:main'
+        ]
+    },
+    classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
