@@ -24,6 +24,19 @@ class TestRaygunSender(unittest.TestCase):
             http_result = self.sender.track_exception(info)
             self.assertEqual(http_result[0], 403)
 
+    def test_ignore_exceptions(self):
+        ex = ['Exception']
+        self.sender.ignore_exceptions(ex)
+
+        self.assertEqual(self.sender.ignoredExceptions, ex)
+
+    def test_filter_keys(self):
+        keys = ['credit_card']
+        self.sender.filter_keys(keys)
+
+        self.assertEqual(self.sender.filteredKeys, keys)
+
+
 def main():
     unittest.main()
 

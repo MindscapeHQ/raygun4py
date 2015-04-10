@@ -41,9 +41,9 @@ class RaygunSender:
         if isinstance(exceptions, list):
             self.ignoredExceptions = exceptions
 
-    def filter_keys(self, filtered_keys):
-        if isinstance(exceptions, list):
-            self.filteredKeys = filtered_keys
+    def filter_keys(self, keys):
+        if isinstance(keys, list):
+            self.filteredKeys = keys
 
     def use_proxy(self, proxy):
         pass
