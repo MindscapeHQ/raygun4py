@@ -27,6 +27,8 @@ class RaygunSender:
                                   "compile the socket module with SSL support.")
         self.userversion = "Not defined"
         self.user = None
+        self.ignoredExceptions = []
+        self.filteredKeys = []
 
     def set_version(self, version):
         if isinstance(version, basestring):
@@ -35,9 +37,16 @@ class RaygunSender:
     def set_user(self, user):
         self.user = user
 
-    def set_ignored_exceptions(self, exceptions):
+    def ignore_exceptions(self, exceptions):
         if isinstance(exceptions, list):
             self.ignoredExceptions = exceptions
+
+    def filter_keys(self, filtered_keys):
+        if isinstance(exceptions, list):
+            self.filteredKeys = filtered_keys
+
+    def use_proxy(self, proxy):
+        pass
 
     def track_exception(self, exc_info=None, **kwargs):
         if exc_info is None:
@@ -75,7 +84,8 @@ class RaygunSender:
         message = self._create_message(errorMessage, tags, customData, httpRequest)
         message = self._transform_message(message)
 
-        return self._post(message)
+        if message is not None:
+            return self._post(message)
 
     def _parse_args(errorMessage, kwargs):
         tags = kwargs['tags'] if 'tags' in kwargs else None
@@ -99,10 +109,15 @@ class RaygunSender:
 
     def _transform_message(self, message):
         message = utilities.ignore_exceptions(self.ignoredExceptions, message)
+
+        if message is not None:
+            message = utilities.filter_keys(self.filteredKeys, message)
+
         return message
 
     def _post(self, raygunMessage):
         json = jsonpickle.encode(raygunMessage, unpicklable=False)
+
         try:
             auth_header = 'Basic %s' % (":".join(["myusername", "mypassword"]).encode('Base64').strip('\r\n'))
             headers = {

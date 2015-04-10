@@ -93,6 +93,9 @@ class RaygunMessage:
         self.occurredOn = datetime.utcnow()
         self.details = {}
 
+    def get_error(self):
+        return self.details['error']
+
 
 class RaygunErrorMessage:
 
@@ -112,3 +115,6 @@ class RaygunErrorMessage:
                 })
 
         self.data = ""
+
+    def get_classname(self):
+        return self.className
