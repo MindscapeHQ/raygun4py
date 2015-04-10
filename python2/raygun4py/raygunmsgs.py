@@ -96,6 +96,9 @@ class RaygunMessage:
     def get_error(self):
         return self.details['error']
 
+    def get_details(self):
+        return self.details
+
 
 class RaygunErrorMessage:
 

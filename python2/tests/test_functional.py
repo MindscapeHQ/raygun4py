@@ -119,6 +119,29 @@ class TestRaygun4PyFunctional(unittest.TestCase):
 
             self.assertEqual(httpResult[0], 202)
 
+    def test_ignore_exception(self):
+        client = raygunprovider.RaygunSender(self.apiKey)
+        client.ignore_exceptions(['CustomException'])
+
+        try:
+            raise CustomException("This test should not send an exception")
+        except CustomException as e:
+            httpResult = client.send_exception(e)
+
+            self.assertEqual(httpResult, None)
+
+    def test_filter_keys_202(self):
+        client = raygunprovider.RaygunSender(self.apiKey)
+        client.filter_keys(['environment'])
+
+        try:
+            raise Exception("Raygun4py functional test - Py2 filter_keys")
+        except Exception as e:
+            httpResult = client.send_exception(e, exc_info = sys.exc_info())
+        
+        self.assertEqual(httpResult[0], 202)
+
+
 class CustomException(Exception):
     def __init__(self, value):
         self.value = value

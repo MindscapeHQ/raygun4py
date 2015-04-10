@@ -112,7 +112,7 @@ class RaygunSender:
 
         if message is not None:
             message = utilities.filter_keys(self.filteredKeys, message)
-
+            
         return message
 
     def _post(self, raygunMessage):

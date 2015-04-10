@@ -1,5 +1,6 @@
 import unittest, sys
 from raygun4py import raygunprovider
+from raygun4py import utilities
 
 class TestRaygunSender(unittest.TestCase):
 
@@ -30,11 +31,19 @@ class TestRaygunSender(unittest.TestCase):
 
         self.assertEqual(self.sender.ignoredExceptions, ex)
 
-    def test_filter_keys(self):
+    def test_filter_keys_set(self):
         keys = ['credit_card']
         self.sender.filter_keys(keys)
 
         self.assertEqual(self.sender.filteredKeys, keys)
+
+    def test_filter_keys_filters_error(self):
+        keys = ['identifier']
+        self.sender.filter_keys(keys)
+
+        self.sender.set_user({ 'identifier': 'foo' })
+
+        self.assertEqual(utilities.filter_keys(keys, self.sender.user)['identifier'], '<filtered>')
 
 
 def main():
