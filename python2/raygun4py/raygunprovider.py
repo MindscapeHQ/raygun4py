@@ -46,7 +46,7 @@ class RaygunSender:
         if isinstance(keys, list):
             self.filteredKeys = keys
 
-    def use_proxy(self, host, port):
+    def set_proxy(self, host, port):
         self.proxy = {
             'host': host,
             'port': port
@@ -132,7 +132,8 @@ class RaygunSender:
 
             conn = None
             if self.proxy is not None:
-                conn = httplib.HTTPConnection(self.proxy.host, self.proxy.port)
+                conn = httplib.HTTPSConnection(self.proxy['host'], self.proxy['port'])
+                conn.set_tunnel(self.endpointhost, 443)
             else:
                 conn = httplib.HTTPSConnection(self.endpointhost, '443')
 

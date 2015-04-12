@@ -141,6 +141,18 @@ class TestRaygun4PyFunctional(unittest.TestCase):
         
         self.assertEqual(httpResult[0], 202)
 
+    @unittest.skip('Requires a proxy, skipping for Travis')
+    def test_proxy(self):
+        client = raygunprovider.RaygunSender(self.apiKey)
+        client.set_proxy('127.0.0.1', 3128)
+
+        try:
+            raise Exception("Raygun4py functional test - Py2 set_proxy")
+        except Exception as e:
+            httpResult = client.send_exception(e, exc_info = sys.exc_info())
+        
+        self.assertEqual(httpResult[0], 202)
+
 
 class CustomException(Exception):
     def __init__(self, value):
