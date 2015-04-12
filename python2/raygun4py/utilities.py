@@ -22,8 +22,3 @@ def filter_keys(filteredKeys, object):
             iterationTarget[key] = filter_keys(filteredKeys, iterationTarget[key])
 
     return iterationTarget
-
-
-
-def set_proxy():
-    pass

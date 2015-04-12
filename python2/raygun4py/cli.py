@@ -5,7 +5,7 @@ def main():
     usage = '\n  raygun [options]\n  raygun install <apikey>\n  raygun test'
     parser = OptionParser(usage=usage)
     
-    parser.add_option('-a', '--apikey', dest='apikey', help='Your API key, available on the Application Settings page in the Raygun web app')
+    parser.add_option('-a', '--apikey', dest='apikey', help='Change the API key, available on the Application Settings page in the Raygun web app')
 
     options, args = parser.parse_args()
 

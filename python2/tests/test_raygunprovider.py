@@ -1,4 +1,5 @@
-import unittest, sys
+import sys
+import unittest2 as unittest
 from raygun4py import raygunprovider
 from raygun4py import utilities
 

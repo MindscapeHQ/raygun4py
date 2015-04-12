@@ -1,4 +1,6 @@
-import sys, unittest, socket
+import sys
+import unittest2 as unittest
+import socket
 from raygun4py import raygunmsgs
 
 class TestRaygunMessageBuilder(unittest.TestCase):
