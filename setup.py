@@ -24,7 +24,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'raygun = raygun4py.cli:main'
+            'raygun4py = raygun4py.cli:main'
         ]
     },
     classifiers=[
