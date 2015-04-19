@@ -30,6 +30,7 @@ class RaygunSender:
         self.ignoredExceptions = []
         self.filteredKeys = []
         self.proxy = None
+        self.beforeSendCallback = None
 
     def set_version(self, version):
         if isinstance(version, basestring):
@@ -51,6 +52,10 @@ class RaygunSender:
             'host': host,
             'port': port
         }
+
+    def on_before_send(self, callback):
+        if callable(callback):
+            self.beforeSendCallback = callback
 
     def track_exception(self, exc_info=None, **kwargs):
         if exc_info is None:
@@ -116,6 +121,14 @@ class RaygunSender:
 
         if message is not None:
             message = utilities.filter_keys(self.filteredKeys, message)
+
+        if self.beforeSendCallback is not None:
+            mutated_payload = self.beforeSendCallback(message['details'])
+
+            if mutated_payload is not None:
+                message['details'] = mutated_payload
+            else:
+                return None
 
         return message
 
