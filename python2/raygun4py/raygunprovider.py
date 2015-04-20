@@ -57,32 +57,16 @@ class RaygunSender:
         if callable(callback):
             self.beforeSendCallback = callback
 
-    def track_exception(self, exc_info=None, **kwargs):
+    def send_exception(self, exception=None, exc_info=None, **kwargs):
         if exc_info is None:
             exc_info = sys.exc_info()
 
         exc_type, exc_value, exc_traceback = exc_info
 
-        errorMessage = raygunmsgs.RaygunErrorMessage(exc_type, exc_value, exc_traceback)
-
-        try:
-            del exc_type, exc_value, exc_traceback
-        except Exception as e:
-            raise
-
-        tags, customData, httpRequest = self._parse_args(kwargs)
-        message = self._create_message(errorMessage, tags, customData, httpRequest)
-        message = self._transform_message(message)
-
-        return self._post(message)
-
-    def send_exception(self, exception, exc_info=None, **kwargs):
-        if exc_info is None:
-            exc_info = sys.exc_info()
-
-        exc_type, exc_value, exc_traceback = exc_info
-
-        errorMessage = raygunmsgs.RaygunErrorMessage(type(exception), exception, exc_traceback)
+        if exception is not None:
+            errorMessage = raygunmsgs.RaygunErrorMessage(type(exception), exception, exc_traceback)
+        else:
+            errorMessage = raygunmsgs.RaygunErrorMessage(exc_type, exc_value, exc_traceback)
 
         try:
             del exc_type, exc_value, exc_traceback
