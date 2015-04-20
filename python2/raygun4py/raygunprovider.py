@@ -83,7 +83,12 @@ class RaygunSender:
     def _parse_args(errorMessage, kwargs):
         tags = kwargs['tags'] if 'tags' in kwargs else None
         customData = kwargs['userCustomData'] if 'userCustomData' in kwargs else None
-        httpRequest = kwargs['httpRequest'] if 'httpRequest' in kwargs else None
+
+        httpRequest = None
+        if 'httpRequest' in kwargs:
+            httpRequest = kwargs['httpRequest']
+        elif 'request' in kwargs:
+            httpRequest = kwargs['request']                   
 
         return tags, customData, httpRequest
 

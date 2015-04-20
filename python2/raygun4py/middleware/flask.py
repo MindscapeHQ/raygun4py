@@ -9,7 +9,6 @@ class Provider(object):
 	def __init__(self, flaskApp, apiKey):
 		self.flaskApp = flaskApp
 		self.apiKey = apiKey
-		self.flaskApp = flaskApp
 
 		got_request_exception.connect(self.send_exception, sender=flaskApp)
 
