@@ -176,6 +176,26 @@ class TestRaygun4PyFunctional(unittest.TestCase):
         
         self.assertIsNone(result)
 
+    def test_request(self):
+        client = raygunprovider.RaygunSender(self.apiKey)
+
+        try:
+            raise Exception("Raygun4py functional test - on_before_send")
+        except Exception as e:
+            result = client.send_exception(request={})
+
+            self.assertEqual(result[0], 202)
+
+    def test_http_request(self):
+        client = raygunprovider.RaygunSender(self.apiKey)
+
+        try:
+            raise Exception("Raygun4py functional test - on_before_send")
+        except Exception as e:
+            result = client.send_exception(httpRequest={})
+
+            self.assertEqual(result[0], 202)
+
 class CustomException(Exception):
     def __init__(self, value):
         self.value = value
