@@ -149,10 +149,7 @@ class RaygunHandler(logging.Handler):
         self.version = version
 
     def emit(self, record):
-        if record.exc_info:
-            exc = record.exc_info
-
-            userCustomData = {
-                "Logger Message": record.msg
-            }
-            self.sender.track_exception(exc, userCustomData=userCustomData)
+        userCustomData = {
+            "Logger Message": record.msg
+        }
+        self.sender.send_exception(userCustomData=userCustomData)
