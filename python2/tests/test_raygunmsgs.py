@@ -73,11 +73,12 @@ class TestRaygunErrorMessage(unittest.TestCase):
         pass
 
     def setUp(self):
+        i_must_be_included = 'and i am'
+
         try:
             self.parent()
         except Exception as e:
             self.theException = e
-
             exc_info = sys.exc_info()
             self.msg = raygunmsgs.RaygunErrorMessage(exc_info[0], exc_info[1], exc_info[2])
 
@@ -90,6 +91,11 @@ class TestRaygunErrorMessage(unittest.TestCase):
 
     def test_classname(self):
         self.assertEqual(self.msg.className, 'ParentError')
+
+    def test_local_variable(self):
+        localVars = self.msg.__dict__['stackTrace'][1]['localVariables']
+
+        self.assertTrue('i_must_be_included' in localVars)
 
 
 def main():

@@ -1,4 +1,5 @@
 import traceback
+import inspect
 
 try:
     import multiprocessing
@@ -106,18 +107,32 @@ class RaygunErrorMessage:
         self.className = exc_type.__name__
         self.message = "%s: %s" % (exc_type.__name__, exc_value)
         self.stackTrace = []
-        traces = traceback.extract_tb(exc_traceback)
 
-        if traces:
-            for t in traces:
-                self.stackTrace.append({
-                    "lineNumber": t[1],
-                    "className": t[2],
-                    "fileName": t[0],
-                    "methodName": t[3],
-                })
+        try:
+            frames = inspect.stack()[1:]
+
+            if frames:
+                for frame in frames:
+                    self.stackTrace.append({
+                        'lineNumber': frame[2],
+                        'className': frame[3],
+                        'fileName': frame[1],
+                        'methodName': frame[4],
+                        'localVariables': self._get_locals(frame[0])
+                    })
+        finally:
+            del frames
 
         self.data = ""
 
     def get_classname(self):
         return self.className
+
+    def _get_locals(self, frame):
+        result = {}
+        localVars = getattr(frame, 'f_locals', {})
+
+        if '__traceback_hide__' not in localVars:
+            for key in localVars:
+                result[key] = str(localVars[key])
+            return result

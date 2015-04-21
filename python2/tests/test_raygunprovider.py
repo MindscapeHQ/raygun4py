@@ -47,14 +47,15 @@ class TestRaygunSender(unittest.TestCase):
         self.assertEqual(utilities.filter_keys(keys, self.sender.user)['identifier'], '<filtered>')
 
     def test_set_transmitLocalVariables(self):
-        self.sender = raygunprovider.RaygunSender('', config={ 'transmitLocalVariables': False })
+        self.sender = raygunprovider.RaygunSender('foo', config={ 'transmitLocalVariables': False })
 
         self.assertFalse(self.sender.transmitLocalVariables)
 
     def test_default_transmitLocalVariables(self):
-        self.sender = raygunprovider.RaygunSender('')
+        self.sender = raygunprovider.RaygunSender('foo')
 
         self.assertTrue(self.sender.transmitLocalVariables)
+
 
 def main():
     unittest.main()
