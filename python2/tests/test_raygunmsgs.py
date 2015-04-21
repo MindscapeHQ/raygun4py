@@ -93,7 +93,7 @@ class TestRaygunErrorMessage(unittest.TestCase):
         self.assertEqual(self.msg.className, 'ParentError')
 
     def test_local_variable(self):
-        localVars = self.msg.__dict__['stackTrace'][1]['localVariables']
+        localVars = self.msg.__dict__['stackTrace'][0]['localVariables']
 
         self.assertTrue('i_must_be_included' in localVars)
 

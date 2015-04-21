@@ -109,7 +109,7 @@ class RaygunErrorMessage:
         self.stackTrace = []
 
         try:
-            frames = inspect.stack()[1:]
+            frames = inspect.getinnerframes(exc_traceback)
 
             if frames:
                 for frame in frames:
@@ -117,7 +117,7 @@ class RaygunErrorMessage:
                         'lineNumber': frame[2],
                         'className': frame[3],
                         'fileName': frame[1],
-                        'methodName': frame[4],
+                        'methodName': frame[4][0],
                         'localVariables': self._get_locals(frame[0])
                     })
         finally:

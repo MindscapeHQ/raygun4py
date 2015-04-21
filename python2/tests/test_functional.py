@@ -20,7 +20,7 @@ class TestRaygun4PyFunctional(unittest.TestCase):
         try:
             raise Exception("Raygun4py manual sending test - user")
         except:
-            httpResult = client.send_exception(sys.exc_info())
+            httpResult = client.send_exception(exc_info=sys.exc_info())
 
             self.assertEqual(httpResult[0], 202)
 
@@ -31,7 +31,7 @@ class TestRaygun4PyFunctional(unittest.TestCase):
         try:
             raise Exception("Raygun4py manual sending test - user")
         except:
-            httpResult = client.send_exception(sys.exc_info())
+            httpResult = client.send_exception(exc_info=sys.exc_info())
 
             self.assertEqual(httpResult[0], 202)
 
@@ -207,6 +207,17 @@ class TestRaygun4PyFunctional(unittest.TestCase):
 
             self.assertEqual(result[0], 202)
 
+    def test_localvariables_multilevels(self):
+        client = raygunprovider.RaygunSender(self.apiKey)
+
+        try:
+            scope = 'parent'
+            child()
+        except Exception as e:
+            result = client.send_exception(httpRequest={})
+
+            self.assertEqual(result[0], 202)
+
 class CustomException(Exception):
     def __init__(self, value):
         self.value = value
@@ -219,3 +230,7 @@ def before_send_mutate_payload(message):
 
 def before_send_cancel_send(message):
     return None
+
+def child():
+    throwerScope = 'child'
+    raise Exception("Raygun4py functional test - local variables multi levels")
