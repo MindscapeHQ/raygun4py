@@ -14,9 +14,9 @@ setup(
         "raygun4py": base_dir + "/raygun4py"
     },
     license='LICENSE',
-    url='http://raygun.io',
-    author='Mindscape',
-    author_email='contact@mindscape.co.nz',
+    url='https://raygun.io',
+    author='Raygun',
+    author_email='hello@raygun.io',
     description='Official Raygun provider for Python 2.6/2.7 and Python 3+',
     long_description=open('README.rst').read(),
     install_requires=[

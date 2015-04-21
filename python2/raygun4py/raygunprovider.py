@@ -14,7 +14,7 @@ class RaygunSender:
     endpointhost = 'api.raygun.io'
     endpointpath = '/entries'
 
-    def __init__(self, apiKey):
+    def __init__(self, apiKey, config={}):
         if (apiKey):
             self.apiKey = apiKey
         else:
@@ -31,6 +31,7 @@ class RaygunSender:
         self.filteredKeys = []
         self.proxy = None
         self.beforeSendCallback = None
+        self.transmitLocalVariables = config['transmitLocalVariables'] if 'transmitLocalVariables' in config else True
 
     def set_version(self, version):
         if isinstance(version, basestring):
