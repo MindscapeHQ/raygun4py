@@ -113,3 +113,29 @@ class TestRaygun4PyFunctional(unittest.TestCase):
         logger.addHandler(rgHandler)
 
         self.assertEqual(0, self.log_nosend(logger))
+
+    def test_localvariables(self):
+        client = raygunprovider.RaygunSender(self.apiKey)
+
+        try:
+            foo = 'bar'
+            raise Exception("Raygun4py3 functional test - local variables")
+        except Exception as e:
+            result = client.send_exception(httpRequest={})
+
+            self.assertEqual(result[0], 202)
+
+    def test_localvariables_multilevels(self):
+        client = raygunprovider.RaygunSender(self.apiKey)
+
+        try:
+            scope = 'parent'
+            child()
+        except Exception as e:
+            result = client.send_exception(httpRequest={})
+
+            self.assertEqual(result[0], 202)
+
+def child():
+    throwerScope = 'child'
+    raise Exception("Raygun4py3 functional test - local variables multi levels")
