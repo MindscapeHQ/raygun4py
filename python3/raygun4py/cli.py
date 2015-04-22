@@ -10,14 +10,14 @@ def main():
 
     if 'install' in args:
         if len(args) > 1:
-            print "Installed API key! Now run 'raygun4py test' to check it's working"
+            print("Installed API key! Now run 'raygun4py test' to check it's working")
         else:
-            print 'Please provide a Raygun API key!'
+            print('Please provide a Raygun API key!')
     elif 'test' in args:
-        if len(args) > 1 and isinstance(args[1], basestring):
+        if len(args) > 1 and isinstance(args[1], str):
             send_test_exception(args[1])
         else:
-            print 'Please provide your API key'
+            print('Please provide your API key')
     else:
         parser.print_help()
 
@@ -25,12 +25,12 @@ def send_test_exception(apikey):
     client = raygunprovider.RaygunSender(apikey)
 
     try:
-        raise Exception("Test exception from Raygun4py!")
+        raise Exception("Test exception from Raygun4py3!")
     except:
-        response = client.track_exception(sys.exc_info())
+        response = client.send_exception()
 
         if response[0] is 202:
-            print "Success! Now check your Raygun dashboard at https://app.raygun.io"
+            print("Success! Now check your Raygun dashboard at https://app.raygun.io")
         else:
-            print "Something went wrong - please check your API key or contact us to get help. The response was:"
-            print response
+            print("Something went wrong - please check your API key or contact us to get help. The response was:")
+            print(response)

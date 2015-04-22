@@ -27,7 +27,7 @@ def send_test_exception(apikey):
     try:
         raise Exception("Test exception from Raygun4py!")
     except:
-        response = client.track_exception(sys.exc_info())
+        response = client.send_exception()
 
         if response[0] is 202:
             print "Success! Now check your Raygun dashboard at https://app.raygun.io"
