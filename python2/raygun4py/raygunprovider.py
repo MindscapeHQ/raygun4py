@@ -126,7 +126,6 @@ class RaygunSender:
         json = jsonpickle.encode(raygunMessage, unpicklable=False)
 
         try:
-            auth_header = 'Basic %s' % (":".join(["myusername", "mypassword"]).encode('Base64').strip('\r\n'))
             headers = {
                 "X-ApiKey": self.apiKey,
                 "Content-Type": "application/json",

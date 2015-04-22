@@ -11,20 +11,40 @@ class TestRaygun4PyFunctional(unittest.TestCase):
         client = raygunprovider.RaygunSender(self.apiKey)
 
         try:
-            raise Exception("Raygun4py Python3 send")
+            raise Exception("Raygun4py3 Python3 send")
         except Exception as e:
             httpResult = client.send_exception(e)
 
             self.assertEqual(httpResult[0], 202)
 
-    def test_sending(self):
+    def test_sending_exc_info(self):
         client = raygunprovider.RaygunSender(self.apiKey)
 
         try:
-            raise Exception("Raygun4py manual sending test")
+            raise Exception("Raygun4py3 manual sending test")
         except:
-            exc_type, exc_value, exc_traceback = sys.exc_info()
-            httpResult = client.send(exc_type, exc_value, exc_traceback)
+            exc_info = sys.exc_info()
+            httpResult = client.send_exception(exc_info=exc_info)
+
+            self.assertEqual(httpResult[0], 202)
+
+    def test_sending_exception(self):
+        client = raygunprovider.RaygunSender(self.apiKey)
+
+        try:
+            raise Exception("Raygun4py3 manual sending test")
+        except Exception as e:
+            httpResult = client.send_exception(exception=e)
+
+            self.assertEqual(httpResult[0], 202)
+
+    def test_sending_auto(self):
+        client = raygunprovider.RaygunSender(self.apiKey)
+
+        try:
+            raise Exception("Raygun4py3 exception (auto)")
+        except Exception as e:
+            httpResult = client.send_exception()
 
             self.assertEqual(httpResult[0], 202)
 
@@ -33,12 +53,12 @@ class TestRaygun4PyFunctional(unittest.TestCase):
 
         try:
             try:
-                raise Exception("Nested child")
+                raise Exception("Nested child test_python3_new_sending")
             except:
-                raise Exception("Nested parent")
+                raise Exception("Nested parent py3")
         except:
-            exc_type, exc_value, exc_traceback = sys.exc_info()
-            httpResult = client.send(exc_type, exc_value, exc_traceback)
+            exc_info = sys.exc_info()
+            httpResult = client.send_exception(exc_info=exc_info)
 
             self.assertEqual(httpResult[0], 202)
 
@@ -53,26 +73,26 @@ class TestRaygun4PyFunctional(unittest.TestCase):
           })
 
         try:
-            raise Exception("Raygun4py manual sending test - user")
+            raise Exception("Raygun4py3 manual sending test - user")
         except:
-            exc_type, exc_value, exc_traceback = sys.exc_info()
-            httpResult = client.send(exc_type, exc_value, exc_traceback)
+            exc_info = sys.exc_info()
+            httpResult = client.send_exception(exc_info=exc_info)
 
             self.assertEqual(httpResult[0], 202)
 
     def log_send(self, logger):
         try:
-            raise Exception("Raygun4py Logging Test")
+            raise Exception("Raygun4py3 Logging Test")
         except:
             exc_type, exc_value, exc_traceback = sys.exc_info()
-            logger.error("Logging with sending", exc_info = (exc_type, exc_value, exc_traceback))
+            logger.error("Logging with sending", exc_info=sys.exc_info())
             return 0
 
         return 1
 
     def log_nosend(self, logger):
         try:
-            raise Exception("Raygun4py Logging Test")
+            raise Exception("Raygun4py3 Logging Test")
         except:
             logger.error("Logging without sending")
             return 0
