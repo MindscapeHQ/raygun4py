@@ -1,6 +1,7 @@
 import jsonpickle
 from raygun4py import raygunmsgs
 
+
 def ignore_exceptions(ignoredExceptions, message):
     if message.get_error().get_classname() in ignoredExceptions:
         return None

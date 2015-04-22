@@ -2,6 +2,7 @@ import sys
 from optparse import OptionParser
 from raygun4py import raygunprovider
 
+
 def main():
     usage = '\n  raygun4py test <apikey>'
     parser = OptionParser(usage=usage)
@@ -20,6 +21,7 @@ def main():
             print 'Please provide your API key'
     else:
         parser.print_help()
+
 
 def send_test_exception(apikey):
     client = raygunprovider.RaygunSender(apikey)

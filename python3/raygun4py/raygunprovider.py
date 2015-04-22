@@ -89,7 +89,7 @@ class RaygunSender:
         if 'httpRequest' in kwargs:
             httpRequest = kwargs['httpRequest']
         elif 'request' in kwargs:
-            httpRequest = kwargs['request']                   
+            httpRequest = kwargs['request']
 
         return tags, customData, httpRequest
 
