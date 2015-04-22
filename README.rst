@@ -27,58 +27,39 @@ Then import and instantiate the module::
 Usage
 =====
 
-Run python[2or3]/sample.py to see a basic implementation. You'll need to replace the API key with one of your own.
-
-Logging
--------
-
-You can also attach the logging handler in raygunprovider.RaygunHandler then calling a logging method in a function that is provided to sys.except hook. This requires much less setup than the above alternative.
-
-**See sampleWithLogging.py** for an example implementation.
-
-Uncaught exception handler
---------------------------
-
-To automatically pick up unhandled exceptions with custom logic, you can provide a callback function to sys.excepthook. This will send uncaught exceptions that your program throws. The function should take three parameters: the type, value and traceback. In the function, create a new raygunprovider.RaygunSender, then call send() on that object, passing in the parameters.
-
-**See sample.py for an example implementation**.
-
-Manual sending
---------------
-
-**Python 3**
-
-Python 3 code can now use the new send_exception method, which simply takes an Exception object and sends it::
-
-    try:
-        raise Exception("foo")
-    except Exception as e:
-        client.send_exception(e)
-
-**Python 2**
-
-In a catch block, you can automatically send the current exception to Raygun by calling send_exception()::
+Automatically send the current exception like this::
 
     try:
         raise Exception("foo")
     except:
         client.send_exception()
 
-The legacy send() function has been deprecated in favor of send_exception. If you wish you can pass through the tuple itself to send_exception::
+See `sending functions`_ for more ways to send.
 
-    try:
-        raise Exception("foo")
-    except:
-        exc_info = sys.exc_info()
-        client.send_exception(exc_info)
 
+
+Uncaught exception handler
+--------------------------
+
+To automatically pick up unhandled exceptions with custom logic, you can provide a callback function to sys.excepthook::
+
+  def handle_exception(exc_type, exc_value, exc_traceback):
+      sender = raygunprovider.RaygunSender("your_apikey")
+      sender.send_exception(exc_info=(exc_type, exc_value, exc_traceback))
+
+  sys.excepthook = handle_exception
+
+Logging
+-------
+
+You can also attach the logging handler in raygunprovider.RaygunHandler then calling a logging method in a function that is provided to sys.except hook. See :code:`sampleWithLogging.py` for an example implementation.
 
 
 Web frameworks
 --------------
 
 If you are in a web server environment and have HTTP request details available, you can pass these and the headers through in a dictionary (as in sample.py).
-
+l
 Code running on Google App Engine should now be supported - you can test this locally, and has been reported working once deployed (the latter currently requires a paid account due to needed SSL support).
 
 Documentation
@@ -92,19 +73,7 @@ Sending functions
 +================+===============+====================+
 | send_exception | exception     | Exception          |
 +                +---------------+--------------------+
-|                | tags          | List               |
-+                +---------------+--------------------+
-|                | userCustomData| Dict               |
-+                +---------------+--------------------+
-|                | httpRequest   | Dict               |
-+----------------+---------------+--------------------+
-
-This function manually sends an exception object to Raygun.
-
-+----------------+---------------+--------------------+
-| Function       | Arguments     | Type               |
-+================+===============+====================+
-| track_exception| exc_info      | Tuple              |
+|                | exc_info      | 3-tuple            |
 +                +---------------+--------------------+
 |                | tags          | List               |
 +                +---------------+--------------------+
@@ -115,12 +84,28 @@ This function manually sends an exception object to Raygun.
 
 This is the preferred method for sending exceptions. Call this function from within a catch block to send the current exception to Raygun::
 
+  # Automatically gets the current exception
+  httpResult = client.send_exception()
 
-The other arguments are optional:
+  # Uses the supplied sys.exc_info() tuple
+  httpResult = client.send_exception(exc_info=sys.exc_info())
 
-* tags is a list of tags relating to the current context which you can define.
-* userCustomData is a dict containing custom key-values also of your choosing.
-* httpRequest is HTTP Request data - see sample.py for the expected format of the object.
+  # Uses a supplied Exception object
+  httpResult = client.send_exception(exception=exception)
+
+  # Send tags, custom data and an HTTP request object
+  httpResult = client.send_exception(tags=[], userCustomData={}, request={})
+
+All the arguments in the above table are optional:
+
+* :code:`exception` should be a subclass of type Exception. Pass this in if you want to manually transmit an exception object to Raygun.
+* :code:`exc_info` should be the 3-tuple returned from :code:`sys.exc_info()`. Pass this tuple in if you wish to use it in other code aside from send_exception().
+
+send_exception also supports the following extra data parameters:
+
+* :code:`tags` is a list of tags relating to the current context which you can define.
+* :code:`userCustomData` is a dict containing custom key-values also of your choosing.
+* :code:`httpRequest` is HTTP Request data - see `sample.py` for the expected format of the object.
 
 Data functions
 --------------

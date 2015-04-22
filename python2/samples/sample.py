@@ -24,7 +24,7 @@ def handle_exception(exc_type, exc_value, exc_traceback):
         "rawData": None,
     }
 
-    print cl.send(exc_type, exc_value, exc_traceback, "myclass", ["tag1", "tag2"], {"key1": 1111, "key2": 2222}, request)
+    print cl.send_exception(exc_info=(exc_type, exc_value, exc_traceback), "myclass", ["tag1", "tag2"], {"key1": 1111, "key2": 2222}, request)
 
 def very_buggy_request():
     methodtwo()
