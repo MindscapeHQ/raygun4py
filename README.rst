@@ -94,7 +94,7 @@ Version tracking
 
 Call `client.set_version("x.x.x.x")` to attach an app version to each message that is sent. This will be visible on the dashboard and can be used for filtering.
 
-Unique User Tracking
+Affected User Tracking
 --------------------
 
 User data can be passed in which will be displayed in the Raygun web app. Call `set_user` with the following::
