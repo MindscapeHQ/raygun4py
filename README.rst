@@ -18,7 +18,9 @@ The easiest way to install this is as a pip package, as it is available from PyP
 
     $ pip install raygun4py
 
-Then import and instantiate the module::
+Then import and instantiate the module:
+
+.. code:: python
 
     from raygun4py import raygunprovider
 
@@ -27,7 +29,9 @@ Then import and instantiate the module::
 Usage
 =====
 
-Automatically send the current exception like this::
+Automatically send the current exception like this:
+
+.. code:: python
 
     try:
         raise Exception("foo")
@@ -41,7 +45,9 @@ See `sending functions`_ for more ways to send.
 Uncaught exception handler
 --------------------------
 
-To automatically pick up unhandled exceptions with custom logic, you can provide a callback function to sys.excepthook::
+To automatically pick up unhandled exceptions with custom logic, you can provide a callback function to sys.excepthook:
+
+.. code:: python
 
   def handle_exception(exc_type, exc_value, exc_traceback):
       sender = raygunprovider.RaygunSender("your_apikey")
@@ -52,14 +58,95 @@ To automatically pick up unhandled exceptions with custom logic, you can provide
 Logging
 -------
 
-You can also attach the logging handler in raygunprovider.RaygunHandler then calling a logging method in a function that is provided to sys.except hook. See :code:`sampleWithLogging.py` for an example implementation.
+You can also send exceptions using a logger:
+
+.. code:: python
+
+  logger = logging.getLogger("mylogger")
+  rgHandler = raygunprovider.RaygunHandler("your_apikey")
+  logger.addHandler(rgHandler)
+
+  def log_exception(exc_type, exc_value, exc_traceback):
+      logger.error("An exception occurred", exc_info = (exc_type, exc_value, exc_traceback))
+
+  sys.excepthook = log_exception
+
+This uses the built-in :code:`RaygunHandler`. You can provide your own handler implementation based on that class if you need custom sending behavior.
 
 
 Web frameworks
 --------------
 
-If you are in a web server environment and have HTTP request details available, you can pass these and the headers through in a dictionary (as in sample.py).
-l
+Python 2
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Raygun4py in Python 2.x includes several middleware implementations for various frameworks to enable reporting out of the box:
+
+Django
+++++++
+
+settings.py
+
+.. code:: python
+
+  MIDDLEWARE_CLASSES = (
+      'raygun4py.middleware.django.Provider'
+  )
+
+  RAYGUN4PY_API_KEY = 'your_apikey'
+
+Exceptions that occur in views will be automatically sent to Raygun.
+
+
+Flask
++++++
+
+.. code:: python
+
+  from flask import Flask, current_app
+  from raygun4py.middleware import flask
+
+  app = Flask(__name__)
+
+  flask.Provider(app, 'your_apikey').attach()
+
+WSGI
+++++
+
+An example using **Tornado**, which will pick up exceptions that occur in the WSGI pipeline:
+
+.. code:: python
+
+  from raygun4py.middleware import wsgi
+
+  class MainHandler(tornado.web.RequestHandler):
+
+    def initialize(self):
+        raise Exception('init')
+
+  def main():
+    settings = {
+        'default_handler_class': MainHandler
+    }
+
+    application = tornado.web.Application([
+        (r"/", MainHandler),
+    ], **settings)
+
+    wsgiapp = tornado.wsgi.WSGIAdapter(application)
+    raygun_wrapped_app = wsgi.Provider(wsgiapp, 'your_apikey')
+    server = wsgiref.simple_server.make_server('', 8888, raygun_wrapped_app)
+    server.serve_forever()
+
+Note that many frameworks (tornado, pryramid, gevent et al) will swallow exceptions that occur within their domain.
+
+Let us know if we're missing middleware for your framework, or feel free to submit a pull request.
+
+Attaching raw HTTP request data
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you are in a web server environment and have HTTP request details available, you can pass these and the headers through in a dictionary (see :code:`sample.py`).
+
 Code running on Google App Engine should now be supported - you can test this locally, and has been reported working once deployed (the latter currently requires a paid account due to needed SSL support).
 
 Documentation
