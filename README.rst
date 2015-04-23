@@ -197,6 +197,40 @@ send_exception also supports the following extra data parameters:
 Data functions
 --------------
 
++------------------+---------------+--------------------+
+| Function         | Arguments     | Type               |
++==================+===============+====================+
+| ignore_exceptions| exceptions    | List               |
++------------------+---------------+--------------------+
+
+Provide a list of exception types to ignore here. Any exceptions that are passed to send_exception that match a type in this list won't be sent.
+
++------------------+---------------+--------------------+
+| Function         | Arguments     | Type               |
++==================+===============+====================+
+| filter_keys      | keys          | List               |
++------------------+---------------+--------------------+
+
+If you want to filter sensitive data out of the payload that is sent to Raygun, pass in a list of keys here. Any matching keys in the payload will have their value replaced with :code:`<filtered>` - useful for passwords, credit card data etc.
+
++------------------+---------------+--------------------+
+| Function         | Arguments     | Type               |
++==================+===============+====================+
+| on_before_send   | callback      | Function           |
++------------------+---------------+--------------------+
+
+You can mutate the candidate payload by passing in a function that accepts one parameter using this function. This allows you to completely customize what data is sent, immediately before it happens.
+
++----------------+---------------+--------------------+
+| Function       | Arguments     | Type               |
++================+===============+====================+
+| set_proxy      | host          | String             |
++                +---------------+--------------------+
+|                | port          | Integer            |
++----------------+---------------+--------------------+
+
+Call this function if your code is behind a proxy and want Raygun4py to make the HTTP request to the Raygun endpoint through it.
+
 +----------------+---------------+--------------------+
 | Function       | Arguments     | Type               |
 +================+===============+====================+
