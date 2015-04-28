@@ -103,10 +103,13 @@ class RaygunMessage:
 
 class RaygunErrorMessage:
 
-    def __init__(self, exc_type, exc_value, exc_traceback):
+    def __init__(self, exc_type, exc_value, exc_traceback, options):
         self.className = exc_type.__name__
         self.message = "%s: %s" % (exc_type.__name__, exc_value)
         self.stackTrace = []
+
+        if 'transmitGlobalVariables' in options and options['transmitGlobalVariables'] is True:
+            self.globalVariables = globals()
 
         try:
             frames = inspect.getinnerframes(exc_traceback)
@@ -118,7 +121,7 @@ class RaygunErrorMessage:
                         'className': frame[3],
                         'fileName': frame[1],
                         'methodName': frame[4][0],
-                        'localVariables': self._get_locals(frame[0])
+                        'localVariables': self._get_locals(frame[0]) if 'transmitLocalVariables' in options and options['transmitLocalVariables'] is True else None
                     })
         finally:
             del frames

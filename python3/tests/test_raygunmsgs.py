@@ -83,7 +83,7 @@ class TestRaygunErrorMessage(unittest.TestCase):
             self.theException = e
 
             exc_info = sys.exc_info()
-            self.msg = raygunmsgs.RaygunErrorMessage(exc_info[0], exc_info[1], exc_info[2])
+            self.msg = raygunmsgs.RaygunErrorMessage(exc_info[0], exc_info[1], exc_info[2], { 'transmitLocalVariables': True })
 
     def parent(self):
             try:

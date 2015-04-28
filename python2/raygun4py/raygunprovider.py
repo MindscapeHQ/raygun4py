@@ -32,6 +32,7 @@ class RaygunSender:
         self.proxy = None
         self.beforeSendCallback = None
         self.transmitLocalVariables = config['transmitLocalVariables'] if 'transmitLocalVariables' in config else True
+        self.transmitGlobalVariables = config['transmitGlobalVariables'] if 'transmitGlobalVariables' in config else True
 
     def set_version(self, version):
         if isinstance(version, basestring):
@@ -59,15 +60,20 @@ class RaygunSender:
             self.beforeSendCallback = callback
 
     def send_exception(self, exception=None, exc_info=None, **kwargs):
+        options = {
+            'transmitLocalVariables': self.transmitLocalVariables,
+            'transmitGlobalVariables': self.transmitGlobalVariables
+        }
+
         if exc_info is None:
             exc_info = sys.exc_info()
 
         exc_type, exc_value, exc_traceback = exc_info
 
         if exception is not None:
-            errorMessage = raygunmsgs.RaygunErrorMessage(type(exception), exception, exc_traceback)
+            errorMessage = raygunmsgs.RaygunErrorMessage(type(exception), exception, exc_traceback, options)
         else:
-            errorMessage = raygunmsgs.RaygunErrorMessage(exc_type, exc_value, exc_traceback)
+            errorMessage = raygunmsgs.RaygunErrorMessage(exc_type, exc_value, exc_traceback, options)
 
         try:
             del exc_type, exc_value, exc_traceback
