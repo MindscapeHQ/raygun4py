@@ -169,7 +169,9 @@ Sending functions
 |                | httpRequest   | Dict               |
 +----------------+---------------+--------------------+
 
-This is the preferred method for sending exceptions. Call this function from within a catch block to send the current exception to Raygun::
+**All parameters are optional.**
+
+Call this function from within a catch block to send the current exception to Raygun::
 
   # Automatically gets the current exception
   httpResult = client.send_exception()
@@ -183,7 +185,7 @@ This is the preferred method for sending exceptions. Call this function from wit
   # Send tags, custom data and an HTTP request object
   httpResult = client.send_exception(tags=[], userCustomData={}, request={})
 
-All the arguments in the above table are optional:
+You can pass in **either** of these two exception params:
 
 * :code:`exception` should be a subclass of type Exception. Pass this in if you want to manually transmit an exception object to Raygun.
 * :code:`exc_info` should be the 3-tuple returned from :code:`sys.exc_info()`. Pass this tuple in if you wish to use it in other code aside from send_exception().
@@ -200,18 +202,18 @@ Data functions
 +------------------+---------------+--------------------+
 | Function         | Arguments     | Type               |
 +==================+===============+====================+
-| ignore_exceptions| exceptions    | List               |
-+------------------+---------------+--------------------+
-
-Provide a list of exception types to ignore here. Any exceptions that are passed to send_exception that match a type in this list won't be sent.
-
-+------------------+---------------+--------------------+
-| Function         | Arguments     | Type               |
-+==================+===============+====================+
 | filter_keys      | keys          | List               |
 +------------------+---------------+--------------------+
 
 If you want to filter sensitive data out of the payload that is sent to Raygun, pass in a list of keys here. Any matching keys in the payload will have their value replaced with :code:`<filtered>` - useful for passwords, credit card data etc.
+
++------------------+---------------+--------------------+
+| Function         | Arguments     | Type               |
++==================+===============+====================+
+| ignore_exceptions| exceptions    | List               |
++------------------+---------------+--------------------+
+
+Provide a list of exception types to ignore here. Any exceptions that are passed to send_exception that match a type in this list won't be sent.
 
 +------------------+---------------+--------------------+
 | Function         | Arguments     | Type               |
