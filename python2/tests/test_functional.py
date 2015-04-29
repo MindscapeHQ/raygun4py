@@ -29,7 +29,7 @@ class TestRaygun4PyFunctional(unittest.TestCase):
         client.set_version('v1.0.0')
 
         try:
-            raise Exception("Raygun4py manual sending test - user")
+            raise Exception("Raygun4py manual sending test - version")
         except:
             httpResult = client.send_exception(exc_info=sys.exc_info())
 

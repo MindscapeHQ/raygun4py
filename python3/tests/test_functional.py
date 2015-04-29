@@ -62,6 +62,17 @@ class TestRaygun4PyFunctional(unittest.TestCase):
 
             self.assertEqual(httpResult[0], 202)
 
+    def test_send_with_version(self):
+        client = raygunprovider.RaygunSender(self.apiKey)
+        client.set_version('v1.0.0')
+
+        try:
+            raise Exception("Raygun4py3 manual sending test - version")
+        except:
+            httpResult = client.send_exception(exc_info=sys.exc_info())
+
+            self.assertEqual(httpResult[0], 202)
+
     def test_sending_user(self):
         client = raygunprovider.RaygunSender(self.apiKey)
         client.set_user({
@@ -135,6 +146,56 @@ class TestRaygun4PyFunctional(unittest.TestCase):
             result = client.send_exception(httpRequest={})
 
             self.assertEqual(result[0], 202)
+
+    def test_before_send_callback(self):
+        client = raygunprovider.RaygunSender(self.apiKey)
+        client.on_before_send(before_send_mutate_payload)
+
+        try:
+            raise Exception("Raygun4py3 functional test - on_before_send")
+        except Exception as e:
+            httpResult = client.send_exception(e, exc_info = sys.exc_info())
+        
+        self.assertEqual(httpResult[0], 202)
+
+    def test_before_send_callback_sets_none_cancels_send(self):
+        client = raygunprovider.RaygunSender(self.apiKey)
+        client.on_before_send(before_send_cancel_send)
+
+        try:
+            raise Exception("Raygun4py3 functional test - on_before_send")
+        except Exception as e:
+            result = client.send_exception(e, exc_info = sys.exc_info())
+        
+        self.assertIsNone(result)
+
+    def test_request(self):
+        client = raygunprovider.RaygunSender(self.apiKey)
+
+        try:
+            raise Exception("Raygun4py functional test - on_before_send")
+        except Exception as e:
+            result = client.send_exception(request={})
+
+            self.assertEqual(result[0], 202)
+
+    def test_http_request(self):
+        client = raygunprovider.RaygunSender(self.apiKey)
+
+        try:
+            raise Exception("Raygun4py functional test - on_before_send")
+        except Exception as e:
+            result = client.send_exception(httpRequest={})
+
+            self.assertEqual(result[0], 202)
+
+            
+def before_send_mutate_payload(message):
+    message['newKey'] = 'newValue'
+    return message
+
+def before_send_cancel_send(message):
+    return None
 
 def child():
     throwerScope = 'child'

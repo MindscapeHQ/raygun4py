@@ -35,7 +35,7 @@ class RaygunSender:
         self.transmitGlobalVariables = config['transmitGlobalVariables'] if 'transmitGlobalVariables' in config else True
 
     def set_version(self, version):
-        if isinstance(version, basestring):
+        if isinstance(version, str):
             self.userversion = version
 
     def set_user(self, user):
