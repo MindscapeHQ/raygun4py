@@ -1,5 +1,6 @@
 import traceback
 import inspect
+import os
 
 try:
     import multiprocessing
@@ -27,14 +28,20 @@ class RaygunMessageBuilder:
         return self
 
     def set_environment_details(self):
+        env = {}
+        for key in os.environ.keys():
+            env[key] = os.environ[key]
+
         self.raygunMessage.details['environment'] = {
             "processorCount": (
                 multiprocessing.cpu_count() if USE_MULTIPROCESSING else "n/a"
             ),
             "architecture": platform.architecture()[0],
             "cpu": platform.processor(),
-            "oSVersion": "%s %s" % (platform.system(), platform.release())
+            "oSVersion": "%s %s" % (platform.system(), platform.release()),
+            "environmentVariables": env
         }
+
         return self
 
     def set_exception_details(self, raygunExceptionMessage):
