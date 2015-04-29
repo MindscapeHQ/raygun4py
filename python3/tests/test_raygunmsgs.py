@@ -98,7 +98,7 @@ class TestRaygunErrorMessage(unittest.TestCase):
             raise TestRaygunErrorMessage.ChildError("Child message")
 
     def test_exc_traceback_none_generates_empty_array(self):
-        errorMessage = raygunmsgs.RaygunErrorMessage(Exception, None, None)
+        errorMessage = raygunmsgs.RaygunErrorMessage(Exception, None, None, {})
         self.assertEqual(errorMessage.stackTrace, [])
 
     def test_classname(self):

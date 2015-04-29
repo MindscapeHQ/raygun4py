@@ -137,7 +137,7 @@ class RaygunErrorMessage:
                 nestedException = exc_value.__context__
 
             if nestedException is not None:
-                self.innerError = RaygunErrorMessage(type(nestedException), nestedException, nestedException.__traceback__)
+                self.innerError = RaygunErrorMessage(type(nestedException), nestedException, nestedException.__traceback__, options)
 
     def get_classname(self):
         return self.className
