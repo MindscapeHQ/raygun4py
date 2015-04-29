@@ -26,6 +26,15 @@ Then import and instantiate the module:
 
     client = raygunprovider.RaygunSender('your_apikey')
 
+Test the installation
+------------------------
+
+From the command line, run::
+
+  $ raygun4py test your_apikey
+
+Replace :code:`your_apikey` with the one listed on your Raygun dashboard. This will cause a test exception to be generated and sent.
+
 Usage
 =====
 
@@ -39,7 +48,6 @@ Automatically send the current exception like this:
         client.send_exception()
 
 See `sending functions`_ for more ways to send.
-
 
 
 Uncaught exception handler
@@ -152,6 +160,20 @@ Code running on Google App Engine should now be supported - you can test this lo
 Documentation
 =============
 
+Initialization options
+----------------------
+
+:code:`RaygunSender` accepts a :code:`config` dict which is used to set options for the provider::
+
+  from raygun4py import raygunprovider
+
+  client = raygunprovider.RaygunSender('your_apikey', config={
+    'transmitLocalVariables': True,
+    'transmitGlobalVariables': True
+  })
+
+If either of these are set to False, the corresponding variables will not be sent with exception payloads. Both default to True.
+
 Sending functions
 -----------------
 
@@ -196,7 +218,7 @@ send_exception also supports the following extra data parameters:
 * :code:`userCustomData` is a dict containing custom key-values also of your choosing.
 * :code:`httpRequest` is HTTP Request data - see `sample.py` for the expected format of the object.
 
-Data functions
+Config and data functions
 --------------
 
 +------------------+---------------+--------------------+
@@ -262,7 +284,7 @@ User data can be passed in which will be displayed in the Raygun web app. The di
 Chained exceptions
 ------------------
 
-For Python 3, chained exceptions are now supported and automatically sent along with their traceback.
+For Python 3, chained exceptions are supported and automatically sent along with their traceback.
 
 This occurs when an exception is raised while handling another exception - see tests_functional.py for an example.
 
