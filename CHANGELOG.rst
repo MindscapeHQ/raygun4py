@@ -1,7 +1,13 @@
-vnext
+3.0.0
 
-- Py2: Added send_exception function
-- Py2: Removed className argument from send() (breaking change. send_exception should be used instead)
+- Added functions: ignore_exceptions, filter_keys, set_proxy, on_before_send
+- Added support for local variables, global variables, and environment variables
+- Added CLI for testing provider
+- Py2: Added web middleware (Django, Flask and WSGI)
+- Py2: Added send_exception function (see below)
+- send() deprecated in favor of send_exception(); see the Sending Functions in the readme for the available options
+
+
 
 2.2.0
 
