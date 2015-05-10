@@ -1,9 +1,14 @@
 raygun4py
 =========
 
-Official Raygun provider for **Python 2.6/2.7** and **Python 3+**
+.. image:: https://travis-ci.org/MindscapeHQ/raygun4py.svg?branch=vnext
+  :target: https://travis-ci.org/MindscapeHQ/raygun4py?branch=vnext
 
-This V2 release now contains code for both main Python versions, and should build automatically using your Python environment.
+.. image:: https://coveralls.io/repos/MindscapeHQ/raygun4py/badge.svg?branch=vnext
+  :target: https://coveralls.io/r/MindscapeHQ/raygun4py?branch=vnext
+
+
+Official Raygun provider for **Python 2.6/2.7**, **Python 3+** and **PyPy**
 
 
 Installation
@@ -13,91 +18,264 @@ The easiest way to install this is as a pip package, as it is available from PyP
 
     $ pip install raygun4py
 
-Then import and instantiate the module::
+Then import and instantiate the module:
+
+.. code:: python
 
     from raygun4py import raygunprovider
 
     client = raygunprovider.RaygunSender('your_apikey')
 
+Test the installation
+------------------------
+
+From the command line, run::
+
+  $ raygun4py test your_apikey
+
+Replace :code:`your_apikey` with the one listed on your Raygun dashboard. This will cause a test exception to be generated and sent.
+
 Usage
 =====
 
-Run python[2or3]/sample.py to see a basic implementation. You'll need to replace the API key with one of your own.
+Automatically send the current exception like this:
 
-Logging
--------
+.. code:: python
 
-You can also attach the logging handler in raygunprovider.RaygunHandler then calling a logging method in a function that is provided to sys.except hook. This requires much less setup than the above alternative.
+    try:
+        raise Exception("foo")
+    except:
+        client.send_exception()
 
-**See sampleWithLogging.py** for an example implementation.
+See `sending functions`_ for more ways to send.
+
 
 Uncaught exception handler
 --------------------------
 
-To automatically pick up unhandled exceptions with custom logic, you can provide a callback function to sys.excepthook. This will send uncaught exceptions that your program throws. The function should take three parameters: the type, value and traceback. In the function, create a new raygunprovider.RaygunSender, then call send() on that object, passing in the parameters.
+To automatically pick up unhandled exceptions with custom logic, you can provide a callback function to sys.excepthook:
 
-**See sample.py for an example implementation**.
+.. code:: python
 
-Manual sending
---------------
+  def handle_exception(exc_type, exc_value, exc_traceback):
+      sender = raygunprovider.RaygunSender("your_apikey")
+      sender.send_exception(exc_info=(exc_type, exc_value, exc_traceback))
 
-**Python 3**
+  sys.excepthook = handle_exception
 
-Python 3 code can now use the new send_exception method, which simply takes an Exception object and sends it::
+Logging
+-------
 
-    try:
-        raise Exception("foo")
-    except Exception as e:
-        client.send_exception(e)
+You can also send exceptions using a logger:
 
-**Python 2**
+.. code:: python
 
-You can manually send the current exception in Python 2 by calling sys.exc_info first, and pass through the three values through to send()::
+  logger = logging.getLogger("mylogger")
+  rgHandler = raygunprovider.RaygunHandler("your_apikey")
+  logger.addHandler(rgHandler)
 
-    try:
-        raise StandardError("Raygun4py manual sending test")
-    except:
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        client.send(exc_type, exc_value, exc_traceback)
+  def log_exception(exc_type, exc_value, exc_traceback):
+      logger.error("An exception occurred", exc_info = (exc_type, exc_value, exc_traceback))
+
+  sys.excepthook = log_exception
+
+This uses the built-in :code:`RaygunHandler`. You can provide your own handler implementation based on that class if you need custom sending behavior.
+
 
 Web frameworks
 --------------
 
-If you are in a web server environment and have HTTP request details available, you can pass these and the headers through in a dictionary (as in sample.py).
+Python 2
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Raygun4py in Python 2.x includes several middleware implementations for various frameworks to enable reporting out of the box:
+
+Django
+++++++
+
+settings.py
+
+.. code:: python
+
+  MIDDLEWARE_CLASSES = (
+      'raygun4py.middleware.django.Provider'
+  )
+
+  RAYGUN4PY_API_KEY = 'your_apikey'
+
+Exceptions that occur in views will be automatically sent to Raygun.
+
+
+Flask
++++++
+
+.. code:: python
+
+  from flask import Flask, current_app
+  from raygun4py.middleware import flask
+
+  app = Flask(__name__)
+
+  flask.Provider(app, 'your_apikey').attach()
+
+WSGI
+++++
+
+An example using **Tornado**, which will pick up exceptions that occur in the WSGI pipeline:
+
+.. code:: python
+
+  from raygun4py.middleware import wsgi
+
+  class MainHandler(tornado.web.RequestHandler):
+
+    def initialize(self):
+        raise Exception('init')
+
+  def main():
+    settings = {
+        'default_handler_class': MainHandler
+    }
+
+    application = tornado.web.Application([
+        (r"/", MainHandler),
+    ], **settings)
+
+    wsgiapp = tornado.wsgi.WSGIAdapter(application)
+    raygun_wrapped_app = wsgi.Provider(wsgiapp, 'your_apikey')
+    server = wsgiref.simple_server.make_server('', 8888, raygun_wrapped_app)
+    server.serve_forever()
+
+Note that many frameworks (tornado, pryramid, gevent et al) will swallow exceptions that occur within their domain.
+
+Let us know if we're missing middleware for your framework, or feel free to submit a pull request.
+
+Attaching raw HTTP request data
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you are in a web server environment and have HTTP request details available, you can pass these and the headers through in a dictionary (see :code:`sample.py`).
 
 Code running on Google App Engine should now be supported - you can test this locally, and has been reported working once deployed (the latter currently requires a paid account due to needed SSL support).
 
 Documentation
 =============
 
-API
----
+Initialization options
+----------------------
 
-*class* raygunprovider.**send_exception**(exception, [className[, tags[, userCustomData[, httpRequest]]]])
+:code:`RaygunSender` accepts a :code:`config` dict which is used to set options for the provider:
 
-This is the preferred method for manually sending from Python 3 code. The first parameter, _exception_, should be an object that inherits from Exception.
+.. code:: python
 
-*class* raygunprovider.**send**(exc_type, exc_value, exc_traceback, [className[, tags[, userCustomData[, httpRequest]]]])
+  from raygun4py import raygunprovider
 
-This method performs the actual sending of exception data to Raygun. This overload is available for both Python 2 and 3, but should be considered deprecated for Py3. The first three parameters are required and can be accessed using sys.exc_info (see the example under Manual Sending above).
+  client = raygunprovider.RaygunSender('your_apikey', config={
+    'transmitLocalVariables': True,
+    'transmitGlobalVariables': True
+  })
 
-The remaining parameters are optional:
+If either of these are set to False, the corresponding variables will not be sent with exception payloads. Both default to True.
 
-* tags is a list of tags relating to the current context which you can define
-* userCustomData is a dict containing custom key-values also of your choosing.
-* httpRequest is HTTP Request data - see sample.py for the expected format of the object.
+Sending functions
+-----------------
 
-* className was used prior to v2.2.0, but is now **deprecated** and can be removed from your code. This parameter may be deleted in a future release.
++----------------+---------------+--------------------+
+| Function       | Arguments     | Type               |
++================+===============+====================+
+| send_exception | exception     | Exception          |
++                +---------------+--------------------+
+|                | exc_info      | 3-tuple            |
++                +---------------+--------------------+
+|                | tags          | List               |
++                +---------------+--------------------+
+|                | userCustomData| Dict               |
++                +---------------+--------------------+
+|                | httpRequest   | Dict               |
++----------------+---------------+--------------------+
 
-Version tracking
-----------------
+**All parameters are optional.**
 
-Call `client.set_version("x.x.x.x")` to attach an app version to each message that is sent. This will be visible on the dashboard and can be used for filtering.
+Call this function from within a catch block to send the current exception to Raygun:
 
-Affected User Tracking
---------------------
+.. code:: python
 
-User data can be passed in which will be displayed in the Raygun web app. Call `set_user` with the following::
+  # Automatically gets the current exception
+  httpResult = client.send_exception()
+
+  # Uses the supplied sys.exc_info() tuple
+  httpResult = client.send_exception(exc_info=sys.exc_info())
+
+  # Uses a supplied Exception object
+  httpResult = client.send_exception(exception=exception)
+
+  # Send tags, custom data and an HTTP request object
+  httpResult = client.send_exception(tags=[], userCustomData={}, request={})
+
+You can pass in **either** of these two exception params:
+
+* :code:`exception` should be a subclass of type Exception. Pass this in if you want to manually transmit an exception object to Raygun.
+* :code:`exc_info` should be the 3-tuple returned from :code:`sys.exc_info()`. Pass this tuple in if you wish to use it in other code aside from send_exception().
+
+send_exception also supports the following extra data parameters:
+
+* :code:`tags` is a list of tags relating to the current context which you can define.
+* :code:`userCustomData` is a dict containing custom key-values also of your choosing.
+* :code:`httpRequest` is HTTP Request data - see `sample.py` for the expected format of the object.
+
+Config and data functions
+--------------
+
++------------------+---------------+--------------------+
+| Function         | Arguments     | Type               |
++==================+===============+====================+
+| filter_keys      | keys          | List               |
++------------------+---------------+--------------------+
+
+If you want to filter sensitive data out of the payload that is sent to Raygun, pass in a list of keys here. Any matching keys in the payload will have their value replaced with :code:`<filtered>` - useful for passwords, credit card data etc.
+
++------------------+---------------+--------------------+
+| Function         | Arguments     | Type               |
++==================+===============+====================+
+| ignore_exceptions| exceptions    | List               |
++------------------+---------------+--------------------+
+
+Provide a list of exception types to ignore here. Any exceptions that are passed to send_exception that match a type in this list won't be sent.
+
++------------------+---------------+--------------------+
+| Function         | Arguments     | Type               |
++==================+===============+====================+
+| on_before_send   | callback      | Function           |
++------------------+---------------+--------------------+
+
+You can mutate the candidate payload by passing in a function that accepts one parameter using this function. This allows you to completely customize what data is sent, immediately before it happens.
+
++----------------+---------------+--------------------+
+| Function       | Arguments     | Type               |
++================+===============+====================+
+| set_proxy      | host          | String             |
++                +---------------+--------------------+
+|                | port          | Integer            |
++----------------+---------------+--------------------+
+
+Call this function if your code is behind a proxy and want Raygun4py to make the HTTP request to the Raygun endpoint through it.
+
++----------------+---------------+--------------------+
+| Function       | Arguments     | Type               |
++================+===============+====================+
+| set_version    | version       | String             |
++----------------+---------------+--------------------+
+
+Call this to attach a SemVer version to each message that is sent. This will be visible on the dashboard and can be used to filter exceptions to a particular version, deployment tracking etc.
+
++----------------+---------------+--------------------+
+| Function       | Arguments     | Type               |
++================+===============+====================+
+| set_user       | user_info     | Dict               |
++----------------+---------------+--------------------+
+
+User data can be passed in which will be displayed in the Raygun web app. The dict you pass in should look this this:
+
+.. code:: python
 
   client.set_user({
       'firstName': 'Foo',
@@ -112,7 +290,7 @@ User data can be passed in which will be displayed in the Raygun web app. Call `
 Chained exceptions
 ------------------
 
-For Python 3, chained exceptions are now supported and automatically sent along with their traceback.
+For Python 3, chained exceptions are supported and automatically sent along with their traceback.
 
 This occurs when an exception is raised while handling another exception - see tests_functional.py for an example.
 
@@ -126,52 +304,4 @@ Create a thread in the official support forums at http://raygun.io/forums, and w
 Changelog
 =========
 
-2.2.0
-
-- Added new send_exception() method for Py3
-- Added support for chained exceptions for Py3
-- Automatically detect class name - this no longer needs to be provided on send() and as such this parameter is deprecated.
-- Support Google App Engine by disabling multiprocessing module if not available
-
-2.0.1
-
-- Fix bug when exceptions received from C++ libraries
-
-2.0.0
-
-- Added port of library to Python 3
-- Minor bugfix where OS version wasn't correctly transmitted (Environment tab in Dashboard)
-
-1.1.3
-
-- Fixed bug when logging with RaygunHandler attached but not passing exception data crashes program
-
-1.1.2
-
-- Fixed a bug where the IP address had invalid casing resulting in it being unable to be read by the API
-- Fixed a bug if set_user wasn't called leading to a error
-- Renamed samples and moved them to a more appropriate folder
-- Added unit tests
-
-1.1.1
-
-- Fixed a critical bug in 1.1.0; the previous version is not recommended - use this instead.
-
-1.1.0
-
-- Added set_user function for unique user tracking; internal refactor to make module more pythonic
-
-1.0.0
-
-- **Breaking change:** changed module name to raygun4py. Now use *from raygun4py import raygunprovider*
-
-- Added ability to send HTTP request data
-
-0.1.2
-
-- PyPi package
-- RST file
-
-0.1
-
-- Initial release; basic message creation and transport functionality
+`View the release history here <CHANGELOG.rst>`_

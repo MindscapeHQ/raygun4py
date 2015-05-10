@@ -1,0 +1,9 @@
+[report]
+omit =
+    */__init__.py
+    */site-packages/*
+    */dist-packages/*
+    */tests/*
+
+ exclude_lines =
+    except Exception as e:

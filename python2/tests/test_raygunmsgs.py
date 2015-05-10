@@ -1,4 +1,6 @@
-import sys, unittest, socket
+import sys
+import unittest2 as unittest
+import socket
 from raygun4py import raygunmsgs
 
 class TestRaygunMessageBuilder(unittest.TestCase):
@@ -21,15 +23,15 @@ class TestRaygunMessageBuilder(unittest.TestCase):
 
     def test_machinename(self):
         self.builder.set_machine_name(socket.gethostname())
-        self.assertIsNotNone(self.builder.raygunMessage.details['machineName'])
+        self.assertTrue(self.builder.raygunMessage.details['machineName'] != None)
 
     def test_customdata(self):
         self.builder.set_customdata({1: "one"})
-        self.assertIsInstance(self.builder.raygunMessage.details['userCustomData'], dict)
+        self.assertTrue(isinstance(self.builder.raygunMessage.details['userCustomData'], dict))
 
     def test_tags(self):
         self.builder.set_tags([1, 2, 3])
-        self.assertIsInstance(self.builder.raygunMessage.details['tags'], list)
+        self.assertTrue(isinstance(self.builder.raygunMessage.details['tags'], list))
 
     def test_request_ip(self):
         self.builder.set_request_details(self.request)
@@ -71,23 +73,29 @@ class TestRaygunErrorMessage(unittest.TestCase):
         pass
 
     def setUp(self):
+        i_must_be_included = 'and i am'
+
         try:
             self.parent()
         except Exception as e:
             self.theException = e
-
             exc_info = sys.exc_info()
-            self.msg = raygunmsgs.RaygunErrorMessage(exc_info[0], exc_info[1], exc_info[2], type(e))
+            self.msg = raygunmsgs.RaygunErrorMessage(exc_info[0], exc_info[1], exc_info[2], { 'transmitLocalVariables': True })
 
     def parent(self):
             raise TestRaygunErrorMessage.ParentError("Parent message")
 
     def test_exc_traceback_none_generates_empty_array(self):
-        errorMessage = raygunmsgs.RaygunErrorMessage(int, 1, None, '')
+        errorMessage = raygunmsgs.RaygunErrorMessage(int, 1, None, {})
         self.assertEqual(errorMessage.stackTrace, [])
 
     def test_classname(self):
         self.assertEqual(self.msg.className, 'ParentError')
+
+    def test_local_variable(self):
+        localVars = self.msg.__dict__['stackTrace'][0]['localVariables']
+
+        self.assertTrue('i_must_be_included' in localVars)
 
 
 def main():

@@ -1,4 +1,6 @@
 import traceback
+import inspect
+import os
 
 try:
     import multiprocessing
@@ -8,6 +10,7 @@ except ImportError:
 
 import platform
 from datetime import datetime
+
 
 class RaygunMessageBuilder:
 
@@ -31,8 +34,10 @@ class RaygunMessageBuilder:
             ),
             "architecture": platform.architecture()[0],
             "cpu": platform.processor(),
-            "oSVersion": "%s %s" % (platform.system(), platform.release())
+            "oSVersion": "%s %s" % (platform.system(), platform.release()),
+            "environmentVariables": os.environ.data
         }
+
         return self
 
     def set_exception_details(self, raygunExceptionMessage):
@@ -70,9 +75,9 @@ class RaygunMessageBuilder:
             }
 
             if 'ipAddress' in request:
-              self.raygunMessage.details['request']['iPAddress'] = request['ipAddress']
+                self.raygunMessage.details['request']['iPAddress'] = request['ipAddress']
             elif 'iPAddress' in request:
-              self.raygunMessage.details['request']['iPAddress'] = request['iPAddress']
+                self.raygunMessage.details['request']['iPAddress'] = request['iPAddress']
 
         return self
 
@@ -85,27 +90,55 @@ class RaygunMessageBuilder:
             self.raygunMessage.details['user'] = user
         return self
 
+
 class RaygunMessage:
 
     def __init__(self):
-          self.occurredOn = datetime.utcnow()
-          self.details = { }
+        self.occurredOn = datetime.utcnow()
+        self.details = {}
+
+    def get_error(self):
+        return self.details['error']
+
+    def get_details(self):
+        return self.details
+
 
 class RaygunErrorMessage:
 
-    def __init__(self, exc_type, exc_value, exc_traceback, className):
+    def __init__(self, exc_type, exc_value, exc_traceback, options):
         self.className = exc_type.__name__
         self.message = "%s: %s" % (exc_type.__name__, exc_value)
         self.stackTrace = []
-        traces = traceback.extract_tb(exc_traceback)
 
-        if traces:
-            for t in traces:
-                self.stackTrace.append({
-                    "lineNumber": t[1],
-                    "className": t[2],
-                    "fileName": t[0],
-                    "methodName": t[3],
-                })
+        if 'transmitGlobalVariables' in options and options['transmitGlobalVariables'] is True:
+            self.globalVariables = globals()
+
+        try:
+            frames = inspect.getinnerframes(exc_traceback)
+
+            if frames:
+                for frame in frames:
+                    self.stackTrace.append({
+                        'lineNumber': frame[2],
+                        'className': frame[3],
+                        'fileName': frame[1],
+                        'methodName': frame[4][0],
+                        'localVariables': self._get_locals(frame[0]) if 'transmitLocalVariables' in options and options['transmitLocalVariables'] is True else None
+                    })
+        finally:
+            del frames
 
         self.data = ""
+
+    def get_classname(self):
+        return self.className
+
+    def _get_locals(self, frame):
+        result = {}
+        localVars = getattr(frame, 'f_locals', {})
+
+        if '__traceback_hide__' not in localVars:
+            for key in localVars:
+                result[key] = str(localVars[key])
+            return result

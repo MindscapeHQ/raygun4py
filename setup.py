@@ -8,19 +8,27 @@ elif sys.version_info[0] == 3:
 
 setup(
     name='raygun4py',
-    version='2.2.0',
+    version='3.0.0',
     packages=['raygun4py'],
     package_dir= {
         "raygun4py": base_dir + "/raygun4py"
     },
     license='LICENSE',
-    url='http://raygun.io',
-    author='Mindscape',
-    author_email='contact@mindscape.co.nz',
+    url='https://raygun.io',
+    author='Raygun',
+    author_email='hello@raygun.io',
+    description='Official Raygun provider for Python 2.6/2.7 and Python 3+',
     long_description=open('README.rst').read(),
     install_requires=[
-        "jsonpickle == 0.7.0"
-    ],classifiers=[
+        'jsonpickle == 0.7.0',
+        'blinker == 1.3.0'
+    ],
+    entry_points={
+        'console_scripts': [
+            'raygun4py = raygun4py.cli:main'
+        ]
+    },
+    classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
