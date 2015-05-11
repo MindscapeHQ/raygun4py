@@ -8,7 +8,7 @@ class Provider(object):
 
     def __call__(self, environ, start_response):
         if not self.sender:
-            print >> sys.stderr, ("Raygun-Flask: Cannot send as provider not attached")
+            print >> sys.stderr, ("Raygun-WSGI: Cannot send as provider not attached")
 
         try:
             chunk = self.app(environ, start_response)
