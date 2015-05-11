@@ -1,3 +1,8 @@
+3.0.1
+
+- Updated bdist egg to include middleware package
+- Fix WSGI logging message
+
 3.0.0
 
 - Added functions: ignore_exceptions, filter_keys, set_proxy, on_before_send
