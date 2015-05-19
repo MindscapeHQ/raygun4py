@@ -126,8 +126,6 @@ class RaygunErrorMessage:
                         'methodName': frame[4][0] if frame[4] is not None else None,
                         'localVariables': self._get_locals(frame[0]) if 'transmitLocalVariables' in options and options['transmitLocalVariables'] is True else None
                     })
-        except:
-            pass
         finally:
             del frames
 
