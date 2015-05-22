@@ -1,4 +1,5 @@
 import sys, unittest, socket
+import inspect
 from raygun4py import raygunmsgs
 
 class TestRaygunMessageBuilder(unittest.TestCase):
@@ -128,6 +129,25 @@ class TestRaygunErrorMessage(unittest.TestCase):
 
     def test_chained_exception_childs_cause_is_grandchild(self):
         self.assertIsInstance(self.theException.__cause__.__context__, TestRaygunErrorMessage.GrandchildError)
+
+    def test_methodname_none(self):
+        originalGetinnerframes = inspect.getinnerframes
+        inspect.getinnerframes = getinnerframes_mock_methodname_none
+
+        errorMessage = raygunmsgs.RaygunErrorMessage(int, 1, None, { "transmitLocalVariables": False })
+
+        self.assertEqual(errorMessage.__dict__['stackTrace'][0]['methodName'], None)
+
+        inspect.getinnerframes = originalGetinnerframes
+
+def getinnerframes_mock_methodname_none(exception):
+    return [(
+        'localVar',
+        'fileName',
+        'lineNumber',
+        'className',
+        None
+    )]
 
 def main():
     unittest.main()
