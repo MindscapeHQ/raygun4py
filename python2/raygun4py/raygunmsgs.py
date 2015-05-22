@@ -1,6 +1,7 @@
 import traceback
 import inspect
 import os
+import sys
 
 try:
     import multiprocessing
@@ -114,6 +115,7 @@ class RaygunErrorMessage:
         if 'transmitGlobalVariables' in options and options['transmitGlobalVariables'] is True:
             self.globalVariables = globals()
 
+        frames = None
         try:
             frames = inspect.getinnerframes(exc_traceback)
 

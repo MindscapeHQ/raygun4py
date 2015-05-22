@@ -1,6 +1,8 @@
 import sys
 import unittest2 as unittest
 import socket
+import inspect
+
 from raygun4py import raygunmsgs
 
 class TestRaygunMessageBuilder(unittest.TestCase):
@@ -96,6 +98,25 @@ class TestRaygunErrorMessage(unittest.TestCase):
         localVars = self.msg.__dict__['stackTrace'][0]['localVariables']
 
         self.assertTrue('i_must_be_included' in localVars)
+
+    def test_methodname_none(self):
+        originalGetinnerframes = inspect.getinnerframes
+        inspect.getinnerframes = getinnerframes_mock_methodname_none
+
+        errorMessage = raygunmsgs.RaygunErrorMessage(int, 1, None, { "transmitLocalVariables": False })
+
+        self.assertEqual(errorMessage.__dict__['stackTrace'][0]['methodName'], None)
+
+        inspect.getinnerframes = originalGetinnerframes
+
+def getinnerframes_mock_methodname_none(exception):
+    return [(
+        'localVar',
+        'fileName',
+        'lineNumber',
+        'className',
+        None
+    )]
 
 
 def main():
