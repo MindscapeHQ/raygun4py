@@ -1,3 +1,7 @@
+3.0.2
+
+- Guard added for tracebacks with null method names (such as exceptions from C-wrapper libraries)
+
 3.0.1
 
 - Updated bdist egg to include middleware package

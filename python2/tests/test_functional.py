@@ -1,3 +1,5 @@
+# coding=utf-8
+
 import unittest2 as unittest
 import sys, logging, socket, os
 from raygun4py import raygunprovider
@@ -213,6 +215,28 @@ class TestRaygun4PyFunctional(unittest.TestCase):
         try:
             scope = 'parent'
             child()
+        except Exception as e:
+            result = client.send_exception(httpRequest={})
+
+            self.assertEqual(result[0], 202)
+
+    def test_utf8_message(self):
+        client = raygunprovider.RaygunSender(self.apiKey)
+
+        try:
+            raise Exception("ΔΔΔΔ")
+        except Exception as e:
+            result = client.send_exception(httpRequest={})
+
+            self.assertEqual(result[0], 202)
+
+    def test_utf8_localvariable(self):
+        client = raygunprovider.RaygunSender(self.apiKey)
+
+        theVariable = 'ᵫ'
+
+        try:
+            raise Exception("Raygun4py2: utf8 local variable")
         except Exception as e:
             result = client.send_exception(httpRequest={})
 
