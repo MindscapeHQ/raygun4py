@@ -140,7 +140,7 @@ class TestRaygun4PyFunctional(unittest.TestCase):
             raise Exception("Raygun4py functional test - Py2 filter_keys")
         except Exception as e:
             httpResult = client.send_exception(e, exc_info = sys.exc_info())
-        
+
         self.assertEqual(httpResult[0], 202)
 
     @unittest.skip('Requires a proxy, skipping for Travis')
@@ -152,7 +152,7 @@ class TestRaygun4PyFunctional(unittest.TestCase):
             raise Exception("Raygun4py functional test - Py2 set_proxy")
         except Exception as e:
             httpResult = client.send_exception(e, exc_info = sys.exc_info())
-        
+
         self.assertEqual(httpResult[0], 202)
 
 
@@ -164,7 +164,7 @@ class TestRaygun4PyFunctional(unittest.TestCase):
             raise Exception("Raygun4py functional test - on_before_send")
         except Exception as e:
             httpResult = client.send_exception(e, exc_info = sys.exc_info())
-        
+
         self.assertEqual(httpResult[0], 202)
 
     def test_before_send_callback_sets_none_cancels_send(self):
@@ -175,7 +175,7 @@ class TestRaygun4PyFunctional(unittest.TestCase):
             raise Exception("Raygun4py functional test - on_before_send")
         except Exception as e:
             result = client.send_exception(e, exc_info = sys.exc_info())
-        
+
         self.assertIsNone(result)
 
     def test_request(self):
@@ -245,7 +245,7 @@ class TestRaygun4PyFunctional(unittest.TestCase):
     def test_bytestring_localvariable(self):
       client = raygunprovider.RaygunSender(self.apiKey)
 
-      byteString = b'\x8d\x80\x92uK!M\xed\x16u3\x0b\xcc\xb1r1N\xdfs\x13,>\x01\x87\xae\xd0E\xe8\x02\x05\xd0d\xaa\xbd\xc9wc}\x1b\xbd\x06\xf8R3\xb4\xf3_F\x1b\xac}\xba\x11gul%v9\xf8\x0cp\x03'
+      byteString = b'\x8d\x80\x92uK!M\xed'
 
       try:
         raise Exception("Raygun4py2: bytestring local variable")
