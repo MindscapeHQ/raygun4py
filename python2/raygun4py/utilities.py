@@ -24,6 +24,7 @@ def filter_keys(filteredKeys, object):
 
     return iterationTarget
 
+
 def camel(k):
     "Turns snake_case_strings into camelCaseStrings."
     if k.lower() != k:
