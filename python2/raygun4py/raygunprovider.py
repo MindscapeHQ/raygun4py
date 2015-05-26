@@ -1,5 +1,6 @@
 import sys
 import os
+import copy
 import socket
 import logging
 import jsonpickle
@@ -8,13 +9,25 @@ from raygun4py import raygunmsgs
 from raygun4py import utilities
 
 
+DEFAULT_CONFIG = {
+    'before_send_callback': None,
+    'filtered_keys': [],
+    'ignored_exceptions': [],
+    'proxy': None,
+    'transmit_global_variables': True,
+    'transmit_local_variables': True,
+    'userversion': "Not defined",
+    'user': None,
+}
+
+
 class RaygunSender:
 
     apiKey = None
     endpointhost = 'api.raygun.io'
     endpointpath = '/entries'
 
-    def __init__(self, apiKey, config={}):
+    def __init__(self, apiKey, config=None):
         if (apiKey):
             self.apiKey = apiKey
         else:
@@ -25,14 +38,12 @@ class RaygunSender:
         except ImportError:
             print >> sys.stderr, ("RaygunProvider error: No SSL support available, cannot send. Please"
                                   "compile the socket module with SSL support.")
-        self.userversion = "Not defined"
-        self.user = None
-        self.ignoredExceptions = []
-        self.filteredKeys = []
-        self.proxy = None
-        self.beforeSendCallback = None
-        self.transmitLocalVariables = config['transmitLocalVariables'] if 'transmitLocalVariables' in config else True
-        self.transmitGlobalVariables = config['transmitGlobalVariables'] if 'transmitGlobalVariables' in config else True
+        
+        # Set up the default values
+        default_config = utilities.camelize_dict(copy.deepcopy(DEFAULT_CONFIG))
+        default_config.update(utilities.camelize_dict(config or {}))
+        for k, v in default_config.items():
+            setattr(self, k, v)
 
     def set_version(self, version):
         if isinstance(version, basestring):

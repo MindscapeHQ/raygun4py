@@ -7,8 +7,10 @@ from raygun4py import raygunprovider
 class Provider(object):
 
     def __init__(self):
-    	apiKey = getattr(settings, 'RAYGUN4PY_API_KEY', None)
-        self.sender = raygunprovider.RaygunSender(apiKey)
+    	config = getattr(settings, 'RAYGUN4PY_CONFIG', {})
+    	apiKey = getattr(settings, 'RAYGUN4PY_API_KEY', config.get('api_key', None))
+    	
+        self.sender = raygunprovider.RaygunSender(apiKey, config=config)
 
     def process_exception(self, request, exception):
     	raygunRequest = self._mapRequest(request)
