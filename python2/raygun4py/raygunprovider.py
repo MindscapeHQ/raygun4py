@@ -1,4 +1,9 @@
 import sys
+<<<<<<< HEAD
+=======
+import os
+import copy
+>>>>>>> Allow wider range of config changes.
 import socket
 import logging
 import jsonpickle
@@ -12,6 +17,29 @@ from raygun4py import utilities
 log = logging.getLogger(__name__)
 
 
+DEFAULT_CONFIG = {
+    'before_send_callback': None,
+    'filtered_keys': [],
+    'ignored_exceptions': [],
+    'proxy': None,
+    'transmit_global_variables': True,
+    'transmit_local_variables': True,
+    'userversion': "Not defined",
+    'user': None,
+}
+
+def camel(k):
+    "Turns snake_case_strings into camelCaseStrings."
+    if k.lower() != k:
+        return k  # Don't transform camelCase value, it's good to go.
+    new_key = k.replace('_', ' ').title().replace(' ', '')
+    return new_key[0].lower() + new_key[1:]
+
+def normalize_dict(d):
+    return dict([
+        (camel(k), v) for k, v in d.items()
+    ])
+
 class RaygunSender:
 
     apiKey = None
@@ -20,7 +48,7 @@ class RaygunSender:
     endpointpath = '/entries'
     timeout = None
 
-    def __init__(self, apiKey, config={}):
+    def __init__(self, apiKey, config=None):
         if (apiKey):
             self.apiKey = apiKey
         else:
@@ -41,6 +69,11 @@ class RaygunSender:
         self.transmitLocalVariables = config['transmitLocalVariables'] if 'transmitLocalVariables' in config else True
         self.transmitGlobalVariables = config['transmitGlobalVariables'] if 'transmitGlobalVariables' in config else True
         self.timeout = config['httpTimeout'] if 'httpTimeout' in config else 10.0
+        # Set up the default values
+        default_config = normalize_dict(copy.deepcopy(DEFAULT_CONFIG))
+        default_config.update(normalize_dict(config or {}))
+        for k, v in default_config.items():
+            setattr(self, k, v)
 
     def set_version(self, version):
         if isinstance(version, basestring):
