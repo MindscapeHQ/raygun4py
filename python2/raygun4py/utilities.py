@@ -32,3 +32,16 @@ def execute_grouping_key(grouping_key_callback, message):
             return grouping_key
 
     return None
+
+
+def camel(k):
+    "Turns snake_case_strings into camelCaseStrings."
+    if k.lower() != k:
+        return k  # Don't transform camelCase value, it's good to go.
+    new_key = k.replace('_', ' ').title().replace(' ', '')
+    return new_key[0].lower() + new_key[1:]
+
+def camelize_dict(d):
+    return dict([
+        (camel(k), v) for k, v in d.items()
+    ])
