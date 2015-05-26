@@ -28,17 +28,6 @@ DEFAULT_CONFIG = {
     'user': None,
 }
 
-def camel(k):
-    "Turns snake_case_strings into camelCaseStrings."
-    if k.lower() != k:
-        return k  # Don't transform camelCase value, it's good to go.
-    new_key = k.replace('_', ' ').title().replace(' ', '')
-    return new_key[0].lower() + new_key[1:]
-
-def normalize_dict(d):
-    return dict([
-        (camel(k), v) for k, v in d.items()
-    ])
 
 class RaygunSender:
 
@@ -70,8 +59,8 @@ class RaygunSender:
         self.transmitGlobalVariables = config['transmitGlobalVariables'] if 'transmitGlobalVariables' in config else True
         self.timeout = config['httpTimeout'] if 'httpTimeout' in config else 10.0
         # Set up the default values
-        default_config = normalize_dict(copy.deepcopy(DEFAULT_CONFIG))
-        default_config.update(normalize_dict(config or {}))
+        default_config = utilities.camelize_dict(copy.deepcopy(DEFAULT_CONFIG))
+        default_config.update(utilities.camelize_dict(config or {}))
         for k, v in default_config.items():
             setattr(self, k, v)
 
