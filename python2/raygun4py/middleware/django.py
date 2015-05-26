@@ -1,19 +1,14 @@
 from __future__ import absolute_import
 
-import copy
-
 from django.conf import settings
 
 from raygun4py import raygunprovider
 
-DEFAULT_CONFIG = {}
-
 class Provider(object):
 
     def __init__(self):
-    	apiKey = getattr(settings, 'RAYGUN4PY_API_KEY', None)
-    	config = copy.deepcopy(DEFAULT_CONFIG)
-    	config.update(getattr(settings, 'RAYGUN4PY_CONFIG', {}))
+    	config = getattr(settings, 'RAYGUN4PY_CONFIG', {})
+    	apiKey = getattr(settings, 'RAYGUN4PY_API_KEY', config.get('api_key', None))
     	
         self.sender = raygunprovider.RaygunSender(apiKey, config=config)
 
