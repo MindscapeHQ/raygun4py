@@ -24,6 +24,7 @@ class Provider(object):
             if not k.startswith('wsgi'):
                 _headers[k] = v
 
+
         return {
             'hostName': request.get_host(),
             'url': request.path,
