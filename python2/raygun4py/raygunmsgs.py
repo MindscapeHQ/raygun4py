@@ -1,6 +1,7 @@
 import traceback
 import inspect
 import os
+import sys
 
 try:
     import multiprocessing
@@ -114,6 +115,7 @@ class RaygunErrorMessage:
         if 'transmitGlobalVariables' in options and options['transmitGlobalVariables'] is True:
             self.globalVariables = globals()
 
+        frames = None
         try:
             frames = inspect.getinnerframes(exc_traceback)
 
@@ -123,7 +125,7 @@ class RaygunErrorMessage:
                         'lineNumber': frame[2],
                         'className': frame[3],
                         'fileName': frame[1],
-                        'methodName': frame[4][0],
+                        'methodName': frame[4][0] if frame[4] is not None else None,
                         'localVariables': self._get_locals(frame[0]) if 'transmitLocalVariables' in options and options['transmitLocalVariables'] is True else None
                     })
         finally:

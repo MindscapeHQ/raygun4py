@@ -1,3 +1,8 @@
+3.0.2
+
+- Fix UnicodeDecodeError being thrown when sending payload due to jsonpickle not pickling large binary values correctly (such as local variable bytestrings or high-codepoint unicode characters)
+- Guard added for tracebacks with null method names (such as exceptions from C-wrapper libraries)
+
 3.0.1
 
 - Updated bdist egg to include middleware package

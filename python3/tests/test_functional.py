@@ -189,6 +189,16 @@ class TestRaygun4PyFunctional(unittest.TestCase):
 
             self.assertEqual(result[0], 202)
 
+    def test_utf8_message(self):
+        client = raygunprovider.RaygunSender(self.apiKey)
+
+        try:
+            raise Exception("ΔΔΔΔ")
+        except Exception as e:
+            result = client.send_exception(httpRequest={})
+
+            self.assertEqual(result[0], 202)
+
             
 def before_send_mutate_payload(message):
     message['newKey'] = 'newValue'

@@ -11,7 +11,7 @@ elif sys.version_info[0] == 3:
 
 setup(
     name='raygun4py',
-    version='3.0.1',
+    version='3.0.2',
     packages=packages,
     package_dir= {
         "raygun4py": base_dir + "/raygun4py"
@@ -23,7 +23,7 @@ setup(
     description='Official Raygun provider for Python 2.6/2.7 and Python 3+',
     long_description=open('README.rst').read(),
     install_requires=[
-        'jsonpickle == 0.7.0',
+        'jsonpickle == 0.9.2',
         'blinker == 1.3.0'
     ],
     entry_points={
