@@ -23,3 +23,17 @@ def filter_keys(filteredKeys, object):
             iterationTarget[key] = filter_keys(filteredKeys, iterationTarget[key])
 
     return iterationTarget
+
+
+def camel(k):
+    "Turns snake_case_strings into camelCaseStrings."
+    if k.lower() != k:
+        return k  # Don't transform camelCase value, it's good to go.
+    new_key = k.replace('_', ' ').title().replace(' ', '')
+    return new_key[0].lower() + new_key[1:]
+
+
+def camelize_dict(d):
+    return dict([
+        (camel(k), v) for k, v in d.items()
+    ])

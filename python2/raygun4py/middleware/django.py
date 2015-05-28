@@ -7,8 +7,10 @@ from raygun4py import raygunprovider
 class Provider(object):
 
     def __init__(self):
-    	apiKey = getattr(settings, 'RAYGUN4PY_API_KEY', None)
-        self.sender = raygunprovider.RaygunSender(apiKey)
+    	config = getattr(settings, 'RAYGUN4PY_CONFIG', {})
+    	apiKey = getattr(settings, 'RAYGUN4PY_API_KEY', config.get('api_key', None))
+    	
+        self.sender = raygunprovider.RaygunSender(apiKey, config=config)
 
     def process_exception(self, request, exception):
     	raygunRequest = self._mapRequest(request)
@@ -22,6 +24,12 @@ class Provider(object):
             if not k.startswith('wsgi'):
                 _headers[k] = v
 
+        raw_data = ''
+        if hasattr(request, 'body'):
+            raw_data = request.body
+        elif hasattr(request, 'raw_post_data'):
+            raw_data = request.raw_post_data
+
         return {
             'hostName': request.get_host(),
             'url': request.path,
@@ -30,5 +38,5 @@ class Provider(object):
             'queryString': dict((key, request.GET[key]) for key in request.GET),
             'form': dict((key, request.POST[key]) for key in request.POST),
             'headers': _headers,
-            'rawData': request.body if hasattr(request, 'body') else request.raw_post_data
+            'rawData': raw_data
         }
