@@ -142,5 +142,5 @@ class RaygunErrorMessage:
 
         if '__traceback_hide__' not in localVars:
             for key in localVars:
-                result[key] = str(localVars[key])
+                result[key] = repr(localVars[key])
             return result
