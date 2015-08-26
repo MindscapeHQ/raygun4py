@@ -18,13 +18,13 @@ class RaygunSender:
         if (apiKey):
             self.apiKey = apiKey
         else:
-            print >> sys.stderr, "RaygunProvider error: ApiKey not set, errors will not be transmitted"
+            log.warning("RaygunProvider error: ApiKey not set, errors will not be transmitted")
 
         try:
             import ssl
         except ImportError:
-            print >> sys.stderr, ("RaygunProvider error: No SSL support available, cannot send. Please"
-                                  "compile the socket module with SSL support.")
+            log.warning("RaygunProvider error: No SSL support available, cannot send. Please"
+                        "compile the socket module with SSL support.")
         self.userversion = "Not defined"
         self.user = None
         self.ignoredExceptions = []
@@ -149,7 +149,7 @@ class RaygunSender:
             response = conn.getresponse()
             conn.close()
         except Exception as e:
-            print(e)
+            log.error(e)
             return 400, "Exception: Could not send"
         return response.status, response.reason
 
