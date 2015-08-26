@@ -1,4 +1,10 @@
+import logging
+
 from raygun4py import raygunprovider
+
+
+log = logging.getLogger(__name__)
+
 
 class Provider(object):
 
@@ -8,7 +14,7 @@ class Provider(object):
 
     def __call__(self, environ, start_response):
         if not self.sender:
-            print >> sys.stderr, ("Raygun-WSGI: Cannot send as provider not attached")
+            log.error("Raygun-WSGI: Cannot send as provider not attached")
 
         try:
             chunk = self.app(environ, start_response)
