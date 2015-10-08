@@ -6,9 +6,10 @@ from raygun4py import raygunprovider
 
 class Provider(object):
 
-	def __init__(self, flaskApp, apiKey):
+	def __init__(self, flaskApp, apiKey, config=None):
 		self.flaskApp = flaskApp
 		self.apiKey = apiKey
+		self.config = config or {}
 
 		got_request_exception.connect(self.send_exception, sender=flaskApp)
 
@@ -18,7 +19,7 @@ class Provider(object):
 		if not hasattr(self.flaskApp, 'extensions'):
 			self.flaskApp.extensions = {}
 
-		self.sender = raygunprovider.RaygunSender(self.apiKey)
+		self.sender = raygunprovider.RaygunSender(self.apiKey, self.config)
 
 	def send_exception(self, *args, **kwargs):
 		if not self.sender:
