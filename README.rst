@@ -102,6 +102,7 @@ settings.py
   )
 
   RAYGUN4PY_API_KEY = 'your_apikey'
+  RAYGUN4PY_CONFIG = {'ignoredExceptions': ['CustomException']}
 
 Exceptions that occur in views will be automatically sent to Raygun.
 
@@ -116,7 +117,7 @@ Flask
 
   app = Flask(__name__)
 
-  flask.Provider(app, 'your_apikey').attach()
+  flask.Provider(app, 'your_apikey', {'ignoredExceptions': ['CustomException']}).attach()
 
 WSGI
 ++++
@@ -142,7 +143,7 @@ An example using **Tornado**, which will pick up exceptions that occur in the WS
     ], **settings)
 
     wsgiapp = tornado.wsgi.WSGIAdapter(application)
-    raygun_wrapped_app = wsgi.Provider(wsgiapp, 'your_apikey')
+    raygun_wrapped_app = wsgi.Provider(wsgiapp, 'your_apikey'. {'ignoredException': ['CustomException']})
     server = wsgiref.simple_server.make_server('', 8888, raygun_wrapped_app)
     server.serve_forever()
 
@@ -225,45 +226,61 @@ send_exception also supports the following extra data parameters:
 Config and data functions
 --------------
 
-+------------------+---------------+--------------------+
-| Function         | Arguments     | Type               |
-+==================+===============+====================+
-| filter_keys      | keys          | List               |
-+------------------+---------------+--------------------+
+Raygun supports passing a dictionary of variables that can be later used to customize RaygunSender. It's very handful if you are using one of our built-in middlewares.
+
++------------------+---------------+--------------------+-----------------------------+
+| Function         | Arguments     | Type               | Configuration variable name |
++==================+===============+====================+=============================+
+| filter_keys      | keys          | List               | filteredKeys                |
++------------------+---------------+--------------------+-----------------------------+
 
 If you want to filter sensitive data out of the payload that is sent to Raygun, pass in a list of keys here. Any matching keys in the payload will have their value replaced with :code:`<filtered>` - useful for passwords, credit card data etc.
 
-+------------------+---------------+--------------------+
-| Function         | Arguments     | Type               |
-+==================+===============+====================+
-| ignore_exceptions| exceptions    | List               |
-+------------------+---------------+--------------------+
++------------------+---------------+--------------------+-----------------------------+
+| Function         | Arguments     | Type               | Configuration variable name |
++==================+===============+====================+=============================+
+| ignore_exceptions| exceptions    | List               | ignoredExceptions           |
++------------------+---------------+--------------------+-----------------------------+
 
 Provide a list of exception types to ignore here. Any exceptions that are passed to send_exception that match a type in this list won't be sent.
 
-+------------------+---------------+--------------------+
-| Function         | Arguments     | Type               |
-+==================+===============+====================+
-| on_before_send   | callback      | Function           |
-+------------------+---------------+--------------------+
++------------------+---------------+--------------------+-----------------------------+
+| Function         | Arguments     | Type               | Configuration variable name |
++==================+===============+====================+=============================+
+| on_before_send   | callback      | Function           | beforeSendCallback          |
++------------------+---------------+--------------------+-----------------------------+
 
 You can mutate the candidate payload by passing in a function that accepts one parameter using this function. This allows you to completely customize what data is sent, immediately before it happens.
+Raygun4py passes details of the message. Example usage:
 
-+----------------+---------------+--------------------+
-| Function       | Arguments     | Type               |
-+================+===============+====================+
-| set_proxy      | host          | String             |
-+                +---------------+--------------------+
-|                | port          | Integer            |
-+----------------+---------------+--------------------+
+.. code:: python
+
+  import os
+
+  def add_environment_detail(message):
+      '''Hook ads information about machine type 
+      message.update({
+        'NodeType': os.environ.get('NodeType')
+      })
+      return message
+
+  client = raygunprovider.RaygunSender('your_apikey', {'beforeSendCallback': add_environment_detail})
+
++----------------+---------------+--------------------+-----------------------------+
+| Function       | Arguments     | Type               | Configuration variable name |
++================+===============+====================+=============================+
+| set_proxy      | host          | String             | proxy                       |
++                +---------------+--------------------+                             +
+|                | port          | Integer            |                             |
++----------------+---------------+--------------------+-----------------------------+
 
 Call this function if your code is behind a proxy and want Raygun4py to make the HTTP request to the Raygun endpoint through it.
 
-+----------------+---------------+--------------------+
-| Function       | Arguments     | Type               |
-+================+===============+====================+
-| set_version    | version       | String             |
-+----------------+---------------+--------------------+
++----------------+---------------+--------------------+-----------------------------+
+| Function       | Arguments     | Type               | Configuration variable name |
++================+===============+====================+=============================+
+| set_version    | version       | String             | filteredKeys                |
++----------------+---------------+--------------------+-----------------------------+
 
 Call this to attach a SemVer version to each message that is sent. This will be visible on the dashboard and can be used to filter exceptions to a particular version, deployment tracking etc.
 
@@ -286,6 +303,8 @@ User data can be passed in which will be displayed in the Raygun web app. The di
     })
 
 `identifier` should be whatever unique key you use to identify users, for instance an email address. This will be used to create the count of unique affected users. If you wish to anonymize it, you can generate and store a UUID or hash one or more of their unique login data fields, if available.
+
+
 
 Chained exceptions
 ------------------

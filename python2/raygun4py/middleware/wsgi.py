@@ -2,9 +2,9 @@ from raygun4py import raygunprovider
 
 class Provider(object):
 
-    def __init__(self, app, apiKey):
+    def __init__(self, app, apiKey, config=None):
         self.app = app
-        self.sender = raygunprovider.RaygunSender(apiKey)
+        self.sender = raygunprovider.RaygunSender(apiKey, config or {})
 
     def __call__(self, environ, start_response):
         if not self.sender:

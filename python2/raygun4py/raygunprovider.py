@@ -25,14 +25,14 @@ class RaygunSender:
         except ImportError:
             print >> sys.stderr, ("RaygunProvider error: No SSL support available, cannot send. Please"
                                   "compile the socket module with SSL support.")
-        self.userversion = "Not defined"
+        self.userversion = config.get('version', 'Not defined')
         self.user = None
-        self.ignoredExceptions = []
-        self.filteredKeys = []
-        self.proxy = None
-        self.beforeSendCallback = None
-        self.transmitLocalVariables = config['transmitLocalVariables'] if 'transmitLocalVariables' in config else True
-        self.transmitGlobalVariables = config['transmitGlobalVariables'] if 'transmitGlobalVariables' in config else True
+        self.ignoredExceptions = config.get('ignoredExceptions', [])
+        self.filteredKeys = config.get('filteredKeys', [])
+        self.proxy = config.get('proxy')
+        self.beforeSendCallback = config.get('beforeSendCallback')
+        self.transmitLocalVariables = config.get('transmitLocalVariables', True)
+        self.transmitGlobalVariables = config.get('transmitGlobalVariables', True)
 
     def set_version(self, version):
         if isinstance(version, basestring):

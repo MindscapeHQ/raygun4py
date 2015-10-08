@@ -121,9 +121,24 @@ class TestRaygun4PyFunctional(unittest.TestCase):
 
             self.assertEqual(httpResult[0], 202)
 
-    def test_ignore_exception(self):
+    def test_ignore_exception_setter(self):
+        ignoredExceptions = ['CustomException']
         client = raygunprovider.RaygunSender(self.apiKey)
-        client.ignore_exceptions(['CustomException'])
+
+        client.ignore_exceptions(None)
+        self.assertEqual(client.ignoredExceptions, [])
+
+        client.ignore_exceptions('CustomException')
+        self.assertEqual(client.ignoredExceptions, [])
+
+        client.ignore_exceptions(ignoredExceptions)
+        self.assertEqual(client.ignoredExceptions, ignoredExceptions)
+
+    def test_ignore_exception(self):
+        ignoredExceptions = ['CustomException']
+        client = raygunprovider.RaygunSender(self.apiKey, config={'ignoredExceptions': ignoredExceptions})
+
+        self.assertEqual(client.ignoredExceptions, ignoredExceptions)
 
         try:
             raise CustomException("This test should not send an exception")
