@@ -60,7 +60,7 @@ class RaygunMessageBuilder:
 
     def set_tags(self, tags):
         if type(tags) is list or tuple:
-            self.raygunMessage.details['tags'] = tags
+            self.raygunMessage.details['Tags'] = tags
         return self
 
     def set_request_details(self, request):
