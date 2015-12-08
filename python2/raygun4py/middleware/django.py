@@ -21,6 +21,12 @@ class Provider(object):
         for k, v in headers:
             if not k.startswith('wsgi'):
                 _headers[k] = v
+                
+        raw_data = ''
+        if hasattr(request, 'body'):
+            raw_data = request.body
+        elif hasattr(request, 'raw_post_data'):
+            raw_data = request.raw_post_data
 
         return {
             'hostName': request.get_host(),
@@ -30,5 +36,5 @@ class Provider(object):
             'queryString': dict((key, request.GET[key]) for key in request.GET),
             'form': dict((key, request.POST[key]) for key in request.POST),
             'headers': _headers,
-            'rawData': request.body if hasattr(request, 'body') else request.raw_post_data
+            'rawData': raw_data
         }
