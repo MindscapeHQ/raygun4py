@@ -142,5 +142,8 @@ class RaygunErrorMessage:
 
         if '__traceback_hide__' not in localVars:
             for key in localVars:
-                result[key] = str(localVars[key])
+                try:
+                    result[key] = unicode(localVars[key])
+                except:
+                    pass
             return result
