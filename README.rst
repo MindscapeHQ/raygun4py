@@ -171,10 +171,13 @@ Initialization options
 
   client = raygunprovider.RaygunSender('your_apikey', config={
     'transmitLocalVariables': True,
-    'transmitGlobalVariables': True
+    'transmitGlobalVariables': True,
+    'httpTimeout': 10
   })
 
-If either of these are set to False, the corresponding variables will not be sent with exception payloads. Both default to True.
+If either of the first two are set to False, the corresponding variables will not be sent with exception payloads. Both default to True.
+
+httpTimeout controls the maximum time the HTTP request can take when POSTing to the Raygun API, and is a float. It defaults to 10s.
 
 Sending functions
 -----------------
