@@ -233,7 +233,7 @@ class TestRaygun4PyFunctional(unittest.TestCase):
     def test_utf8_localvariable(self):
         client = raygunprovider.RaygunSender(self.apiKey)
 
-        theVariable = 'ᵫ'
+        the_variable = 'ᵫ'
 
         try:
             raise Exception("Raygun4py2: utf8 local variable")
@@ -243,16 +243,27 @@ class TestRaygun4PyFunctional(unittest.TestCase):
             self.assertEqual(result[0], 202)
 
     def test_bytestring_localvariable(self):
-      client = raygunprovider.RaygunSender(self.apiKey)
+        client = raygunprovider.RaygunSender(self.apiKey)
 
-      byteString = b'\x8d\x80\x92uK!M\xed'
+        byte_string = b'\x8d\x80\x92uK!M\xed'
 
-      try:
-        raise Exception("Raygun4py2: bytestring local variable")
-      except Exception as e:
-        result = client.send_exception(httpRequest={})
+        try:
+            raise Exception("Raygun4py2: bytestring local variable")
+        except Exception as e:
+            result = client.send_exception(httpRequest={})
 
-        self.assertEqual(result[0], 202)
+            self.assertEqual(result[0], 202)
+
+    def test_localvariables_unicode(self):
+        client = raygunprovider.RaygunSender(self.apiKey)
+
+        try:
+            sigma = u"\u2211"
+            raise Exception("Raygun4py functional test - local variable - unicode")
+        except Exception as e:
+            result = client.send_exception(httpRequest={})
+
+            self.assertEqual(result[0], 202)
 
 class CustomException(Exception):
     def __init__(self, value):
