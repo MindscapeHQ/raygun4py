@@ -1,4 +1,3 @@
-import jsonpickle
 from raygun4py import raygunmsgs
 
 

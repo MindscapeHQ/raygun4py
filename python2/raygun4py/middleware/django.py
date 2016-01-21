@@ -30,5 +30,5 @@ class Provider(object):
             'queryString': dict((key, request.GET[key]) for key in request.GET),
             'form': dict((key, request.POST[key]) for key in request.POST),
             'headers': _headers,
-            'rawData': request.body if hasattr(request, 'body') else request.raw_post_data
+            'rawData': request.body if hasattr(request, 'body') else getattr(request, 'raw_post_data', {})
         }

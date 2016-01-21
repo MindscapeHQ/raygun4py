@@ -1,30 +1,33 @@
 import sys
-import os
 import socket
 import logging
 import jsonpickle
-from http import client
+import requests
 from raygun4py import raygunmsgs
 from raygun4py import utilities
+
+log = logging.getLogger(__name__)
 
 
 class RaygunSender:
 
     apiKey = None
+    endpointprotocol = 'https://'
     endpointhost = 'api.raygun.io'
     endpointpath = '/entries'
+    timeout = None
 
     def __init__(self, apiKey, config={}):
         if (apiKey):
             self.apiKey = apiKey
         else:
-            print >> sys.stderr, "RaygunProvider error: ApiKey not set, errors will not be transmitted"
+            self.log.warning("RaygunProvider error: ApiKey not set, errors will not be transmitted")
 
         try:
             import ssl
         except ImportError:
-            print >> sys.stderr, ("RaygunProvider error: No SSL support available, cannot send. Please"
-                                  "compile the socket module with SSL support.")
+            self.log.warning("RaygunProvider error: No SSL support available, cannot send. Please"
+                        "compile the socket module with SSL support.")
         self.userversion = "Not defined"
         self.user = None
         self.ignoredExceptions = []
@@ -33,6 +36,7 @@ class RaygunSender:
         self.beforeSendCallback = None
         self.transmitLocalVariables = config['transmitLocalVariables'] if 'transmitLocalVariables' in config else True
         self.transmitGlobalVariables = config['transmitGlobalVariables'] if 'transmitGlobalVariables' in config else True
+        self.timeout = config['httpTimeout'] if 'httpTimeout' in config else 10.0
 
     def set_version(self, version):
         if isinstance(version, str):
@@ -138,20 +142,12 @@ class RaygunSender:
                 "User-Agent": "raygun4py"
             }
 
-            conn = None
-            if self.proxy is not None:
-                conn = client.HTTPSConnection(self.proxy['host'], self.proxy['port'])
-                conn.set_tunnel(self.endpointhost, 443)
-            else:
-                conn = client.HTTPSConnection(self.endpointhost, '443')
-
-            conn.request('POST', self.endpointpath, json, headers)
-            response = conn.getresponse()
-            conn.close()
+            response = requests.post(self.endpointprotocol + self.endpointhost + self.endpointpath,
+                                     headers=headers, data=json, timeout=self.timeout)
         except Exception as e:
-            print(e)
+            self.log.error(e)
             return 400, "Exception: Could not send"
-        return response.status, response.reason
+        return response.status_code, response.text
 
 
 class RaygunHandler(logging.Handler):

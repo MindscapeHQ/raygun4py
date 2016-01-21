@@ -1,8 +1,14 @@
 from __future__ import absolute_import
 
+import logging
+
 from flask.signals import got_request_exception
 
 from raygun4py import raygunprovider
+
+
+log = logging.getLogger(__name__)
+
 
 class Provider(object):
 
@@ -22,6 +28,6 @@ class Provider(object):
 
 	def send_exception(self, *args, **kwargs):
 		if not self.sender:
-			print >> sys.stderr, ("Raygun-Flask: Cannot send as provider not attached")
+			log.error("Raygun-Flask: Cannot send as provider not attached")
 
 		self.sender.send_exception()

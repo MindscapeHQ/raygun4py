@@ -1,3 +1,10 @@
+3.0.3
+
+- Add 'httpTimeout' option to config
+- Much improved unicode handling for local variables for both py2 and py3
+- Fix Django >1.8 raw_post_data bug
+- Internal: upgrade from httplib to requests (urllib3); provider errors are now output to loggers instead of stdout/stderr; CI now runs on Travis in container-mode
+
 3.0.2
 
 - Fix UnicodeDecodeError being thrown when sending payload due to jsonpickle not pickling large binary values correctly (such as local variable bytestrings or high-codepoint unicode characters)
