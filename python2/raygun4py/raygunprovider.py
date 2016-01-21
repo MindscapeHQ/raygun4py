@@ -3,6 +3,9 @@ import socket
 import logging
 import jsonpickle
 import requests
+import requests.packages.urllib3
+requests.packages.urllib3.disable_warnings()
+
 from raygun4py import raygunmsgs
 from raygun4py import utilities
 
