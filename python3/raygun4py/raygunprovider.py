@@ -6,6 +6,8 @@ import requests
 from raygun4py import raygunmsgs
 from raygun4py import utilities
 
+log = logging.getLogger(__name__)
+
 
 class RaygunSender:
 
@@ -14,8 +16,6 @@ class RaygunSender:
     endpointhost = 'api.raygun.io'
     endpointpath = '/entries'
     timeout = None
-
-    log = logging.getLogger("raygun4py")
 
     def __init__(self, apiKey, config={}):
         if (apiKey):

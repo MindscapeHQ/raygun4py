@@ -1,12 +1,10 @@
 import sys
-import os
 import socket
 import logging
 import jsonpickle
-import httplib
+import requests
 from raygun4py import raygunmsgs
 from raygun4py import utilities
-
 
 log = logging.getLogger(__name__)
 
@@ -14,8 +12,10 @@ log = logging.getLogger(__name__)
 class RaygunSender:
 
     apiKey = None
+    endpointprotocol = 'https://'
     endpointhost = 'api.raygun.io'
     endpointpath = '/entries'
+    timeout = None
 
     def __init__(self, apiKey, config={}):
         if (apiKey):
@@ -36,6 +36,7 @@ class RaygunSender:
         self.beforeSendCallback = None
         self.transmitLocalVariables = config['transmitLocalVariables'] if 'transmitLocalVariables' in config else True
         self.transmitGlobalVariables = config['transmitGlobalVariables'] if 'transmitGlobalVariables' in config else True
+        self.timeout = config['httpTimeout'] if 'httpTimeout' in config else 10.0
 
     def set_version(self, version):
         if isinstance(version, basestring):
@@ -141,19 +142,12 @@ class RaygunSender:
                 "User-Agent": "raygun4py"
             }
 
-            conn = None
-            if self.proxy is not None:
-                conn = httplib.HTTPSConnection(self.proxy['host'], self.proxy['port'])
-                conn.set_tunnel(self.endpointhost, 443)
-            else:
-                conn = httplib.HTTPSConnection(self.endpointhost, '443')
-
-            conn.request('POST', self.endpointpath, json, headers)
-            response = conn.getresponse()
+            response = requests.post(self.endpointprotocol + self.endpointhost + self.endpointpath,
+                                     headers=headers, data=json, timeout=self.timeout)
         except Exception as e:
             log.error(e)
             return 400, "Exception: Could not send"
-        return response.status, response.reason
+        return response.status_code, response.text
 
 
 class RaygunHandler(logging.Handler):
