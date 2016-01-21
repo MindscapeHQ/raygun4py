@@ -258,8 +258,24 @@ class TestRaygun4PyFunctional(unittest.TestCase):
         client = raygunprovider.RaygunSender(self.apiKey)
 
         try:
-            sigma = u"\u2211"
+            sigma = u'\u2211'
             raise Exception("Raygun4py functional test - local variable - unicode")
+        except Exception as e:
+            result = client.send_exception(httpRequest={})
+
+            self.assertEqual(result[0], 202)
+
+    def test_localvariables_cause_str_exception(self):
+        client = raygunprovider.RaygunSender(self.apiKey)
+
+        class StrFailingClass(object):
+            def __str__(self):
+                raise Exception("I failed to stringify myself")
+
+        instance = StrFailingClass()
+
+        try:
+            raise Exception("Raygun4py functional test - local variable - cause an str exception")
         except Exception as e:
             result = client.send_exception(httpRequest={})
 
