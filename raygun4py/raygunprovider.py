@@ -40,6 +40,7 @@ class RaygunSender:
         messageArgs = (self._create_message(rgExcept, tags, userCustomData, httpRequest), )
 
         thread = Thread(target = self._post, group = None, args = messageArgs)
+        thread.daemon = True
         thread.start()
         return 0
 
