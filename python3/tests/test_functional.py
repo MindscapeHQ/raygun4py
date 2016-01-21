@@ -1,3 +1,5 @@
+# coding=utf-8
+
 import unittest
 import sys, logging, socket, os
 from raygun4py import raygunprovider
@@ -198,6 +200,55 @@ class TestRaygun4PyFunctional(unittest.TestCase):
             result = client.send_exception(httpRequest={})
 
             self.assertEqual(result[0], 202)
+
+    def test_utf8_localvariable(self):
+        client = raygunprovider.RaygunSender(self.apiKey)
+
+        the_variable = 'ᵫ'
+
+        try:
+            raise Exception("Raygun4py3: utf8 local variable")
+        except Exception as e:
+            result = client.send_exception(httpRequest={})
+
+            self.assertEqual(result[0], 202)
+
+    def test_bytestring_localvariable(self):
+        client = raygunprovider.RaygunSender(self.apiKey)
+
+        byte_string = b'\x8d\x80\x92uK!M\xed'
+
+        try:
+            raise Exception("Raygun4py3: bytestring local variable")
+        except Exception as e:
+            result = client.send_exception(httpRequest={})
+
+            self.assertEqual(result[0], 202)
+
+    def test_localvariables_unicode(self):
+        client = raygunprovider.RaygunSender(self.apiKey)
+
+        try:
+            sigma = u'\u2211'
+            raise Exception("Raygun4py3 functional test - local variable - unicode")
+        except Exception as e:
+            result = client.send_exception(httpRequest={})
+
+            self.assertEqual(result[0], 202)
+
+    def test_localvariables_cause_str_exception(self):
+        client = raygunprovider.RaygunSender(self.apiKey)
+
+        class StrFailingClass(object):
+            def __str__(self):
+                raise Exception("I failed to stringify myself")
+
+        instance = StrFailingClass()
+
+        try:
+            raise Exception("Raygun4py3 functional test - local variable - cause an str exception")
+        except Exception as e:
+            result = client.send_exception(httpRequest={})
 
             
 def before_send_mutate_payload(message):
