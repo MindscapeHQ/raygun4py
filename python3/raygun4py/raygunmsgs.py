@@ -157,10 +157,8 @@ class RaygunErrorMessage:
             for key in localVars:
                 try:
                     # Note that str() *can* fail; thus protect against it as much as we can.
-                    if type(localVars[key]) is unicode:
-                        result[key] = localVars[key]
-                    else:
-                        result[key] = str(localVars[key])
+                    #if type(localVars[key]) is unicode:
+                    result[key] = str(localVars[key])
                 except Exception as e:
                     try:
                         r = repr(localVars[key])
