@@ -146,9 +146,12 @@ class RaygunErrorMessage:
                     # Note that str() *can* fail; thus protect against it as much as we can.
                     result[key] = str(localVars[key])
                 except Exception as e:
-                    try:
-                        r = repr(localVars[key])
-                    except Exception as re:
-                        r = "Couldn't convert to repr due to {0}".format(re)
-                    result[key] = "!!! Couldn't convert {0!r} (repr: {1}) due to {2!r} !!!".format(key, r, e)
+                    if type(localVars[key]) is unicode:
+                        result[key] = localVars[key]
+                    else:
+                        try:
+                            r = repr(localVars[key])
+                        except Exception as re:
+                            r = "Couldn't convert to repr due to {0}".format(re)
+                        result[key] = "!!! Couldn't convert {0!r} (repr: {1}) due to {2!r} !!!".format(key, r, e)
             return result
