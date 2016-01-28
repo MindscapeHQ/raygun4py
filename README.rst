@@ -314,7 +314,7 @@ By example:
     class MyClass(object):
 
         def my_callback(self, raygun_message):
-            return raygun_message.get_error().message # Use naive message-based grouping only
+            return raygun_message.get_error().message[:100] # Use naive message-based grouping only
 
         def create_raygun_and_bind_callback(self):
             sender = raygunprovider.RaygunSender('api_key')
