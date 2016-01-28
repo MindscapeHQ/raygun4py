@@ -94,7 +94,7 @@ class RaygunSender:
         if message is not None:
             return self._post(message)
 
-    def _parse_args(errorMessage, kwargs):
+    def _parse_args(self, kwargs):
         tags = kwargs['tags'] if 'tags' in kwargs else None
         customData = kwargs['userCustomData'] if 'userCustomData' in kwargs else None
 

@@ -89,26 +89,26 @@ class RaygunSender:
         except Exception as e:
             raise
 
-        tags, customData, httpRequest = self._parse_args(kwargs)
-        message = self._create_message(errorMessage, tags, customData, httpRequest)
+        tags, custom_data, http_request = self._parse_args(kwargs)
+        message = self._create_message(errorMessage, tags, custom_data, http_request)
         message = self._transform_message(message)
 
         if message is not None:
             return self._post(message)
 
-    def _parse_args(errorMessage, kwargs):
+    def _parse_args(self, kwargs):
         tags = kwargs['tags'] if 'tags' in kwargs else None
-        customData = kwargs['userCustomData'] if 'userCustomData' in kwargs else None
+        custom_data = kwargs['userCustomData'] if 'userCustomData' in kwargs else None
 
-        httpRequest = None
+        http_request = None
         if 'httpRequest' in kwargs:
-            httpRequest = kwargs['httpRequest']
+            http_request = kwargs['httpRequest']
         elif 'request' in kwargs:
-            httpRequest = kwargs['request']
+            http_request = kwargs['request']
 
-        return tags, customData, httpRequest
+        return tags, custom_data, http_request
 
-    def _create_message(self, raygunExceptionMessage, tags, userCustomData, httpRequest):
+    def _create_message(self, raygunExceptionMessage, tags, user_custom_data, http_request):
         return raygunmsgs.RaygunMessageBuilder().new() \
             .set_machine_name(socket.gethostname()) \
             .set_version(self.userversion) \
@@ -116,8 +116,8 @@ class RaygunSender:
             .set_exception_details(raygunExceptionMessage) \
             .set_environment_details() \
             .set_tags(tags) \
-            .set_customdata(userCustomData) \
-            .set_request_details(httpRequest) \
+            .set_customdata(user_custom_data) \
+            .set_request_details(http_request) \
             .set_user(self.user) \
             .build()
 
@@ -157,9 +157,9 @@ class RaygunSender:
 
 
 class RaygunHandler(logging.Handler):
-    def __init__(self, apiKey, version=None):
+    def __init__(self, api_key, version=None):
         logging.Handler.__init__(self)
-        self.sender = RaygunSender(apiKey)
+        self.sender = RaygunSender(api_key)
         self.version = version
 
     def emit(self, record):
