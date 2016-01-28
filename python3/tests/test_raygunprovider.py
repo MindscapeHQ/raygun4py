@@ -1,7 +1,8 @@
 import unittest, sys
 from raygun4py import raygunprovider
-from raygun4py import utilities
 from raygun4py import raygunmsgs
+from raygun4py import utilities
+
 
 class TestRaygunSender(unittest.TestCase):
 
@@ -131,6 +132,7 @@ class TestGroupingKey(unittest.TestCase):
 
         self.sender._transform_message(msg)
         self.assertIsNone(msg.get_details()['groupingKey'])
+
 
 def main():
     unittest.main()

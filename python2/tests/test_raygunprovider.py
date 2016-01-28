@@ -1,7 +1,9 @@
 import sys
 import unittest2 as unittest
 from raygun4py import raygunprovider
+from raygun4py import raygunmsgs
 from raygun4py import utilities
+
 
 class TestRaygunSender(unittest.TestCase):
 
@@ -55,6 +57,82 @@ class TestRaygunSender(unittest.TestCase):
         self.sender = raygunprovider.RaygunSender('foo')
 
         self.assertTrue(self.sender.transmitLocalVariables)
+
+
+class TestGroupingKey(unittest.TestCase):
+
+    def the_callback(self, raygun_message):
+        return self.key
+
+    def create_dummy_message(self):
+        self.sender = raygunprovider.RaygunSender('apikey')
+
+        msg = raygunmsgs.RaygunMessageBuilder().new()
+        errorMessage = raygunmsgs.RaygunErrorMessage(Exception, None, None, {})
+        msg.set_exception_details(errorMessage)
+        return msg.build()
+
+    def test_groupingkey_is_not_none_with_callback(self):
+        msg = self.create_dummy_message()
+        self.sender.on_grouping_key(self.the_callback)
+        self.key = 'foo'
+        self.sender._transform_message(msg)
+
+        self.assertIsNotNone(msg.get_details()['groupingKey'])
+
+    def test_groupingkey_is_set_with_callback(self):
+        msg = self.create_dummy_message()
+        self.sender.on_grouping_key(self.the_callback)
+        self.key = 'foo'
+        self.sender._transform_message(msg)
+
+        self.assertEquals(msg.get_details()['groupingKey'], 'foo')
+
+    def test_groupingkey_is_string_with_callback(self):
+        msg = self.create_dummy_message()
+        self.sender.on_grouping_key(self.the_callback)
+        self.key = 'foo'
+        self.sender._transform_message(msg)
+
+        self.assertIsInstance(msg.get_details()['groupingKey'], str)
+
+    def test_groupingkey_is_none_when_not_string_returned_from_callback(self):
+        msg = self.create_dummy_message()
+        self.sender.on_grouping_key(self.the_callback)
+        self.key = object
+        self.sender._transform_message(msg)
+
+        self.assertIsNone(msg.get_details()['groupingKey'])
+
+    def test_groupingkey_is_none_when_empty_string_returned_from_callback(self):
+        msg = self.create_dummy_message()
+        self.sender.on_grouping_key(self.the_callback)
+        self.key = ''
+        self.sender._transform_message(msg)
+
+        self.assertIsNone(msg.get_details()['groupingKey'])
+
+    def test_groupingkey_is_set_when_ok_length_string_returned_from_callback(self):
+        msg = self.create_dummy_message()
+        self.sender.on_grouping_key(self.the_callback)
+        self.key = 'a'
+
+        for i in range(0, 99):
+            self.key += 'a'
+
+        self.sender._transform_message(msg)
+        self.assertEqual(msg.get_details()['groupingKey'], self.key)
+
+    def test_groupingkey_is_none_when_too_long_string_returned_from_callback(self):
+        msg = self.create_dummy_message()
+        self.sender.on_grouping_key(self.the_callback)
+        self.key = 'a'
+
+        for i in range(0, 100):
+            self.key += 'a'
+
+        self.sender._transform_message(msg)
+        self.assertIsNone(msg.get_details()['groupingKey'])
 
 
 def main():
