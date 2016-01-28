@@ -12,10 +12,10 @@ class TestRaygunSender(unittest.TestCase):
         self.handler = raygunprovider.RaygunHandler('testkey', 'v1.0')
 
     def test_apikey(self):
-        self.assertEqual(self.sender.apiKey, 'invalidapikey')
+        self.assertEqual(self.sender.api_key, 'invalidapikey')
 
     def test_handler_apikey(self):
-        self.assertEqual(self.handler.sender.apiKey, 'testkey')
+        self.assertEqual(self.handler.sender.api_key, 'testkey')
 
     def test_handler_version(self):
         self.assertEqual(self.handler.version, 'v1.0')
@@ -32,13 +32,13 @@ class TestRaygunSender(unittest.TestCase):
         ex = ['Exception']
         self.sender.ignore_exceptions(ex)
 
-        self.assertEqual(self.sender.ignoredExceptions, ex)
+        self.assertEqual(self.sender.ignored_exceptions, ex)
 
     def test_filter_keys_set(self):
         keys = ['credit_card']
         self.sender.filter_keys(keys)
 
-        self.assertEqual(self.sender.filteredKeys, keys)
+        self.assertEqual(self.sender.filtered_keys, keys)
 
     def test_filter_keys_filters_error(self):
         keys = ['identifier']
@@ -49,14 +49,17 @@ class TestRaygunSender(unittest.TestCase):
         self.assertEqual(utilities.filter_keys(keys, self.sender.user)['identifier'], '<filtered>')
 
     def test_set_transmitLocalVariables(self):
-        self.sender = raygunprovider.RaygunSender('foo', config={ 'transmitLocalVariables': False })
+        self.sender = raygunprovider.RaygunSender('foo', config={ 'transmit_local_variables': False })
+        self.assertFalse(self.sender.transmit_local_variables)
 
-        self.assertFalse(self.sender.transmitLocalVariables)
+    def test_set_transmitLocalVariables_camelcase(self):
+        self.sender = raygunprovider.RaygunSender('foo', config={ 'transmitLocalVariables': False })
+        self.assertFalse(self.sender.transmit_local_variables)
 
     def test_default_transmitLocalVariables(self):
         self.sender = raygunprovider.RaygunSender('foo')
 
-        self.assertTrue(self.sender.transmitLocalVariables)
+        self.assertTrue(self.sender.transmit_local_variables)
 
 
 class TestGroupingKey(unittest.TestCase):

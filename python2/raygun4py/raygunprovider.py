@@ -23,21 +23,20 @@ DEFAULT_CONFIG = {
     'transmit_local_variables': True,
     'userversion': "Not defined",
     'user': None,
-    'httpTimeout': 10.0
+    'http_timeout': 10.0
 }
 
 
 class RaygunSender:
 
-    apiKey = None
+    api_key = None
     endpointprotocol = 'https://'
     endpointhost = 'api.raygun.io'
     endpointpath = '/entries'
-    timeout = None
 
-    def __init__(self, apiKey, config=None):
-        if (apiKey):
-            self.apiKey = apiKey
+    def __init__(self, api_key, config=None):
+        if (api_key):
+            self.api_key = api_key
         else:
             log.warning("RaygunProvider error: ApiKey not set, errors will not be transmitted")
 
@@ -48,10 +47,13 @@ class RaygunSender:
                         "compile the socket module with SSL support.")
 
         # Set up the default values
-        default_config = utilities.camelize_dict(copy.deepcopy(DEFAULT_CONFIG))
-        default_config.update(utilities.camelize_dict(config or {}))
+        default_config = copy.deepcopy(DEFAULT_CONFIG)
+        default_config.update(config or {})
         for k, v in default_config.items():
             setattr(self, k, v)
+
+        #for k, v in default_config.items():
+        #    print k + " - " + str(v)
 
     def set_version(self, version):
         if isinstance(version, basestring):
@@ -139,7 +141,7 @@ class RaygunSender:
         message = utilities.ignore_exceptions(self.ignored_exceptions, message)
 
         if message is not None:
-            message = utilities.filter_keys(self.filteredKeys, message)
+            message = utilities.filter_keys(self.filtered_keys, message)
             message['details']['groupingKey'] = utilities.execute_grouping_key(self.grouping_key_callback, message)
 
         if self.before_send_callback is not None:
@@ -157,13 +159,13 @@ class RaygunSender:
 
         try:
             headers = {
-                "X-ApiKey": self.apiKey,
+                "X-ApiKey": self.api_key,
                 "Content-Type": "application/json",
                 "User-Agent": "raygun4py"
             }
 
             response = requests.post(self.endpointprotocol + self.endpointhost + self.endpointpath,
-                                     headers=headers, data=json, timeout=self.timeout)
+                                     headers=headers, data=json, timeout=self.http_timeout)
         except Exception as e:
             log.error(e)
             return 400, "Exception: Could not send"
@@ -171,9 +173,9 @@ class RaygunSender:
 
 
 class RaygunHandler(logging.Handler):
-    def __init__(self, apiKey, version=None):
+    def __init__(self, api_key, version=None):
         logging.Handler.__init__(self)
-        self.sender = RaygunSender(apiKey)
+        self.sender = RaygunSender(api_key)
         self.version = version
 
     def emit(self, record):
