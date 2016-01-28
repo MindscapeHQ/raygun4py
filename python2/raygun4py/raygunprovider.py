@@ -1,9 +1,5 @@
 import sys
-<<<<<<< HEAD
-=======
-import os
 import copy
->>>>>>> Allow wider range of config changes.
 import socket
 import logging
 import jsonpickle
@@ -19,6 +15,7 @@ log = logging.getLogger(__name__)
 
 DEFAULT_CONFIG = {
     'before_send_callback': None,
+    'grouping_key_callback': None,
     'filtered_keys': [],
     'ignored_exceptions': [],
     'proxy': None,
@@ -26,6 +23,7 @@ DEFAULT_CONFIG = {
     'transmit_local_variables': True,
     'userversion': "Not defined",
     'user': None,
+    'httpTimeout': 10.0
 }
 
 
@@ -48,16 +46,7 @@ class RaygunSender:
         except ImportError:
             log.warning("RaygunProvider error: No SSL support available, cannot send. Please"
                         "compile the socket module with SSL support.")
-        self.userversion = "Not defined"
-        self.user = None
-        self.ignoredExceptions = []
-        self.filteredKeys = []
-        self.proxy = None
-        self.beforeSendCallback = None
-        self.groupingKeyCallback = None
-        self.transmitLocalVariables = config['transmitLocalVariables'] if 'transmitLocalVariables' in config else True
-        self.transmitGlobalVariables = config['transmitGlobalVariables'] if 'transmitGlobalVariables' in config else True
-        self.timeout = config['httpTimeout'] if 'httpTimeout' in config else 10.0
+
         # Set up the default values
         default_config = utilities.camelize_dict(copy.deepcopy(DEFAULT_CONFIG))
         default_config.update(utilities.camelize_dict(config or {}))
@@ -73,11 +62,11 @@ class RaygunSender:
 
     def ignore_exceptions(self, exceptions):
         if isinstance(exceptions, list):
-            self.ignoredExceptions = exceptions
+            self.ignored_exceptions = exceptions
 
     def filter_keys(self, keys):
         if isinstance(keys, list):
-            self.filteredKeys = keys
+            self.filtered_keys = keys
 
     def set_proxy(self, host, port):
         self.proxy = {
@@ -87,16 +76,16 @@ class RaygunSender:
 
     def on_before_send(self, callback):
         if callable(callback):
-            self.beforeSendCallback = callback
+            self.before_send_callback = callback
 
     def on_grouping_key(self, callback):
         if callable(callback):
-            self.groupingKeyCallback = callback
+            self.grouping_key_callback = callback
 
     def send_exception(self, exception=None, exc_info=None, **kwargs):
         options = {
-            'transmitLocalVariables': self.transmitLocalVariables,
-            'transmitGlobalVariables': self.transmitGlobalVariables
+            'transmitLocalVariables': self.transmit_local_variables,
+            'transmitGlobalVariables': self.transmit_global_variables
         }
 
         if exc_info is None:
@@ -147,14 +136,14 @@ class RaygunSender:
             .build()
 
     def _transform_message(self, message):
-        message = utilities.ignore_exceptions(self.ignoredExceptions, message)
+        message = utilities.ignore_exceptions(self.ignored_exceptions, message)
 
         if message is not None:
             message = utilities.filter_keys(self.filteredKeys, message)
-            message['details']['groupingKey'] = utilities.execute_grouping_key(self.groupingKeyCallback, message)
+            message['details']['groupingKey'] = utilities.execute_grouping_key(self.grouping_key_callback, message)
 
-        if self.beforeSendCallback is not None:
-            mutated_payload = self.beforeSendCallback(message['details'])
+        if self.before_send_callback is not None:
+            mutated_payload = self.before_send_callback(message['details'])
 
             if mutated_payload is not None:
                 message['details'] = mutated_payload

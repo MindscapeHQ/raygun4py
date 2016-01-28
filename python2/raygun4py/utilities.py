@@ -1,27 +1,27 @@
 from raygun4py import raygunmsgs
 
 
-def ignore_exceptions(ignoredExceptions, message):
-    if message.get_error().get_classname() in ignoredExceptions:
+def ignore_exceptions(ignored_exceptions, message):
+    if message.get_error().get_classname() in ignored_exceptions:
         return None
 
     return message
 
 
-def filter_keys(filteredKeys, object):
-    iterationTarget = object
+def filter_keys(filtered_keys, object):
+    iteration_target = object
 
     if isinstance(object, raygunmsgs.RaygunMessage):
-        iterationTarget = object.__dict__
+        iteration_target = object.__dict__
 
-    for key in iterationTarget.iterkeys():
-        if key in filteredKeys:
-            iterationTarget[key] = '<filtered>'
+    for key in iteration_target.iterkeys():
+        if key in filtered_keys:
+            iteration_target[key] = '<filtered>'
 
-        elif isinstance(iterationTarget[key], dict):
-            iterationTarget[key] = filter_keys(filteredKeys, iterationTarget[key])
+        elif isinstance(iteration_target[key], dict):
+            iteration_target[key] = filter_keys(filtered_keys, iteration_target[key])
 
-    return iterationTarget
+    return iteration_target
 
 
 def execute_grouping_key(grouping_key_callback, message):
