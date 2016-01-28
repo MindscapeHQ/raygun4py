@@ -34,6 +34,7 @@ class RaygunSender:
         self.filteredKeys = []
         self.proxy = None
         self.beforeSendCallback = None
+        self.groupingKeyCallback = None
         self.transmitLocalVariables = config['transmitLocalVariables'] if 'transmitLocalVariables' in config else True
         self.transmitGlobalVariables = config['transmitGlobalVariables'] if 'transmitGlobalVariables' in config else True
         self.timeout = config['httpTimeout'] if 'httpTimeout' in config else 10.0
@@ -62,6 +63,10 @@ class RaygunSender:
     def on_before_send(self, callback):
         if callable(callback):
             self.beforeSendCallback = callback
+
+    def on_grouping_key(self, callback):
+        if callable(callback):
+            self.groupingKeyCallback = callback
 
     def send_exception(self, exception=None, exc_info=None, **kwargs):
         options = {
@@ -121,6 +126,7 @@ class RaygunSender:
 
         if message is not None:
             message = utilities.filter_keys(self.filteredKeys, message)
+            message['details']['groupingKey'] = utilities.execute_grouping_key(self.groupingKeyCallback, message)
 
         if self.beforeSendCallback is not None:
             mutated_payload = self.beforeSendCallback(message['details'])
