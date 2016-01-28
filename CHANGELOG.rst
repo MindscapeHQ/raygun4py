@@ -1,3 +1,6 @@
+3.1.0
+- Add on_grouping_key for custom grouping logic
+
 3.0.3
 
 - Add 'httpTimeout' option to config

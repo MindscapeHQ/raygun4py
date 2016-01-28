@@ -252,6 +252,14 @@ Provide a list of exception types to ignore here. Any exceptions that are passed
 
 You can mutate the candidate payload by passing in a function that accepts one parameter using this function. This allows you to completely customize what data is sent, immediately before it happens.
 
++------------------+---------------+--------------------+
+| Function         | Arguments     | Type               |
++==================+===============+====================+
+| on_grouping_key  | callback      | Function           |
++------------------+---------------+--------------------+
+
+Pass a callback function to this method to configure custom grouping logic. The callback should take one parameter, an instance of RaygunMessage, and return a string between 1 and 100 characters in length (see 'Custom Grouping Logic' below for more details).
+
 +----------------+---------------+--------------------+
 | Function       | Arguments     | Type               |
 +================+===============+====================+
@@ -289,6 +297,30 @@ User data can be passed in which will be displayed in the Raygun web app. The di
     })
 
 `identifier` should be whatever unique key you use to identify users, for instance an email address. This will be used to create the count of unique affected users. If you wish to anonymize it, you can generate and store a UUID or hash one or more of their unique login data fields, if available.
+
+Custom grouping logic
+---------------------
+
+You can create custom exception grouping logic that overrides the automatic Raygun grouping by passing in a function that accepts one parameter using this function. The callback's one parameter is an instance of RaygunMessage (python[2/3]/raygunmsgs.py), and the callback should return a string.
+
+The RaygunMessage instance contains all the error and state data that is about to be sent to the Raygun API. In your callback you can inspect this RaygunMessage, hash together the fields you want to group by, then return a string which is the grouping key.
+
+This string needs to be between 1 and 100 characters long. If the callback is not set or the string isn't valid, the default automatic grouping will be used.
+
+By example:
+
+.. code:: python
+
+    class MyClass(object):
+
+        def my_callback(self, raygun_message):
+            return raygun_message.get_error().message # Use naive message-based grouping only
+
+        def create_raygun_and_bind_callback(self):
+            sender = raygunprovider.RaygunSender('api_key')
+            sender.on_grouping_key(self.my_callback)
+
+The RaygunSender above will use the my_callback to execute custom grouping logic when an exception is raised. The above logic will use the exception message only - you'll want to use a more sophisticated approach, usually involving sanitizing or ignoring data.
 
 Chained exceptions
 ------------------
