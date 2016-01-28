@@ -47,13 +47,10 @@ class RaygunSender:
                         "compile the socket module with SSL support.")
 
         # Set up the default values
-        default_config = copy.deepcopy(DEFAULT_CONFIG)
-        default_config.update(config or {})
+        default_config = utilities.snakecase_dict(copy.deepcopy(DEFAULT_CONFIG))
+        default_config.update(utilities.snakecase_dict(config or {}))
         for k, v in default_config.items():
             setattr(self, k, v)
-
-        #for k, v in default_config.items():
-        #    print k + " - " + str(v)
 
     def set_version(self, version):
         if isinstance(version, basestring):

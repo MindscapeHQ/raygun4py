@@ -1,3 +1,4 @@
+import re
 from raygun4py import raygunmsgs
 
 
@@ -34,15 +35,13 @@ def execute_grouping_key(grouping_key_callback, message):
     return None
 
 
-def camel(k):
-    "Turns snake_case_strings into camelCaseStrings."
-    if k.lower() != k:
-        return k  # Don't transform camelCase value, it's good to go.
-    new_key = k.replace('_', ' ').title().replace(' ', '')
-    return new_key[0].lower() + new_key[1:]
+def camelcase_to_snakecase(key):
+    "Turns camelCaseStrings into snake_case_strings."
+    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', key)
+    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
 
 
-def camelize_dict(d):
+def snakecase_dict(d):
     return dict([
-        (camel(k), v) for k, v in d.items()
+        (camelcase_to_snakecase(k), v) for k, v in d.items()
     ])

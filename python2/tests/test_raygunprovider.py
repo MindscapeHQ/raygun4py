@@ -61,6 +61,18 @@ class TestRaygunSender(unittest.TestCase):
 
         self.assertTrue(self.sender.transmit_local_variables)
 
+    def test_set_transmit_global_variables(self):
+        self.sender = raygunprovider.RaygunSender('foo', config={ 'transmit_global_variables': False })
+        self.assertFalse(self.sender.transmit_global_variables)
+
+    def test_set_transmit_global_variables_camelcase(self):
+        self.sender = raygunprovider.RaygunSender('foo', config={ 'transmitGlobalVariables': False })
+        self.assertFalse(self.sender.transmit_global_variables)
+
+    def test_default_global_variables(self):
+        self.sender = raygunprovider.RaygunSender('foo')
+        self.assertTrue(self.sender.transmit_global_variables)
+
 
 class TestGroupingKey(unittest.TestCase):
 
