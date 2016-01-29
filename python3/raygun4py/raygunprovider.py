@@ -7,8 +7,6 @@ import requests
 from raygun4py import raygunmsgs
 from raygun4py import utilities
 
-log = logging.getLogger(__name__)
-
 DEFAULT_CONFIG = {
     'before_send_callback': None,
     'grouping_key_callback': None,
@@ -23,6 +21,8 @@ DEFAULT_CONFIG = {
 }
 
 class RaygunSender:
+
+    log = logging.getLogger(__name__)
 
     api_key = None
     endpointprotocol = 'https://'
@@ -123,7 +123,7 @@ class RaygunSender:
             .set_version(self.userversion) \
             .set_client_details() \
             .set_exception_details(raygunExceptionMessage) \
-            .set_environment_details() \
+            .set_environment_details(extra_environment_data) \
             .set_tags(tags) \
             .set_customdata(user_custom_data) \
             .set_request_details(http_request) \
@@ -131,14 +131,14 @@ class RaygunSender:
             .build()
 
     def _transform_message(self, message):
-        message = utilities.ignore_exceptions(self.ignoredExceptions, message)
+        message = utilities.ignore_exceptions(self.ignored_exceptions, message)
 
         if message is not None:
-            message = utilities.filter_keys(self.filteredKeys, message)
-            message['details']['groupingKey'] = utilities.execute_grouping_key(self.groupingKeyCallback, message)
+            message = utilities.filter_keys(self.filtered_keys, message)
+            message['details']['groupingKey'] = utilities.execute_grouping_key(self.grouping_key_callback, message)
 
-        if self.beforeSendCallback is not None:
-            mutated_payload = self.beforeSendCallback(message['details'])
+        if self.before_send_callback is not None:
+            mutated_payload = self.before_send_callback(message['details'])
 
             if mutated_payload is not None:
                 message['details'] = mutated_payload
@@ -152,7 +152,7 @@ class RaygunSender:
 
         try:
             headers = {
-                "X-ApiKey": self.apiKey,
+                "X-ApiKey": self.api_key,
                 "Content-Type": "application/json",
                 "User-Agent": "raygun4py"
             }

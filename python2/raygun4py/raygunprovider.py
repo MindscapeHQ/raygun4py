@@ -9,7 +9,6 @@ from raygun4py import raygunmsgs
 from raygun4py import utilities
 
 requests.packages.urllib3.disable_warnings()
-log = logging.getLogger(__name__)
 
 DEFAULT_CONFIG = {
     'before_send_callback': None,
@@ -26,6 +25,8 @@ DEFAULT_CONFIG = {
 
 
 class RaygunSender:
+
+    log = logging.getLogger(__name__)
 
     api_key = None
     endpointprotocol = 'https://'
