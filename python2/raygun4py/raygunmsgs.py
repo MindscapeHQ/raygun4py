@@ -1,6 +1,6 @@
-import inspect
-import os
 import sys
+import os
+import inspect
 
 try:
     import multiprocessing

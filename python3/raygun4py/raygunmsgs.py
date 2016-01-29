@@ -1,5 +1,6 @@
-import inspect
+import sys
 import os
+import inspect
 
 try:
     import multiprocessing
@@ -38,7 +39,9 @@ class RaygunMessageBuilder:
             "architecture": platform.architecture()[0],
             "cpu": platform.processor(),
             "oSVersion": "%s %s" % (platform.system(), platform.release()),
-            "environmentVariables": env
+            "environmentVariables": env,
+            "runtimeLocation": sys.executable,
+            "runtimeVersion": 'Python ' + sys.version
         }
 
         if extra_environment_data is not None:
