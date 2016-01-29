@@ -8,13 +8,13 @@ from raygun4py import raygunprovider
 class Provider(object):
 
     def __init__(self):
-    	config = getattr(settings, 'RAYGUN4PY_CONFIG', {})
-    	apiKey = getattr(settings, 'RAYGUN4PY_API_KEY', config.get('api_key', None))
-    	
+        config = getattr(settings, 'RAYGUN4PY_CONFIG', {})
+        apiKey = getattr(settings, 'RAYGUN4PY_API_KEY', config.get('api_key', None))
+
         self.sender = raygunprovider.RaygunSender(apiKey, config=config)
 
     def process_exception(self, request, exception):
-    	raygunRequest = self._mapRequest(request)
+        raygunRequest = self._mapRequest(request)
         env = self._get_django_environment()
 
         self.sender.send_exception(exception=exception, request=raygunRequest, extra_environment_data=env)
