@@ -102,8 +102,8 @@ class RaygunSender:
         except Exception as e:
             raise
 
-        tags, customData, httpRequest = self._parse_args(kwargs)
-        message = self._create_message(errorMessage, tags, customData, httpRequest)
+        tags, customData, httpRequest, extra_environment_data = self._parse_args(kwargs)
+        message = self._create_message(errorMessage, tags, customData, httpRequest, extra_environment_data)
         message = self._transform_message(message)
 
         if message is not None:
@@ -112,6 +112,7 @@ class RaygunSender:
     def _parse_args(self, kwargs):
         tags = kwargs['tags'] if 'tags' in kwargs else None
         customData = kwargs['userCustomData'] if 'userCustomData' in kwargs else None
+        extra_environment_data = kwargs['extra_environment_data'] if 'extra_environment_data' in kwargs else None
 
         httpRequest = None
         if 'httpRequest' in kwargs:
@@ -119,15 +120,15 @@ class RaygunSender:
         elif 'request' in kwargs:
             httpRequest = kwargs['request']
 
-        return tags, customData, httpRequest
+        return tags, customData, httpRequest, extra_environment_data
 
-    def _create_message(self, raygunExceptionMessage, tags, userCustomData, httpRequest):
+    def _create_message(self, raygunExceptionMessage, tags, userCustomData, httpRequest, extra_environment_data):
         return raygunmsgs.RaygunMessageBuilder().new() \
             .set_machine_name(socket.gethostname()) \
             .set_version(self.userversion) \
             .set_client_details() \
             .set_exception_details(raygunExceptionMessage) \
-            .set_environment_details() \
+            .set_environment_details(extra_environment_data) \
             .set_tags(tags) \
             .set_customdata(userCustomData) \
             .set_request_details(httpRequest) \

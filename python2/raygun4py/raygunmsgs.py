@@ -1,4 +1,3 @@
-import traceback
 import inspect
 import os
 import sys
@@ -28,7 +27,7 @@ class RaygunMessageBuilder:
         self.raygunMessage.details['machineName'] = name
         return self
 
-    def set_environment_details(self):
+    def set_environment_details(self, extra_environment_data):
         self.raygunMessage.details['environment'] = {
             "processorCount": (
                 multiprocessing.cpu_count() if USE_MULTIPROCESSING else "n/a"
@@ -36,8 +35,15 @@ class RaygunMessageBuilder:
             "architecture": platform.architecture()[0],
             "cpu": platform.processor(),
             "oSVersion": "%s %s" % (platform.system(), platform.release()),
-            "environmentVariables": os.environ.data
+            "environmentVariables": os.environ.data,
+            "runtimeLocation": sys.executable,
+            "runtimeVersion": 'Python ' + sys.version
         }
+
+        if extra_environment_data is not None:
+            merged = extra_environment_data.copy()
+            merged.update(self.raygunMessage.details['environment'])
+            self.raygunMessage.details['environment'] = merged
 
         return self
 
