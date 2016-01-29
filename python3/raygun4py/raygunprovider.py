@@ -1,4 +1,5 @@
 import sys
+import copy
 import socket
 import logging
 import jsonpickle
@@ -8,18 +9,29 @@ from raygun4py import utilities
 
 log = logging.getLogger(__name__)
 
+DEFAULT_CONFIG = {
+    'before_send_callback': None,
+    'grouping_key_callback': None,
+    'filtered_keys': [],
+    'ignored_exceptions': [],
+    'proxy': None,
+    'transmit_global_variables': True,
+    'transmit_local_variables': True,
+    'userversion': "Not defined",
+    'user': None,
+    'http_timeout': 10.0
+}
 
 class RaygunSender:
 
-    apiKey = None
+    api_key = None
     endpointprotocol = 'https://'
     endpointhost = 'api.raygun.io'
     endpointpath = '/entries'
-    timeout = None
 
-    def __init__(self, apiKey, config={}):
-        if (apiKey):
-            self.apiKey = apiKey
+    def __init__(self, api_key, config={}):
+        if (api_key):
+            self.api_key = api_key
         else:
             self.log.warning("RaygunProvider error: ApiKey not set, errors will not be transmitted")
 
@@ -28,16 +40,12 @@ class RaygunSender:
         except ImportError:
             self.log.warning("RaygunProvider error: No SSL support available, cannot send. Please"
                         "compile the socket module with SSL support.")
-        self.userversion = "Not defined"
-        self.user = None
-        self.ignoredExceptions = []
-        self.filteredKeys = []
-        self.proxy = None
-        self.beforeSendCallback = None
-        self.groupingKeyCallback = None
-        self.transmitLocalVariables = config['transmitLocalVariables'] if 'transmitLocalVariables' in config else True
-        self.transmitGlobalVariables = config['transmitGlobalVariables'] if 'transmitGlobalVariables' in config else True
-        self.timeout = config['httpTimeout'] if 'httpTimeout' in config else 10.0
+
+        # Set up the default values
+        default_config = utilities.snakecase_dict(copy.deepcopy(DEFAULT_CONFIG))
+        default_config.update(utilities.snakecase_dict(config or {}))
+        for k, v in default_config.items():
+            setattr(self, k, v)
 
     def set_version(self, version):
         if isinstance(version, str):
@@ -48,11 +56,11 @@ class RaygunSender:
 
     def ignore_exceptions(self, exceptions):
         if isinstance(exceptions, list):
-            self.ignoredExceptions = exceptions
+            self.ignored_exceptions = exceptions
 
     def filter_keys(self, keys):
         if isinstance(keys, list):
-            self.filteredKeys = keys
+            self.filtered_keys = keys
 
     def set_proxy(self, host, port):
         self.proxy = {
@@ -62,16 +70,16 @@ class RaygunSender:
 
     def on_before_send(self, callback):
         if callable(callback):
-            self.beforeSendCallback = callback
+            self.before_send_callback = callback
 
     def on_grouping_key(self, callback):
         if callable(callback):
-            self.groupingKeyCallback = callback
+            self.grouping_key_callback = callback
 
     def send_exception(self, exception=None, exc_info=None, **kwargs):
         options = {
-            'transmitLocalVariables': self.transmitLocalVariables,
-            'transmitGlobalVariables': self.transmitGlobalVariables
+            'transmitLocalVariables': self.transmit_local_variables,
+            'transmitGlobalVariables': self.transmit_global_variables
         }
 
         if exc_info is None:
@@ -89,8 +97,8 @@ class RaygunSender:
         except Exception as e:
             raise
 
-        tags, custom_data, http_request = self._parse_args(kwargs)
-        message = self._create_message(errorMessage, tags, custom_data, http_request)
+        tags, custom_data, http_request, extra_environment_data = self._parse_args(kwargs)
+        message = self._create_message(errorMessage, tags, custom_data, http_request, extra_environment_data)
         message = self._transform_message(message)
 
         if message is not None:
@@ -99,6 +107,7 @@ class RaygunSender:
     def _parse_args(self, kwargs):
         tags = kwargs['tags'] if 'tags' in kwargs else None
         custom_data = kwargs['userCustomData'] if 'userCustomData' in kwargs else None
+        extra_environment_data = kwargs['extra_environment_data'] if 'extra_environment_data' in kwargs else None
 
         http_request = None
         if 'httpRequest' in kwargs:
@@ -106,9 +115,9 @@ class RaygunSender:
         elif 'request' in kwargs:
             http_request = kwargs['request']
 
-        return tags, custom_data, http_request
+        return tags, custom_data, http_request, extra_environment_data
 
-    def _create_message(self, raygunExceptionMessage, tags, user_custom_data, http_request):
+    def _create_message(self, raygunExceptionMessage, tags, user_custom_data, http_request, extra_environment_data):
         return raygunmsgs.RaygunMessageBuilder().new() \
             .set_machine_name(socket.gethostname()) \
             .set_version(self.userversion) \
@@ -149,7 +158,7 @@ class RaygunSender:
             }
 
             response = requests.post(self.endpointprotocol + self.endpointhost + self.endpointpath,
-                                     headers=headers, data=json, timeout=self.timeout)
+                                     headers=headers, data=json, timeout=self.http_timeout)
         except Exception as e:
             self.log.error(e)
             return 400, "Exception: Could not send"

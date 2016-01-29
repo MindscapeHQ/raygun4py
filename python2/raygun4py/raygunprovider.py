@@ -5,13 +5,11 @@ import logging
 import jsonpickle
 import requests
 import requests.packages.urllib3
-requests.packages.urllib3.disable_warnings()
-
 from raygun4py import raygunmsgs
 from raygun4py import utilities
 
+requests.packages.urllib3.disable_warnings()
 log = logging.getLogger(__name__)
-
 
 DEFAULT_CONFIG = {
     'before_send_callback': None,
@@ -102,8 +100,8 @@ class RaygunSender:
         except Exception as e:
             raise
 
-        tags, customData, httpRequest, extra_environment_data = self._parse_args(kwargs)
-        message = self._create_message(errorMessage, tags, customData, httpRequest, extra_environment_data)
+        tags, custom_data, http_request, extra_environment_data = self._parse_args(kwargs)
+        message = self._create_message(errorMessage, tags, custom_data, http_request, extra_environment_data)
         message = self._transform_message(message)
 
         if message is not None:
@@ -111,18 +109,18 @@ class RaygunSender:
 
     def _parse_args(self, kwargs):
         tags = kwargs['tags'] if 'tags' in kwargs else None
-        customData = kwargs['userCustomData'] if 'userCustomData' in kwargs else None
+        custom_data = kwargs['userCustomData'] if 'userCustomData' in kwargs else None
         extra_environment_data = kwargs['extra_environment_data'] if 'extra_environment_data' in kwargs else None
 
-        httpRequest = None
+        http_request = None
         if 'httpRequest' in kwargs:
-            httpRequest = kwargs['httpRequest']
+            http_request = kwargs['httpRequest']
         elif 'request' in kwargs:
-            httpRequest = kwargs['request']
+            http_request = kwargs['request']
 
-        return tags, customData, httpRequest, extra_environment_data
+        return tags, custom_data, http_request, extra_environment_data
 
-    def _create_message(self, raygunExceptionMessage, tags, userCustomData, httpRequest, extra_environment_data):
+    def _create_message(self, raygunExceptionMessage, tags, user_custom_data, http_request, extra_environment_data):
         return raygunmsgs.RaygunMessageBuilder().new() \
             .set_machine_name(socket.gethostname()) \
             .set_version(self.userversion) \
@@ -130,8 +128,8 @@ class RaygunSender:
             .set_exception_details(raygunExceptionMessage) \
             .set_environment_details(extra_environment_data) \
             .set_tags(tags) \
-            .set_customdata(userCustomData) \
-            .set_request_details(httpRequest) \
+            .set_customdata(user_custom_data) \
+            .set_request_details(http_request) \
             .set_user(self.user) \
             .build()
 
