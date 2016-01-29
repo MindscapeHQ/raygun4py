@@ -16,29 +16,26 @@ class Provider(object):
         if not self.sender:
             log.error("Raygun-WSGI: Cannot send as provider not attached")
 
+        iterable = None
+
         try:
-            chunk = self.app(environ, start_response)
+            iterable = self.app(environ, start_response)
+            for event in iterable:
+                yield event
+
         except Exception as e:
             request = self.build_request(environ)
             self.sender.send_exception(exception=e, request=request)
-
             raise
 
-        try:
-            for event in chunk:
-                yield event
-        except Exception as e:
-            request = build_request(environ)
-            self.sender.send_exception(exception=e, request=request)
-
-            raise
         finally:
-            if chunk and hasattr(chunk, 'close') and callable(chunk.close):
+            if hasattr(iterable, 'close'):
                 try:
-                    chunk.close()
+                    iterable.close()
                 except Exception as e:
-                    request = build_request(environ)
-                    self.send_exception(exception=e, request=request)
+                    request = self.build_request(environ)
+                    self.sender.send_exception(exception=e, request=request)
+                    raise
 
     def build_request(self, environ):
         request = {}
