@@ -26,7 +26,7 @@ class RaygunMessageBuilder:
         self.raygunMessage.details['machineName'] = name
         return self
 
-    def set_environment_details(self):
+    def set_environment_details(self, extra_environment_data):
         env = {}
         for key in os.environ.keys():
             env[key] = os.environ[key]
@@ -40,6 +40,11 @@ class RaygunMessageBuilder:
             "oSVersion": "%s %s" % (platform.system(), platform.release()),
             "environmentVariables": env
         }
+
+        if extra_environment_data is not None:
+            merged = extra_environment_data.copy()
+            merged.update(self.raygunMessage.details['environment'])
+            self.raygunMessage.details['environment'] = merged
 
         return self
 
@@ -55,9 +60,9 @@ class RaygunMessageBuilder:
         }
         return self
 
-    def set_customdata(self, userCustomData):
-        if type(userCustomData) is dict:
-            self.raygunMessage.details['userCustomData'] = userCustomData
+    def set_customdata(self, user_custom_data):
+        if type(user_custom_data) is dict:
+            self.raygunMessage.details['userCustomData'] = user_custom_data
         return self
 
     def set_tags(self, tags):
@@ -74,7 +79,7 @@ class RaygunMessageBuilder:
               "queryString": request['queryString'],
               "form": request['form'],
               "headers": request['headers'],
-              "rawData": request['rawData'],
+              "rawData": request['rawData']
             }
 
             if 'ipAddress' in request:

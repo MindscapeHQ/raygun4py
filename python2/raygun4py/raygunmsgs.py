@@ -59,9 +59,9 @@ class RaygunMessageBuilder:
         }
         return self
 
-    def set_customdata(self, userCustomData):
-        if type(userCustomData) is dict:
-            self.raygunMessage.details['userCustomData'] = userCustomData
+    def set_customdata(self, user_custom_data):
+        if type(user_custom_data) is dict:
+            self.raygunMessage.details['userCustomData'] = user_custom_data
         return self
 
     def set_tags(self, tags):
@@ -78,7 +78,7 @@ class RaygunMessageBuilder:
               "queryString": request['queryString'],
               "form": request['form'],
               "headers": request['headers'],
-              "rawData": request['rawData'],
+              "rawData": request['rawData']
             }
 
             if 'ipAddress' in request:
