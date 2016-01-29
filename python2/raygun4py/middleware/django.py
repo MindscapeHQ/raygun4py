@@ -5,6 +5,7 @@ from django.conf import settings
 
 from raygun4py import raygunprovider
 
+
 class Provider(object):
 
     def __init__(self):
