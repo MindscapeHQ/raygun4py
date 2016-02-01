@@ -112,7 +112,7 @@ The above configuration is the minimal required setup. The full set of options s
 
 .. code:: python
 
-  DEFAULT_CONFIG = {
+  RAYGUN4PY_CONFIG = {
       'api_key': 'paste_your_api_key_here',
       'http_timeout': 10.0,
       'proxy': None,
