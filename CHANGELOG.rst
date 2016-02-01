@@ -1,3 +1,11 @@
+3.1.0
+
+- Add on_grouping_key for custom grouping logic
+- Add Django, Flask and WSGI middleware for Python 3
+- Allow Django settings.py config override
+- Surface more environment data (versions, interpreter location etc) for Python itself and Django/Flask
+- Fix WSGI close() implementation when an exception is raised while handling a prior one (match spec)
+
 3.0.3
 
 - Add 'httpTimeout' option to config

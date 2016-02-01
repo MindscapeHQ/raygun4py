@@ -1,7 +1,5 @@
 import logging
-
 from raygun4py import raygunprovider
-
 
 log = logging.getLogger(__name__)
 

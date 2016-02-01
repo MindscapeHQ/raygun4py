@@ -75,6 +75,16 @@ class TestRaygun4PyFunctional(unittest.TestCase):
 
             self.assertEqual(httpResult[0], 202)
 
+    def test_send_with_tags(self):
+        client = raygunprovider.RaygunSender(self.apiKey)
+
+        try:
+            raise Exception("Raygun4py manual sending test - tags")
+        except:
+            httpResult = client.send_exception(exc_info=sys.exc_info(), tags=["I am a tag"])
+
+            self.assertEqual(httpResult[0], 202)
+
     def test_sending_user(self):
         client = raygunprovider.RaygunSender(self.apiKey)
         client.set_user({

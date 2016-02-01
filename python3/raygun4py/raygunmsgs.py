@@ -1,5 +1,6 @@
-import inspect
+import sys
 import os
+import inspect
 
 try:
     import multiprocessing
@@ -26,7 +27,7 @@ class RaygunMessageBuilder:
         self.raygunMessage.details['machineName'] = name
         return self
 
-    def set_environment_details(self):
+    def set_environment_details(self, extra_environment_data):
         env = {}
         for key in os.environ.keys():
             env[key] = os.environ[key]
@@ -38,8 +39,15 @@ class RaygunMessageBuilder:
             "architecture": platform.architecture()[0],
             "cpu": platform.processor(),
             "oSVersion": "%s %s" % (platform.system(), platform.release()),
-            "environmentVariables": env
+            "environmentVariables": env,
+            "runtimeLocation": sys.executable,
+            "runtimeVersion": 'Python ' + sys.version
         }
+
+        if extra_environment_data is not None:
+            merged = extra_environment_data.copy()
+            merged.update(self.raygunMessage.details['environment'])
+            self.raygunMessage.details['environment'] = merged
 
         return self
 
@@ -50,14 +58,14 @@ class RaygunMessageBuilder:
     def set_client_details(self):
         self.raygunMessage.details['client'] = {
             "name": "raygun4py",
-            "version": "2.2.0",
+            "version": "3.1.0",
             "clientUrl": "https://github.com/MindscapeHQ/raygun4py"
         }
         return self
 
-    def set_customdata(self, userCustomData):
-        if type(userCustomData) is dict:
-            self.raygunMessage.details['userCustomData'] = userCustomData
+    def set_customdata(self, user_custom_data):
+        if type(user_custom_data) is dict:
+            self.raygunMessage.details['userCustomData'] = user_custom_data
         return self
 
     def set_tags(self, tags):
@@ -74,7 +82,7 @@ class RaygunMessageBuilder:
               "queryString": request['queryString'],
               "form": request['form'],
               "headers": request['headers'],
-              "rawData": request['rawData'],
+              "rawData": request['rawData']
             }
 
             if 'ipAddress' in request:

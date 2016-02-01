@@ -1,17 +1,16 @@
 import sys
 from setuptools import setup
 
-packages = []
+packages = ['raygun4py', 'raygun4py.middleware']
+
 if sys.version_info[0] == 2:
     base_dir = 'python2'
-    packages = ['raygun4py', 'raygun4py.middleware']
 elif sys.version_info[0] == 3:
     base_dir = 'python3'
-    packages = ['raygun4py']
 
 setup(
     name='raygun4py',
-    version='3.0.3',
+    version='3.1.0',
     packages=packages,
     package_dir= {
         "raygun4py": base_dir + "/raygun4py"
@@ -45,6 +44,7 @@ setup(
         'Programming Language :: Python :: 3.2',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
         'Topic :: Communications',
     ],
 )

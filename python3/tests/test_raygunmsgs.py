@@ -99,8 +99,8 @@ class TestRaygunErrorMessage(unittest.TestCase):
             raise TestRaygunErrorMessage.ChildError("Child message")
 
     def test_exc_traceback_none_generates_empty_array(self):
-        errorMessage = raygunmsgs.RaygunErrorMessage(Exception, None, None, {})
-        self.assertEqual(errorMessage.stackTrace, [])
+        error_message = raygunmsgs.RaygunErrorMessage(Exception, None, None, {})
+        self.assertEqual(error_message.stackTrace, [])
 
     def test_classname(self):
         self.assertEqual(self.msg.className, 'ParentError')
@@ -131,14 +131,14 @@ class TestRaygunErrorMessage(unittest.TestCase):
         self.assertIsInstance(self.theException.__cause__.__context__, TestRaygunErrorMessage.GrandchildError)
 
     def test_methodname_none(self):
-        originalGetinnerframes = inspect.getinnerframes
+        original_getinnerframes = inspect.getinnerframes
         inspect.getinnerframes = getinnerframes_mock_methodname_none
 
-        errorMessage = raygunmsgs.RaygunErrorMessage(int, 1, None, { "transmitLocalVariables": False })
+        error_message = raygunmsgs.RaygunErrorMessage(int, 1, None, { "transmitLocalVariables": False })
 
-        self.assertEqual(errorMessage.__dict__['stackTrace'][0]['methodName'], None)
+        self.assertEqual(error_message.__dict__['stackTrace'][0]['methodName'], None)
 
-        inspect.getinnerframes = originalGetinnerframes
+        inspect.getinnerframes = original_getinnerframes
 
 def getinnerframes_mock_methodname_none(exception):
     return [(

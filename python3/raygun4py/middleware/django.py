@@ -1,8 +1,5 @@
-from __future__ import absolute_import
-
 import django
 from django.conf import settings
-
 from raygun4py import raygunprovider
 
 
@@ -15,10 +12,10 @@ class Provider(object):
         self.sender = raygunprovider.RaygunSender(apiKey, config=config)
 
     def process_exception(self, request, exception):
-        raygunRequest = self._mapRequest(request)
+        raygun_request = self._mapRequest(request)
         env = self._get_django_environment()
 
-        self.sender.send_exception(exception=exception, request=raygunRequest, extra_environment_data=env)
+        self.sender.send_exception(exception=exception, request=raygun_request, extra_environment_data=env)
 
     def _mapRequest(self, request):
         headers = request.META.items()
