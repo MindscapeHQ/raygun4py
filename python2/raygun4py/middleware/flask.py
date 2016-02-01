@@ -2,6 +2,7 @@ from __future__ import absolute_import
 
 import logging
 
+import flask
 from flask.signals import got_request_exception
 
 from raygun4py import raygunprovider
@@ -28,4 +29,10 @@ class Provider(object):
         if not self.sender:
             log.error("Raygun-Flask: Cannot send as provider not attached")
 
-        self.sender.send_exception()
+        env = self._get_flask_environment()
+        self.sender.send_exception(extra_environment_data=env)
+
+    def _get_flask_environment(self):
+        return {
+            'frameworkVersion': 'Flask ' + getattr(flask, '__version__', '')
+        }
