@@ -26,7 +26,6 @@ class DjangoProviderTests(SimpleTestCase):
         environment_payload = provider._get_django_environment()
         self.assertEqual(environment_payload['frameworkVersion'], django.get_version())
 
-
     def test_process_exception_called(self):
         provider = Provider()
         provider.sender = mock.MagicMock(name='send_exception')
