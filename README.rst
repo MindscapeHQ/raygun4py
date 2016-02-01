@@ -93,6 +93,8 @@ Raygun4py in Python 2.x includes several middleware implementations for various 
 Django
 ++++++
 
+To configure Django to automatically send all exceptions that are raised in views to Raygun:
+
 settings.py
 
 .. code:: python
@@ -101,9 +103,29 @@ settings.py
       'raygun4py.middleware.django.Provider'
   )
 
+  RAYGUN4PY_CONFIG = {
+      'api_key': 'paste_your_api_key_here'
+  }
+
   RAYGUN4PY_API_KEY = 'your_apikey'
 
-Exceptions that occur in views will be automatically sent to Raygun.
+The above configuration is the minimal required setup. The full set of options supported by the provider can be declared in the same way:
+
+.. code:: python
+
+  DEFAULT_CONFIG = {
+      'api_key': 'paste_your_api_key_here',
+      'http_timeout': 10.0,
+      'proxy': None,
+      'before_send_callback': None,
+      'grouping_key_callback': None,
+      'filtered_keys': [],
+      'ignored_exceptions': [],
+      'transmit_global_variables': True,
+      'transmit_local_variables': True,
+      'userversion': "Not defined",
+      'user': None
+  }
 
 
 Flask
@@ -163,21 +185,28 @@ Documentation
 Initialization options
 ----------------------
 
-:code:`RaygunSender` accepts a :code:`config` dict which is used to set options for the provider:
+:code:`RaygunSender` accepts a :code:`config` dict which is used to set options for the provider (the defaults are shown below):
 
 .. code:: python
 
   from raygun4py import raygunprovider
 
   client = raygunprovider.RaygunSender('your_apikey', config={
-    'transmitLocalVariables': True,
-    'transmitGlobalVariables': True,
-    'httpTimeout': 10
+      'http_timeout': 10.0,
+      'proxy': None,
+      'before_send_callback': None,
+      'grouping_key_callback': None,
+      'filtered_keys': [],
+      'ignored_exceptions': [],
+      'transmit_global_variables': True,
+      'transmit_local_variables': True,
+      'userversion': "Not defined",
+      'user': None
   })
 
-If either of the first two are set to False, the corresponding variables will not be sent with exception payloads. Both default to True.
+For the local/global variables, if their options are set to False the corresponding variables will not be sent with exception payloads.
 
-httpTimeout controls the maximum time the HTTP request can take when POSTing to the Raygun API, and is a float. It defaults to 10s.
+httpTimeout controls the maximum time the HTTP request can take when POSTing to the Raygun API, and is of type 'float'.
 
 Sending functions
 -----------------
