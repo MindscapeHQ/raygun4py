@@ -107,7 +107,6 @@ settings.py
       'api_key': 'paste_your_api_key_here'
   }
 
-  RAYGUN4PY_API_KEY = 'your_apikey'
 
 The above configuration is the minimal required setup. The full set of options supported by the provider can be declared in the same way:
 
@@ -126,7 +125,6 @@ The above configuration is the minimal required setup. The full set of options s
       'userversion': "Not defined",
       'user': None
   }
-
 
 Flask
 +++++
