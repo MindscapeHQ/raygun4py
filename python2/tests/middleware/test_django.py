@@ -1,12 +1,12 @@
 import django
-from django.test.client import RequestFactory
-from django.test import SimpleTestCase
 from django.conf import settings
-from raygun4py.middleware.django import Provider
 
 settings.configure(DEBUG=True, RAYGUN4PY_API_KEY='foo')
 django.setup()
 
+from django.test.client import RequestFactory
+from django.test import SimpleTestCase
+from raygun4py.middleware.django import Provider
 
 class DjangoProviderTests(SimpleTestCase):
 
