@@ -85,10 +85,7 @@ This uses the built-in :code:`RaygunHandler`. You can provide your own handler i
 Web frameworks
 --------------
 
-Python 2
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Raygun4py in Python 2.x includes several middleware implementations for various frameworks to enable reporting out of the box:
+Raygun4py includes dedicated middleware implementations for Django and Flask, as well as generic WSGI frameworks (Tornado, Bottle, Ginkgo etc). These are available for both Python 2.6/2.7 and Python 3+.
 
 Django
 ++++++
