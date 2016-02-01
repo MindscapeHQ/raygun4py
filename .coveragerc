@@ -4,6 +4,7 @@ omit =
     */site-packages/*
     */dist-packages/*
     */tests/*
+    /opt/*
 
  exclude_lines =
     except Exception as e:

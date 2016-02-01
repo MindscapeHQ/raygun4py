@@ -3,7 +3,7 @@
 - Add Django middleware for Python 3
 - Allow Django settings.py config override
 - Surface more environment data for Python itself and Django
-- Fix WSGI close() implementation when an exception is raised while handling a prior one git statu(match spec)
+- Fix WSGI close() implementation when an exception is raised while handling a prior one (match spec)
 
 3.0.3
 
