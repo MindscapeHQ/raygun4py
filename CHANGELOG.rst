@@ -1,6 +1,6 @@
 3.1.0
 - Add on_grouping_key for custom grouping logic
-- Add Django middleware for Python 3
+- Add Django, Flask and WSGI middleware for Python 3
 - Allow Django settings.py config override
 - Surface more environment data for Python itself and Django
 - Fix WSGI close() implementation when an exception is raised while handling a prior one (match spec)
