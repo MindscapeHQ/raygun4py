@@ -11,6 +11,7 @@ install:
   - pip install nose
   - pip install coveralls
   - pip install unittest2
+  - pip install mock
   - pip install 'django==1.8.8'
 
 script:

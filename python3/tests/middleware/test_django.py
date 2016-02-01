@@ -1,3 +1,4 @@
+import mock
 import django
 from django.test.client import RequestFactory
 from django.test import SimpleTestCase
