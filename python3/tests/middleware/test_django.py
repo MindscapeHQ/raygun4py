@@ -1,8 +1,8 @@
 import mock
 import django
+from django.conf import settings
 from django.test.client import RequestFactory
 from django.test import SimpleTestCase
-from django.conf import settings
 from raygun4py.middleware.django import Provider
 
 settings.configure(DEBUG=True, RAYGUN4PY_API_KEY='foo')
@@ -25,3 +25,15 @@ class DjangoProviderTests(SimpleTestCase):
         provider = Provider()
         environment_payload = provider._get_django_environment()
         self.assertEqual(environment_payload['frameworkVersion'], django.get_version())
+
+
+    def test_process_exception_called(self):
+        provider = Provider()
+        provider.sender = mock.MagicMock(name='send_exception')
+
+        try:
+            raise Exception
+        except Exception as e:
+            provider.process_exception(self.get_request, e)
+
+        self.assertEqual(len(provider.sender.mock_calls), 1)
