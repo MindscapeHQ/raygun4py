@@ -37,12 +37,12 @@ class RaygunSender:
         if (api_key):
             self.api_key = api_key
         else:
-            log.warning("RaygunProvider error: ApiKey not set, errors will not be transmitted")
+            self.log.warning("RaygunProvider error: ApiKey not set, errors will not be transmitted")
 
         try:
             import ssl
         except ImportError:
-            log.warning("RaygunProvider error: No SSL support available, cannot send. Please"
+            self.log.warning("RaygunProvider error: No SSL support available, cannot send. Please"
                         "compile the socket module with SSL support.")
 
         # Set up the default values
@@ -164,7 +164,7 @@ class RaygunSender:
             response = requests.post(self.endpointprotocol + self.endpointhost + self.endpointpath,
                                      headers=headers, data=json, timeout=self.http_timeout)
         except Exception as e:
-            log.error(e)
+            self.log.error(e)
             return 400, "Exception: Could not send"
         return response.status_code, response.text
 
