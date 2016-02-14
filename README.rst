@@ -1,11 +1,11 @@
 raygun4py
 =========
 
-.. image:: https://travis-ci.org/MindscapeHQ/raygun4py.svg?branch=vnext
-  :target: https://travis-ci.org/MindscapeHQ/raygun4py?branch=vnext
+.. image:: https://travis-ci.org/MindscapeHQ/raygun4py.svg?branch=master
+  :target: https://travis-ci.org/MindscapeHQ/raygun4py?branch=master
 
-.. image:: https://coveralls.io/repos/MindscapeHQ/raygun4py/badge.svg?branch=vnext
-  :target: https://coveralls.io/r/MindscapeHQ/raygun4py?branch=vnext
+.. image:: https://coveralls.io/repos/MindscapeHQ/raygun4py/badge.svg?branch=master
+  :target: https://coveralls.io/r/MindscapeHQ/raygun4py?branch=master
 
 
 Official Raygun provider for **Python 2.6/2.7**, **Python 3+** and **PyPy**
