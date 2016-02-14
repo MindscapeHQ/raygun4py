@@ -92,11 +92,6 @@ class RaygunSender:
         else:
             errorMessage = raygunmsgs.RaygunErrorMessage(exc_type, exc_value, exc_traceback, options)
 
-        try:
-            del exc_type, exc_value, exc_traceback
-        except Exception as e:
-            raise
-
         tags, custom_data, http_request, extra_environment_data = self._parse_args(kwargs)
         message = self._create_message(errorMessage, tags, custom_data, http_request, extra_environment_data)
         message = self._transform_message(message)

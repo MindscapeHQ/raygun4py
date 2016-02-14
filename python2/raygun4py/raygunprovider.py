@@ -96,6 +96,7 @@ class RaygunSender:
         else:
             errorMessage = raygunmsgs.RaygunErrorMessage(exc_type, exc_value, exc_traceback, options)
 
+        # Prevent circular reference for GC - https://docs.python.org/2/library/sys.html#sys.exc_info
         try:
             del exc_type, exc_value, exc_traceback
         except Exception as e:
