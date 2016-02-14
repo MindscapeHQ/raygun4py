@@ -1,4 +1,5 @@
 3.1.1
+
 - Global variables are now populated from the final stacktrace frame instead of globals() as seen by the provider
 - Fix log statements in referring to module-level field instead of instance-level for Py2
 
