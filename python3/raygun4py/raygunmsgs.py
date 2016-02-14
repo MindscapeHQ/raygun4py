@@ -58,7 +58,7 @@ class RaygunMessageBuilder:
     def set_client_details(self):
         self.raygunMessage.details['client'] = {
             "name": "raygun4py",
-            "version": "3.1.0",
+            "version": "3.1.1",
             "clientUrl": "https://github.com/MindscapeHQ/raygun4py"
         }
         return self
@@ -122,9 +122,6 @@ class RaygunErrorMessage:
         self.message = "%s: %s" % (exc_type.__name__, exc_value)
         self.stackTrace = []
 
-        if 'transmitGlobalVariables' in options and options['transmitGlobalVariables'] is True:
-            self.globalVariables = globals()
-
         try:
             frames = inspect.getinnerframes(exc_traceback)
 
@@ -137,6 +134,9 @@ class RaygunErrorMessage:
                         'methodName': frame[4][0] if frame[4] is not None else None,
                         'localVariables': self._get_locals(frame[0]) if 'transmitLocalVariables' in options and options['transmitLocalVariables'] is True else None
                     })
+                if 'transmitGlobalVariables' in options and options['transmitGlobalVariables'] is True and len(frames) > 0:
+                    self.globalVariables = frames[-1][0].f_globals
+
         finally:
             del frames
 
