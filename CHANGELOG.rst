@@ -1,3 +1,7 @@
+3.1.1
+- Global variables are now populated from the final stacktrace frame instead of globals() as seen by the provider
+- Fix log statements in referring to module-level field instead of instance-level for Py2
+
 3.1.0
 
 - Add on_grouping_key for custom grouping logic
