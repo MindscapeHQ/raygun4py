@@ -1,6 +1,7 @@
 import sys
 import os
 import inspect
+import jsonpickle
 
 try:
     import multiprocessing
@@ -152,6 +153,19 @@ class RaygunErrorMessage:
 
             if nestedException is not None:
                 self.innerError = RaygunErrorMessage(type(nestedException), nestedException, nestedException.__traceback__, options)
+
+        try:
+            jsonpickle.encode(self, unpicklable=False)
+        except Exception as e:
+            if self.globalVariables:
+                self.globalVariables = None
+
+                try:
+                    jsonpickle.encode(self, unpicklable=False)
+                except Exception as e:
+                    for frame in self.stackTrace:
+                        if frame.localVariables:
+                            frame.localVariables = None
 
     def get_classname(self):
         return self.className
