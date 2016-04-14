@@ -1,3 +1,7 @@
+3.1.2
+
+- Guard against jsonpickle failing to serialize local/global variables
+
 3.1.1
 
 - Global variables are now populated from the final stacktrace frame instead of globals() as seen by the provider

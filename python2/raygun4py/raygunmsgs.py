@@ -1,6 +1,7 @@
 import sys
 import os
 import inspect
+import jsonpickle
 
 try:
     import multiprocessing
@@ -54,7 +55,7 @@ class RaygunMessageBuilder:
     def set_client_details(self):
         self.raygunMessage.details['client'] = {
             "name": "raygun4py",
-            "version": "3.1.1",
+            "version": "3.1.2",
             "clientUrl": "https://github.com/MindscapeHQ/raygun4py"
         }
         return self
@@ -137,6 +138,19 @@ class RaygunErrorMessage:
             del frames
 
         self.data = ""
+
+        try:
+            jsonpickle.encode(self, unpicklable=False)
+        except Exception as e:
+            if self.globalVariables:
+                self.globalVariables = None
+
+                try:
+                    jsonpickle.encode(self, unpicklable=False)
+                except Exception as e:
+                    for frame in self.stackTrace:
+                        if frame.localVariables:
+                            frame.localVariables = None
 
     def get_classname(self):
         return self.className
