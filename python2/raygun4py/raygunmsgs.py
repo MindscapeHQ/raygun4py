@@ -36,7 +36,7 @@ class RaygunMessageBuilder:
             "architecture": platform.architecture()[0],
             "cpu": platform.processor(),
             "oSVersion": "%s %s" % (platform.system(), platform.release()),
-            "environmentVariables": os.environ.data,
+            "environmentVariables": dict(os.environ),
             "runtimeLocation": sys.executable,
             "runtimeVersion": 'Python ' + sys.version
         }
