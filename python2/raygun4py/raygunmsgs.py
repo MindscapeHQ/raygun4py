@@ -36,7 +36,7 @@ class RaygunMessageBuilder:
             "architecture": platform.architecture()[0],
             "cpu": platform.processor(),
             "oSVersion": "%s %s" % (platform.system(), platform.release()),
-            "environmentVariables": os.environ.data,
+            "environmentVariables": os.environ.data if hasattr(os.environ, 'data') else None,
             "runtimeLocation": sys.executable,
             "runtimeVersion": 'Python ' + sys.version
         }
@@ -55,7 +55,7 @@ class RaygunMessageBuilder:
     def set_client_details(self):
         self.raygunMessage.details['client'] = {
             "name": "raygun4py",
-            "version": "3.1.2",
+            "version": "3.1.3",
             "clientUrl": "https://github.com/MindscapeHQ/raygun4py"
         }
         return self
