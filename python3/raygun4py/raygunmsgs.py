@@ -128,12 +128,16 @@ class RaygunErrorMessage:
 
             if frames:
                 for frame in frames:
+                    localVariables = None
+                    if 'transmitLocalVariables' in options and options['transmitLocalVariables'] is True:
+                        localVariables = self._get_locals(frame[0])
+
                     self.stackTrace.append({
                         'lineNumber': frame[2],
                         'className': frame[3],
                         'fileName': frame[1],
                         'methodName': frame[4][0] if frame[4] is not None else None,
-                        'localVariables': self._get_locals(frame[0]) if 'transmitLocalVariables' in options and options['transmitLocalVariables'] is True else None
+                        'localVariables': localVariables
                     })
                 if 'transmitGlobalVariables' in options and options['transmitGlobalVariables'] is True and len(frames) > 0:
                     self.globalVariables = frames[-1][0].f_globals
@@ -164,7 +168,7 @@ class RaygunErrorMessage:
                     jsonpickle.encode(self, unpicklable=False)
                 except Exception as e:
                     for frame in self.stackTrace:
-                        if frame.localVariables:
+                        if 'localVariables' in frame:
                             frame.localVariables = None
 
     def get_classname(self):
