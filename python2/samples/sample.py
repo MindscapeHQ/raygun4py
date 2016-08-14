@@ -5,7 +5,12 @@ from raygun4py import raygunprovider
 def handle_exception(exc_type, exc_value, exc_traceback):
     cl = raygunprovider.RaygunSender("paste_your_api_key_here")
     cl.set_version("1.0.0.0")
-    cl.set_user('example@email_or_user_id.com')
+    cl.set_user({
+        'identifier': 'example@email_or_user_id.com',
+        'firstName': 'John',
+        'fullName': 'John Smith',
+        'email': 'example@email_or_user_id.com'
+    })
 
     # If we're handling a request in a web server environment, we can send the HTTP request data
     headers = {
