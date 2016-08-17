@@ -29,10 +29,6 @@ class RaygunMessageBuilder:
         return self
 
     def set_environment_details(self, extra_environment_data):
-        env = {}
-        for key in os.environ.keys():
-            env[key] = os.environ[key]
-
         self.raygunMessage.details['environment'] = {
             "processorCount": (
                 multiprocessing.cpu_count() if USE_MULTIPROCESSING else "n/a"
@@ -40,7 +36,7 @@ class RaygunMessageBuilder:
             "architecture": platform.architecture()[0],
             "cpu": platform.processor(),
             "oSVersion": "%s %s" % (platform.system(), platform.release()),
-            "environmentVariables": env,
+            "environmentVariables": dict(os.environ),
             "runtimeLocation": sys.executable,
             "runtimeVersion": 'Python ' + sys.version
         }
