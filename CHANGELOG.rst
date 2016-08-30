@@ -1,3 +1,7 @@
+3.1.3
+
+- Guard against Jython 2.6 raising an exception upon environment variable access
+
 3.1.2
 
 - Guard against jsonpickle failing to serialize local/global variables
