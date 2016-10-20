@@ -30,7 +30,7 @@ class RaygunMessageBuilder:
 
     def set_environment_details(self, extra_environment_data):
         self.raygunMessage.details['environment'] = {
-            "environmentVariables": os.environ.data if hasattr(os.environ, 'data') else None,
+            "environmentVariables": dict(os.environ.data) if hasattr(os.environ, 'data') else None,
             "runtimeLocation": sys.executable,
             "runtimeVersion": 'Python ' + sys.version
         }
