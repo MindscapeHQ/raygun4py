@@ -1,6 +1,6 @@
 3.1.3
 
-- Guard against Jython 2.6 raising an exception upon environment variable access
+- Guard against environment variable access exceptions as seen in Google App Engine, gevent and Jython 2.6 
 
 3.1.2
 
