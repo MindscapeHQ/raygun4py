@@ -30,16 +30,34 @@ class RaygunMessageBuilder:
 
     def set_environment_details(self, extra_environment_data):
         self.raygunMessage.details['environment'] = {
-            "processorCount": (
-                multiprocessing.cpu_count() if USE_MULTIPROCESSING else "n/a"
-            ),
-            "architecture": platform.architecture()[0],
-            "cpu": platform.processor(),
-            "oSVersion": "%s %s" % (platform.system(), platform.release()),
             "environmentVariables": dict(os.environ),
             "runtimeLocation": sys.executable,
             "runtimeVersion": 'Python ' + sys.version
         }
+
+        # Wrap these so we gracefully fail if we cannot access the system details for any reason
+        try:
+            self.raygunMessage.details['environment']["processorCount"] = (
+                multiprocessing.cpu_count() if USE_MULTIPROCESSING else "n/a"
+            )
+        except Exception:
+            pass
+
+        try:
+            self.raygunMessage.details['environment']["architecture"] = platform.architecture()[0]
+        except Exception:
+            pass
+
+        try:
+            self.raygunMessage.details['environment']["cpu"] = platform.processor()
+        except Exception:
+            pass
+
+        try:
+            self.raygunMessage.details['environment']["oSVersion"] = "%s %s" % \
+                (platform.system(), platform.release())
+        except Exception:
+            pass
 
         if extra_environment_data is not None:
             merged = extra_environment_data.copy()
