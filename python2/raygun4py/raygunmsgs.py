@@ -30,16 +30,34 @@ class RaygunMessageBuilder:
 
     def set_environment_details(self, extra_environment_data):
         self.raygunMessage.details['environment'] = {
-            "processorCount": (
-                multiprocessing.cpu_count() if USE_MULTIPROCESSING else "n/a"
-            ),
-            "architecture": platform.architecture()[0],
-            "cpu": platform.processor(),
-            "oSVersion": "%s %s" % (platform.system(), platform.release()),
-            "environmentVariables": os.environ.data,
+            "environmentVariables": dict(os.environ.data) if hasattr(os.environ, 'data') else None,
             "runtimeLocation": sys.executable,
             "runtimeVersion": 'Python ' + sys.version
         }
+
+        # Wrap these so we gracefully fail if we cannot access the system details for any reason
+        try:
+            self.raygunMessage.details['environment']["processorCount"] = (
+                multiprocessing.cpu_count() if USE_MULTIPROCESSING else "n/a"
+            )
+        except Exception: # pragma: no cover
+            pass
+
+        try:
+            self.raygunMessage.details['environment']["architecture"] = platform.architecture()[0]
+        except Exception: # pragma: no cover
+            pass
+
+        try:
+            self.raygunMessage.details['environment']["cpu"] = platform.processor()
+        except Exception: # pragma: no cover
+            pass
+
+        try:
+            self.raygunMessage.details['environment']["oSVersion"] = "%s %s" % \
+                (platform.system(), platform.release())
+        except Exception: # pragma: no cover
+            pass
 
         if extra_environment_data is not None:
             merged = extra_environment_data.copy()
@@ -55,7 +73,7 @@ class RaygunMessageBuilder:
     def set_client_details(self):
         self.raygunMessage.details['client'] = {
             "name": "raygun4py",
-            "version": "3.1.2",
+            "version": "3.1.3",
             "clientUrl": "https://github.com/MindscapeHQ/raygun4py"
         }
         return self
@@ -73,13 +91,13 @@ class RaygunMessageBuilder:
     def set_request_details(self, request):
         if request:
             self.raygunMessage.details['request'] = {
-              "hostName": request['hostName'],
-              "url": request['url'],
-              "httpMethod": request['httpMethod'],
-              "queryString": request['queryString'],
-              "form": request['form'],
-              "headers": request['headers'],
-              "rawData": request['rawData']
+                "hostName": request['hostName'],
+                "url": request['url'],
+                "httpMethod": request['httpMethod'],
+                "queryString": request['queryString'],
+                "form": request['form'],
+                "headers": request['headers'],
+                "rawData": request['rawData']
             }
 
             if 'ipAddress' in request:
@@ -125,12 +143,16 @@ class RaygunErrorMessage:
 
             if frames:
                 for frame in frames:
+                    localVariables = None
+                    if 'transmitLocalVariables' in options and options['transmitLocalVariables'] is True:
+                        localVariables = self._get_locals(frame[0])
+
                     self.stackTrace.append({
                         'lineNumber': frame[2],
                         'className': frame[3],
                         'fileName': frame[1],
                         'methodName': frame[4][0] if frame[4] is not None else None,
-                        'localVariables': self._get_locals(frame[0]) if 'transmitLocalVariables' in options and options['transmitLocalVariables'] is True else None
+                        'localVariables': localVariables
                     })
                 if 'transmitGlobalVariables' in options and options['transmitGlobalVariables'] is True and len(frames) > 0:
                     self.globalVariables = frames[-1][0].f_globals
@@ -149,7 +171,7 @@ class RaygunErrorMessage:
                     jsonpickle.encode(self, unpicklable=False)
                 except Exception as e:
                     for frame in self.stackTrace:
-                        if frame.localVariables:
+                        if 'localVariables' in frame:
                             frame.localVariables = None
 
     def get_classname(self):
