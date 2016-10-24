@@ -40,23 +40,23 @@ class RaygunMessageBuilder:
             self.raygunMessage.details['environment']["processorCount"] = (
                 multiprocessing.cpu_count() if USE_MULTIPROCESSING else "n/a"
             )
-        except Exception:
+        except Exception: # pragma: no cover
             pass
 
         try:
             self.raygunMessage.details['environment']["architecture"] = platform.architecture()[0]
-        except Exception:
+        except Exception: # pragma: no cover
             pass
 
         try:
             self.raygunMessage.details['environment']["cpu"] = platform.processor()
-        except Exception:
+        except Exception: # pragma: no cover
             pass
 
         try:
             self.raygunMessage.details['environment']["oSVersion"] = "%s %s" % \
                 (platform.system(), platform.release())
-        except Exception:
+        except Exception: # pragma: no cover
             pass
 
         if extra_environment_data is not None:
