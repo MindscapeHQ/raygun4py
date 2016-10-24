@@ -7,4 +7,6 @@ omit =
     /opt/*
 
  exclude_lines =
+    pragma: no cover
     except Exception as e:
+    except Exception:
