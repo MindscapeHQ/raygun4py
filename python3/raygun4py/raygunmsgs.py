@@ -183,7 +183,7 @@ class RaygunErrorMessage:
                 except Exception as e:
                     for frame in self.stackTrace:
                         if 'localVariables' in frame:
-                            frame.localVariables = None
+                            frame['localVariables'] = None
 
     def get_classname(self):
         return self.className
