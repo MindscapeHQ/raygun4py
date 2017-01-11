@@ -13,7 +13,7 @@ import platform
 from datetime import datetime
 
 
-class RaygunMessageBuilder:
+class RaygunMessageBuilder(object):
 
     def __init__(self):
         self.raygunMessage = RaygunMessage()
@@ -117,7 +117,7 @@ class RaygunMessageBuilder:
         return self
 
 
-class RaygunMessage:
+class RaygunMessage(object):
 
     def __init__(self):
         self.occurredOn = datetime.utcnow()
@@ -130,7 +130,7 @@ class RaygunMessage:
         return self.details
 
 
-class RaygunErrorMessage:
+class RaygunErrorMessage(object):
 
     def __init__(self, exc_type, exc_value, exc_traceback, options):
         self.className = exc_type.__name__
