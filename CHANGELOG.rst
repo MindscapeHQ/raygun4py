@@ -1,3 +1,7 @@
+3.1.4
+
+- Fix runtime bugs involving the WSGI pipeline, a local variable accessor edge case, and a pickling old-style classes exception
+
 3.1.3
 
 - Guard against environment variable access exceptions as seen in Google App Engine, gevent and Jython 2.6 

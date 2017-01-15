@@ -5,7 +5,7 @@ from django.test.client import RequestFactory
 from django.test import SimpleTestCase
 from raygun4py.middleware.django import Provider
 
-settings.configure(DEBUG=True, RAYGUN4PY_API_KEY='foo')
+settings.configure(DEBUG=True, RAYGUN4PY_API_KEY='foo', ALLOWED_HOSTS=['testserver'])
 django.setup()
 
 
