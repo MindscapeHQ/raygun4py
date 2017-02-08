@@ -12,15 +12,11 @@ class Provider(MiddlewareMixin):
 
     def __init__(self, get_response=None):
         super().__init__(get_response)
-        # self.get_response = get_response
 
         config = getattr(settings, 'RAYGUN4PY_CONFIG', {})
         apiKey = getattr(settings, 'RAYGUN4PY_API_KEY', config.get('api_key', None))
 
         self.sender = raygunprovider.RaygunSender(apiKey, config=config)
-
-
-
 
     def process_exception(self, request, exception):
         raygun_request = self._mapRequest(request)
