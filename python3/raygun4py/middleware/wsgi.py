@@ -38,7 +38,7 @@ class Provider(object):
     def build_request(self, environ):
         request = {}
 
-        http_host = environ.get('HTTP_HOST'], None)
+        http_host = environ.get(['HTTP_HOST'], None)
         if http_host is not None:
             http_host = http_host.replace(' ', '')
 
