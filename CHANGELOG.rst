@@ -1,3 +1,7 @@
+3.1.5
+
+- Fix a syntax error in the WSGI middlewre introduced in 3.1.4 
+
 3.1.4
 
 - Fix runtime bugs involving the WSGI pipeline, a local variable accessor edge case, and a pickling old-style classes exception
