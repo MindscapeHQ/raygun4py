@@ -4,7 +4,7 @@ language: python
 
 cache: pip
 
-python: ["2.6", "2.7", "3.2", "3.3", "3.4", "3.5", "pypy"]
+python: ["2.6", "2.7", "3.2", "3.3", "3.4", "3.5", "3.6", "pypy", "pypy3"]
 
 install:
   - pip install jsonpickle
@@ -21,7 +21,7 @@ script:
   # Coverage/Coveralls has dropped support for Python 3.2
   - if [[ $TRAVIS_PYTHON_VERSION != 3.2 && $TRAVIS_PYTHON_VERSION == 3* ]]; then coverage run -m unittest discover python3; fi
   - if [[ $TRAVIS_PYTHON_VERSION == 'pypy' ]]; then coverage run -m unittest2 discover python2; fi
-  # - if [[ $TRAVIS_PYTHON_VERSION == 'pypy3' ]]; then coverage run -m unittest discover python3; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 'pypy3' ]]; then coverage run -m unittest discover python3; fi
 
 after_success:
   coveralls
