@@ -1,6 +1,7 @@
 3.1.5
 
 - Fix a syntax error in the WSGI middlewre introduced in 3.1.4 
+- Relaxes dependency requirements for jsonpickle etc
 
 3.1.4
 
