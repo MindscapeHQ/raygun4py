@@ -49,7 +49,7 @@ class Provider(object):
                 'httpMethod': environ.get('REQUEST_METHOD', None),
                 'url': environ.get('PATH_INFO', None),
                 'ipAddress': environ.get('REMOTE_ADDR', None),
-                'hostName': http_host
+                'hostName': http_host,
                 'queryString': environ.get('QUERY_STRING', None),
                 'headers': {},
                 'form': {},
