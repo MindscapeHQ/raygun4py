@@ -5,7 +5,7 @@ from raygun4py import raygunprovider
 
 class Provider(object):
 
-    def __init__(self):
+    def __init__(self, get_response=None):
         config = getattr(settings, 'RAYGUN4PY_CONFIG', {})
         apiKey = getattr(settings, 'RAYGUN4PY_API_KEY', config.get('api_key', None))
 
