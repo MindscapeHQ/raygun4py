@@ -252,13 +252,13 @@ send_exception also supports the following extra data parameters:
 Config and data functions
 --------------
 
-+------------------+---------------+--------------------+
-| Function         | Arguments     | Type               |
-+==================+===============+====================+
-| filter_keys      | keys          | List               |
-+------------------+---------------+--------------------+
++--------------------+---------------+--------------------+
+| Function           | Arguments     | Type               |
++====================+===============+====================+
+| filtered_keys      | keys          | List               |
++--------------------+---------------+--------------------+
 
-If you want to filter sensitive data out of the payload that is sent to Raygun, pass in a list of keys here. Any matching keys in the payload will have their value replaced with :code:`<filtered>` - useful for passwords, credit card data etc.
+If you want to filter sensitive data out of the payload that is sent to Raygun, pass in a list of keys here. Any matching keys on the top level Raygun message object, or within dictionaries on the top level Raygun message object (including dictionaries nested within dictionaries) will have their value replaced with :code:`<filtered>` - useful for passwords, credit card data etc.
 
 +------------------+---------------+--------------------+
 | Function         | Arguments     | Type               |
