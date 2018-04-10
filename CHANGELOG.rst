@@ -1,3 +1,6 @@
+3.1.6
+- Fixes support for Django from PR #57
+
 3.1.5
 
 - Fix a syntax error in the WSGI middlewre introduced in 3.1.4 
