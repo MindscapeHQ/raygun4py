@@ -34,6 +34,6 @@ class Provider(object):
                     iterable.close()
                 except Exception as e:
                     rg_request_details = http_utilities.build_wsgi_compliant_request(environ)
-                    self.sender.send_exception(exception=e, request=request)
+                    self.sender.send_exception(exception=e, request=rg_request_details)
                     raise
 
