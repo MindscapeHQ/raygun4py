@@ -4,7 +4,15 @@ language: python
 
 cache: pip
 
-python: ["2.7", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "pypy"]
+python: ["2.7", "3.2", "3.3", "3.4", "3.5", "3.6", "pypy"]
+
+# Workaround to install Python 3.7
+# https://github.com/travis-ci/travis-ci/issues/9815
+matrix:
+  include:
+    - python: 3.7
+      dist: xenial
+      sudo: true
 
 install:
   - pip install jsonpickle
