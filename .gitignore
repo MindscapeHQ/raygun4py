@@ -21,6 +21,8 @@ lib
 lib64
 
 venv
+venv2
+venv27
 
 # Installer logs
 pip-log.txt
@@ -37,3 +39,6 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
+
+# VSCode
+.vscode
