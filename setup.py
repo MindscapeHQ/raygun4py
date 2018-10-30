@@ -10,7 +10,7 @@ elif sys.version_info[0] == 3:
 
 setup(
     name='raygun4py',
-    version='3.1.6',
+    version='4.0.0',
     packages=packages,
     package_dir= {
         "raygun4py": base_dir + "/raygun4py"
@@ -19,7 +19,7 @@ setup(
     url='https://raygun.io',
     author='Raygun',
     author_email='hello@raygun.io',
-    description='Official Raygun provider for Python 2.6/2.7 and Python 3+',
+    description='Official Raygun provider for Python 2.7 and Python 3+',
     long_description=open('README.rst').read(),
     install_requires=[
         'jsonpickle >= 0.9.2',
@@ -36,8 +36,6 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.1',
@@ -45,6 +43,8 @@ setup(
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Topic :: Communications',
     ],
 )

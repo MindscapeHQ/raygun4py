@@ -8,7 +8,7 @@ raygun4py
   :target: https://coveralls.io/r/MindscapeHQ/raygun4py?branch=master
 
 
-Official Raygun provider for **Python 2.6/2.7**, **Python 3+** and **PyPy**
+Official Raygun provider for **Python 2.7**, **Python 3+** and **PyPy**
 
 
 Installation

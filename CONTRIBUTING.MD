@@ -17,4 +17,16 @@ cd python2 && unit2
 ```
 
 ## Python 3
-...TODO
+1. `cd <project folder> && virtualenv -p <PATH TO PYTHON2> venv3`
+2. activate the virtual env
+3. `python setup.py develop`
+4.
+```
+pip install unittest2
+pip install mock
+pip install 'django==1.8.8'
+```
+5. Run tests
+```
+cd python3 && unit2
+```
