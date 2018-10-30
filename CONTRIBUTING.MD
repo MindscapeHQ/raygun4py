@@ -11,7 +11,10 @@ pip install unittest2
 pip install mock
 pip install 'django==1.8.8'
 ```
-5.
+5. Run tests
+```
+cd python2 && unit2
+```
 
 ## Python 3
 ...TODO
