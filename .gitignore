@@ -23,6 +23,7 @@ lib64
 venv
 venv2
 venv27
+venv3
 
 # Installer logs
 pip-log.txt
