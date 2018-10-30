@@ -187,12 +187,3 @@ class RaygunErrorMessage(object):
                         r = "Couldn't convert to repr due to {0}".format(re)
                     result[key] = "!!! Couldn't convert {0!r} (repr: {1}) due to {2!r} !!!".format(key, r, e)
             return result
-
-def get_with_fallbacks(dict, keys_to_try):
-    val = None
-    for i in range(len(keys_to_try)):
-        val = dict.get(keys_to_try[i])
-        if val is not None:
-            break
-
-    return val

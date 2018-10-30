@@ -45,9 +45,20 @@ def build_wsgi_compliant_request(request):
 
         for key, value in request.items():
             if key.startswith('HTTP_'):
-                _headers[key] = value
+                # 'HTTP_REFERER' => 'Referer'
+                new_key = http_environ_var_to_header_key(key)
+                _headers[new_key] = value
 
     # force the values to be a dictionary as some frameworks don't treat them that way
     rg_request['headers'] = dict(_headers)
 
     return rg_request
+
+
+def http_environ_var_to_header_key(key):
+    "turns HTTP_REFERER like keys into Referer"
+    parts = key.split('_')
+    if parts[0] == "HTTP":
+        parts.pop(0)
+
+    return '-'.join([x.title() for x in parts])

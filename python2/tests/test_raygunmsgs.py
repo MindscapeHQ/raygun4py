@@ -37,6 +37,7 @@ class TestRaygunMessageBuilder(unittest.TestCase):
             "HTTP_CACHE_CONTROL": "no-cache",
             "HTTP_ACCEPT": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
             "HTTP_USER_AGENT": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36",
+            "HTTP_REFERER": "https://www.google.com/",
             "HTTP_CONNECTION": "keep-alive",
             "SERVER_NAME": "localhost",
             "REMOTE_ADDR": "127.0.0.1",
@@ -103,6 +104,14 @@ class TestRaygunMessageBuilder(unittest.TestCase):
         self.assertEqual(self.builder.raygunMessage.details['request']['url'], '/resource-wsgi')
         self.assertEqual(self.builder.raygunMessage.details['request']['httpMethod'], 'GET')
         self.assertEqual(self.builder.raygunMessage.details['request']['queryString'], 'query=testme')
+
+    def test_wsgi_standard_header_names(self):
+        self.builder.set_request_details(self.raw_wsgi_request)
+        self.assertEqual(self.builder.raygunMessage.details['request']['headers']['User-Agent'],
+                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36")
+        self.assertEqual(self.builder.raygunMessage.details['request']['headers']['Referer'],
+                        "https://www.google.com/")
+
 
 class TestRaygunErrorMessage(unittest.TestCase):
     class ParentError(Exception):
