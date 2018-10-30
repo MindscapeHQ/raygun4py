@@ -1,5 +1,5 @@
 import logging
-from raygun4py import raygunprovider
+from raygun4py import raygunprovider, http_utilities
 
 log = logging.getLogger(__name__)
 
@@ -31,33 +31,7 @@ class Provider(object):
                 try:
                     iterable.close()
                 except Exception as e:
-                    request = self.build_request(environ)
-                    self.sender.send_exception(exception=e, request=request)
+                    rg_request_details = http_utilities.build_wsgi_compliant_request(environ)
+                    self.sender.send_exception(exception=e, request=rg_request_details)
                     raise
 
-    def build_request(self, environ):
-        request = {}
-
-        http_host = environ.get(['HTTP_HOST'], None)
-        if http_host is not None:
-            http_host = http_host.replace(' ', '')
-
-        try:
-            request = {
-                'httpMethod': environ.get('REQUEST_METHOD', None),
-                'url': environ.get('PATH_INFO', None),
-                'ipAddress': environ.get('REMOTE_ADDR', None),
-                'hostName': http_host,
-                'queryString': environ.get('QUERY_STRING', None),
-                'headers': {},
-                'form': {},
-                'rawData': {}
-            }
-        except Exception:
-            pass
-
-        for key, value in environ.items():
-            if key.startswith('HTTP_'):
-               request['headers'][key] = value
-
-        return request
