@@ -16,7 +16,7 @@ setup(
         "raygun4py": base_dir + "/raygun4py"
     },
     license='LICENSE',
-    url='https://raygun.io',
+    url='https://raygun.com',
     author='Raygun',
     author_email='hello@raygun.io',
     description='Official Raygun provider for Python 2.7 and Python 3+',
