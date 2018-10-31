@@ -11,6 +11,7 @@ except ImportError:
 
 import platform
 from datetime import datetime
+from raygun4py import http_utilities
 
 
 class RaygunMessageBuilder(object):
@@ -89,23 +90,12 @@ class RaygunMessageBuilder(object):
         return self
 
     def set_request_details(self, request):
-        if request:
-            self.raygunMessage.details['request'] = {
-              "hostName": request['hostName'],
-              "url": request['url'],
-              "httpMethod": request['httpMethod'],
-              "queryString": request['queryString'],
-              "form": request['form'],
-              "headers": request['headers'],
-              "rawData": request['rawData']
-            }
+        if not request:
+            return self
 
-            if 'ipAddress' in request:
-                self.raygunMessage.details['request']['iPAddress'] = request['ipAddress']
-            elif 'iPAddress' in request:
-                self.raygunMessage.details['request']['iPAddress'] = request['iPAddress']
+        rg_request_details = http_utilities.build_wsgi_compliant_request(request)
+        self.raygunMessage.details['request'] = rg_request_details
 
-        return self
 
     def set_version(self, version):
         self.raygunMessage.details['version'] = version

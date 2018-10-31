@@ -20,6 +20,30 @@ class TestRaygunMessageBuilder(unittest.TestCase):
             "rawData": None
         }
 
+        # https://www.python.org/dev/peps/pep-3333/#environ-variables
+        self.raw_wsgi_request = {
+            "HTTP_PRAGMA": "no-cache",
+            "HTTP_COOKIE": "test-cookie=foo",
+            "SCRIPT_NAME": "",
+            "REQUEST_METHOD": "GET",
+            "HTTP_HOST": "localhost:1234",
+            "PATH_INFO": "/resource-wsgi",
+            "SERVER_PROTOCOL": "HTTP/1.1",
+            "QUERY_STRING": "query=testme",
+            "HTTP_UPGRADE_INSECURE_REQUESTS": "1",
+            "HTTP_CACHE_CONTROL": "no-cache",
+            "HTTP_ACCEPT": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+            "HTTP_USER_AGENT": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36",
+            "HTTP_REFERER": "https://www.google.com/",
+            "HTTP_CONNECTION": "keep-alive",
+            "SERVER_NAME": "localhost",
+            "REMOTE_ADDR": "127.0.0.1",
+            "HTTP_ACCEPT_LANGUAGE": "en-US,en;q=0.9",
+            "wsgi.url_scheme": "http",
+            "SERVER_PORT": "1234",
+            "HTTP_ACCEPT_ENCODING": "gzip, deflate, br"
+        }
+
     def test_machinename(self):
         self.builder.set_machine_name(socket.gethostname())
         self.assertIsNotNone(self.builder.raygunMessage.details['machineName'])
@@ -34,6 +58,10 @@ class TestRaygunMessageBuilder(unittest.TestCase):
 
     def test_request_ip(self):
         self.builder.set_request_details(self.request)
+        self.assertEqual(self.builder.raygunMessage.details['request']['iPAddress'], '127.0.0.1')
+
+    def test_request_ip_from_remote_addr(self):
+        self.builder.set_request_details(self.raw_wsgi_request)
         self.assertEqual(self.builder.raygunMessage.details['request']['iPAddress'], '127.0.0.1')
 
     def test_user_fname(self):
@@ -66,6 +94,20 @@ class TestRaygunMessageBuilder(unittest.TestCase):
             'isAnonymous': False
         })
         self.assertEqual(self.builder.raygunMessage.details['user']['isAnonymous'], False)
+
+    def test_wsgi_fallbacks(self):
+        self.builder.set_request_details(self.raw_wsgi_request)
+        self.assertEqual(self.builder.raygunMessage.details['request']['hostName'], 'localhost:1234')
+        self.assertEqual(self.builder.raygunMessage.details['request']['url'], '/resource-wsgi')
+        self.assertEqual(self.builder.raygunMessage.details['request']['httpMethod'], 'GET')
+        self.assertEqual(self.builder.raygunMessage.details['request']['queryString'], 'query=testme')
+
+    def test_wsgi_standard_header_names(self):
+        self.builder.set_request_details(self.raw_wsgi_request)
+        self.assertEqual(self.builder.raygunMessage.details['request']['headers']['User-Agent'],
+                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36")
+        self.assertEqual(self.builder.raygunMessage.details['request']['headers']['Referer'],
+                        "https://www.google.com/")
 
 class TestRaygunErrorMessage(unittest.TestCase):
     class GrandchildError(Exception):
