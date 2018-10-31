@@ -24,7 +24,7 @@ class Provider(object):
                 yield event
 
         except Exception as e:
-            request = self.build_request(environ)
+            request = http_utilities.build_wsgi_compliant_request(environ)
             self.sender.send_exception(exception=e, request=request)
             raise
 
