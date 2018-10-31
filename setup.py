@@ -20,7 +20,8 @@ setup(
     author='Raygun',
     author_email='hello@raygun.io',
     description='Official Raygun provider for Python 2.7 and Python 3+',
-    long_description=open('README.rst').read(),
+    long_description=open('README.md').read(),
+    long_description_content_type='text/markdown',
     install_requires=[
         'jsonpickle >= 0.9.2',
         'blinker >= 1.3.0',
