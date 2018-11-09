@@ -3,30 +3,18 @@ The following will show you how to get started with local development
 
 ## Python 2
 1. `cd <project folder> && virtualenv -p <PATH TO PYTHON2> venv2`
-2. activate the virtual env
-3. `python setup.py develop`
-4.
+1. activate the virtual env
+1. `pip install .[dev]`
+1. Run tests
 ```
-pip install unittest2
-pip install mock
-pip install 'django==1.8.8'
-```
-5. Run tests
-```
-cd python2 && unit2
+python -m unittest2 discover python2
 ```
 
 ## Python 3
-1. `cd <project folder> && virtualenv -p <PATH TO PYTHON2> venv3`
-2. activate the virtual env
-3. `python setup.py develop`
-4.
+1. `cd <project folder> && virtualenv -p <PATH TO PYTHON3> venv3`
+1. activate the virtual env
+1. `pip install .[dev]`
+1. Run tests
 ```
-pip install unittest2
-pip install mock
-pip install 'django==1.8.8'
-```
-5. Run tests
-```
-cd python3 && unit2
+python -m unittest discover python3
 ```
