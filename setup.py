@@ -16,6 +16,7 @@ requirements = [
 
 dev_requirements = [
     'unittest2 >= 1.1.0',
+    'coveralls >= 1.5.1',
     'mock >= 2.0.0',
     'django == 1.8.8',
     'flask >= 0.10',
