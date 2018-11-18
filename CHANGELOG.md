@@ -8,3 +8,5 @@ Breaking changes:
 
 Features:
   - Improved WSGI request request handling, Thanks @ericb-granular ([#70](https://github.com/MindscapeHQ/raygun4py/pull/70))
+
+### For pre 4.0.0 changelog see CHANGELOG.old.rst
