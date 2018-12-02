@@ -24,8 +24,13 @@ class Provider(object):
                 yield event
 
         except Exception as e:
-            request = http_utilities.build_wsgi_compliant_request(environ)
-            self.sender.send_exception(exception=e, request=request)
+            try:
+                request = http_utilities.build_wsgi_compliant_request(environ)
+                self.sender.send_exception(exception=e, request=request)
+            except Exception as inner:
+                log.error("Raygun-WSGI: could not send exception!")
+                log.error(inner)
+
             raise
 
         finally:
@@ -33,7 +38,11 @@ class Provider(object):
                 try:
                     iterable.close()
                 except Exception as e:
-                    rg_request_details = http_utilities.build_wsgi_compliant_request(environ)
-                    self.sender.send_exception(exception=e, request=rg_request_details)
+                    try:
+                        rg_request_details = http_utilities.build_wsgi_compliant_request(environ)
+                        self.sender.send_exception(exception=e, request=rg_request_details)
+                    except Exception as inner:
+                        log.error("Raygun-WSGI: could not send exception on close!")
+                        log.error(inner)
                     raise
 

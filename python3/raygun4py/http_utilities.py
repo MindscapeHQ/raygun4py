@@ -2,8 +2,9 @@
 
 def build_wsgi_compliant_request(request):
     if not request:
-        return self
+        return
 
+    rg_request = None
     # start with WSGI environ variables, then overlay the specific, expected
     # httpRequest keys for RG API compat
     # https://www.python.org/dev/peps/pep-3333/#environ-variables
@@ -15,12 +16,16 @@ def build_wsgi_compliant_request(request):
     if http_host is not None:
         http_host = http_host.replace(' ', '')
 
-    # TODO, better understand how to "properly" fallback to wsgi.input stream
-    http_form = request.get('form') or request.get('wsgi.input')
-    if http_form is not None:
-        http_form = dict(http_form)
-
     try:
+        http_form = getattr(request, 'form', None) or request.get('form')
+
+        # fallback to wsgi.input
+        if http_form is None and 'wsgi.input' in request:
+            # we can assume WSGI keys inside this block
+            content_length = int(request.get('CONTENT_LENGTH', 0))
+            if content_length:
+                http_form = request['wsgi.input'].read(content_length)
+
         rg_request = {
             'httpMethod': (request.get('httpMethod') or request.get('REQUEST_METHOD')),
             'url': (request.get('url') or request.get('PATH_INFO')),
@@ -49,8 +54,7 @@ def build_wsgi_compliant_request(request):
                 new_key = http_environ_var_to_header_key(key)
                 _headers[new_key] = value
 
-    # force the values to be a dictionary as some frameworks don't treat them that way
-    rg_request['headers'] = dict(_headers)
+    rg_request['headers'] = _headers
 
     return rg_request
 
