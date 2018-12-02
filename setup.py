@@ -35,8 +35,7 @@ setup(
     author='Raygun',
     author_email='hello@raygun.io',
     description='Official Raygun provider for Python 2.7 and Python 3+',
-    long_description=open('README.md').read(),
-    long_description_content_type='text/markdown',
+    long_description=open('README.rst').read(),
     install_requires=requirements,
     extras_require={
         'dev': dev_requirements
