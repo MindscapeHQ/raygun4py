@@ -25,7 +25,7 @@ dev_requirements = [
 
 setup(
     name='raygun4py',
-    version='4.1.1',
+    version='4.2.0',
     packages=packages,
     package_dir= {
         "raygun4py": base_dir + "/raygun4py"
