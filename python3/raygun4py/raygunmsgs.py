@@ -2,7 +2,7 @@ import sys
 import os
 import inspect
 import jsonpickle
-from version import __version__
+from raygun4py import __version__
 
 try:
     import multiprocessing
