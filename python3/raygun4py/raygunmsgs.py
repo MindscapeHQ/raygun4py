@@ -2,6 +2,7 @@ import sys
 import os
 import inspect
 import jsonpickle
+from version import __version__
 
 try:
     import multiprocessing
@@ -74,7 +75,7 @@ class RaygunMessageBuilder(object):
     def set_client_details(self):
         self.raygunMessage.details['client'] = {
             "name": "raygun4py",
-            "version": "3.1.3",
+            "version": __version__,
             "clientUrl": "https://github.com/MindscapeHQ/raygun4py"
         }
         return self
