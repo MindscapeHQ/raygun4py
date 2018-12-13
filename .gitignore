@@ -43,3 +43,6 @@ nosetests.xml
 
 # VSCode
 .vscode
+
+# IntelliJ
+.idea
