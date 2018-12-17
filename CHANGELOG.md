@@ -1,3 +1,11 @@
+## 4.2.1 (18/12/2018):
+Bugfixes
+  - Set version correctly in crash report sent to Raygun API ([#78](https://github.com/MindscapeHQ/raygun4py/pull/79))
+
+- Improve Flash middleware ([#79](https://github.com/MindscapeHQ/raygun4py/pull/79))
+
+Thanks to @brock for both of these changes
+
 ## 4.2.0 (03/12/2018):
 BugFixes
   - Further improved WSGI request handling and fixes problems with forms and WSGI requests ([#76](https://github.com/MindscapeHQ/raygun4py/pull/76))
