@@ -10,6 +10,7 @@ class Provider(object):
     def __init__(self, flaskApp, apiKey):
         self.flaskApp = flaskApp
         self.apiKey = apiKey
+        self.sender = None
 
         got_request_exception.connect(self.send_exception, sender=flaskApp)
 
@@ -20,6 +21,7 @@ class Provider(object):
             self.flaskApp.extensions = {}
 
         self.sender = raygunprovider.RaygunSender(self.apiKey)
+        return self.sender
 
     def send_exception(self, *args, **kwargs):
         if not self.sender:
