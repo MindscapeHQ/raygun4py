@@ -3,11 +3,11 @@ from setuptools import setup
 
 packages = ['raygun4py', 'raygun4py.middleware']
 
-if sys.version_info[0] == 2:
-    base_dir = 'python2'
-elif sys.version_info[0] == 3:
+base_dir = 'python2'
+if sys.version_info[0] == 3:
     base_dir = 'python3'
 
+exec(open('%s/raygun4py/version.py' % base_dir).read())
 requirements = [
     'jsonpickle >= 0.9.2',
     'blinker >= 1.3.0',
@@ -25,7 +25,7 @@ dev_requirements = [
 
 setup(
     name='raygun4py',
-    version='4.2.0',
+    version=__version__,
     packages=packages,
     package_dir= {
         "raygun4py": base_dir + "/raygun4py"

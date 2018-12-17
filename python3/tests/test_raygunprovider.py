@@ -2,6 +2,8 @@ import unittest, sys
 from raygun4py import raygunprovider
 from raygun4py import raygunmsgs
 from raygun4py import utilities
+from raygun4py import __version__
+from raygun4py import version as version_file
 
 
 class TestRaygunSender(unittest.TestCase):
@@ -72,6 +74,9 @@ class TestRaygunSender(unittest.TestCase):
     def test_default_global_variables(self):
         self.sender = raygunprovider.RaygunSender('foo')
         self.assertTrue(self.sender.transmit_global_variables)
+
+    def test_module_version_matches(self):
+        self.assertEqual(__version__, version_file.__version__)
 
 
 class TestGroupingKey(unittest.TestCase):
