@@ -1,3 +1,7 @@
+## 4.2.2 (23/01/2019):
+Bugfixes
+  - Fix `set_request_details` builder method not returning self causing it to be unchainable
+
 ## 4.2.1 (18/12/2018):
 Bugfixes
   - Set version correctly in crash report sent to Raygun API ([#78](https://github.com/MindscapeHQ/raygun4py/pull/79))

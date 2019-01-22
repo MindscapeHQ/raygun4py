@@ -97,6 +97,8 @@ class RaygunMessageBuilder(object):
         rg_request_details = http_utilities.build_wsgi_compliant_request(request)
         self.raygunMessage.details['request'] = rg_request_details
 
+        return self
+
 
     def set_version(self, version):
         self.raygunMessage.details['version'] = version
