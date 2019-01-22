@@ -109,6 +109,12 @@ class TestRaygunMessageBuilder(unittest.TestCase):
         self.assertEqual(self.builder.raygunMessage.details['request']['headers']['Referer'],
                         "https://www.google.com/")
 
+    def test_set_request_details_allows_chaining(self):
+        self.builder \
+                .set_request_details(self.raw_wsgi_request) \
+                .set_tags(['foo', 'bar'])
+
+
 class TestRaygunErrorMessage(unittest.TestCase):
     class GrandchildError(Exception):
         pass
