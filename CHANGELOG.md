@@ -1,3 +1,7 @@
+## 4.2.3 (28/03/2019):
+Bugfixes
+  - Add request rawData to the build_wsgi_compliant_request utilities to fix a bug where rawData is set manually then overwritten by an empty object.
+
 ## 4.2.2 (23/01/2019):
 Bugfixes
   - Fix `set_request_details` builder method not returning self causing it to be unchainable
