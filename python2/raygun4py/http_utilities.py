@@ -34,7 +34,7 @@ def build_wsgi_compliant_request(request):
             'queryString': (request.get('queryString') or request.get('QUERY_STRING')),
             'headers': {}, # see below
             'form': http_form,
-            'rawData': {}
+            'rawData': request.get('rawData')
         }
     except Exception:
         pass
