@@ -119,6 +119,7 @@ The above configuration is the minimal required setup. The full set of options s
       'ignored_exceptions': [],
       'transmit_global_variables': True,
       'transmit_local_variables': True,
+      'transmit_environment_variables:': True,
       'userversion': "Not defined",
       'user': None
   }
@@ -195,6 +196,7 @@ Initialization options
       'ignored_exceptions': [],
       'transmit_global_variables': True,
       'transmit_local_variables': True,
+      'transmit_environment_variables:': True,
       'userversion': "Not defined",
       'user': None
   })
