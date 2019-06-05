@@ -18,6 +18,7 @@ DEFAULT_CONFIG = {
     'proxy': None,
     'transmit_global_variables': True,
     'transmit_local_variables': True,
+    'transmit_environment_variables': True,
     'userversion': "Not defined",
     'user': None,
     'http_timeout': 10.0
@@ -123,7 +124,11 @@ class RaygunSender:
         return tags, custom_data, http_request, extra_environment_data
 
     def _create_message(self, raygunExceptionMessage, tags, user_custom_data, http_request, extra_environment_data):
-        return raygunmsgs.RaygunMessageBuilder().new() \
+        options = {
+            'transmit_environment_variables': self.transmit_environment_variables
+        }
+
+        return raygunmsgs.RaygunMessageBuilder(options).new() \
             .set_machine_name(socket.gethostname()) \
             .set_version(self.userversion) \
             .set_client_details() \
