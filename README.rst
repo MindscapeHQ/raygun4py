@@ -260,7 +260,7 @@ Config and data functions
 | filter_keys        | keys          | List               |
 +--------------------+---------------+--------------------+
 
-If you want to filter sensitive data out of the payload that is sent to Raygun, pass in a list of keys here. Any matching keys on the top level Raygun message object, or within dictionaries on the top level Raygun message object (including dictionaries nested within dictionaries) will have their value replaced with :code:`<filtered>` - useful for passwords, credit card data etc.
+If you want to filter sensitive data out of the payload that is sent to Raygun, pass in a list of keys here. Any matching keys on the top level Raygun message object, or within dictionaries on the top level Raygun message object (including dictionaries nested within dictionaries) will have their value replaced with :code:`<filtered>` - useful for passwords, credit card data etc. Supports * at the end of a key to indicate you want to filter any key that contains that key, ie foo_* will filter foo_bar, foo_qux, foo_baz etc
 
 +------------------+---------------+--------------------+
 | Function         | Arguments     | Type               |
