@@ -119,6 +119,7 @@ The above configuration is the minimal required setup. The full set of options s
       'ignored_exceptions': [],
       'transmit_global_variables': True,
       'transmit_local_variables': True,
+      'transmit_environment_variables:': True,
       'userversion': "Not defined",
       'user': None
   }
@@ -195,11 +196,12 @@ Initialization options
       'ignored_exceptions': [],
       'transmit_global_variables': True,
       'transmit_local_variables': True,
+      'transmit_environment_variables:': True,
       'userversion': "Not defined",
       'user': None
   })
 
-For the local/global variables, if their options are set to False the corresponding variables will not be sent with exception payloads.
+For the local/global/environment variables, if their options are set to False the corresponding variables will not be sent with exception payloads.
 
 httpTimeout controls the maximum time the HTTP request can take when POSTing to the Raygun API, and is of type 'float'.
 
