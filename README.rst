@@ -252,7 +252,7 @@ send_exception also supports the following extra data parameters:
 * :code:`httpRequest` is HTTP Request data - see `sample.py` for the expected format of the object.
 
 Config and data functions
---------------
+-------------------------
 
 +--------------------+---------------+--------------------+
 | Function           | Arguments     | Type               |
