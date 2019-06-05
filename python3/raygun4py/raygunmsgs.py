@@ -17,11 +17,12 @@ from raygun4py import http_utilities
 
 class RaygunMessageBuilder(object):
 
-    def __init__(self):
+    def __init__(self, options):
         self.raygunMessage = RaygunMessage()
+        self.options = options
 
     def new(self):
-        return RaygunMessageBuilder()
+        return RaygunMessageBuilder(self.options)
 
     def build(self):
         return self.raygunMessage
@@ -36,6 +37,9 @@ class RaygunMessageBuilder(object):
             "runtimeLocation": sys.executable,
             "runtimeVersion": 'Python ' + sys.version
         }
+
+        if self.options.get('transmit_environment_variables', True) is False:
+            self.raygunMessage.details['environment']['environmentVariables'] = None
 
         # Wrap these so we gracefully fail if we cannot access the system details for any reason
         try:

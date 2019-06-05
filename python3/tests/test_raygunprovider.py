@@ -87,7 +87,7 @@ class TestGroupingKey(unittest.TestCase):
     def create_dummy_message(self):
         self.sender = raygunprovider.RaygunSender('apikey')
 
-        msg = raygunmsgs.RaygunMessageBuilder().new()
+        msg = raygunmsgs.RaygunMessageBuilder({}).new()
         errorMessage = raygunmsgs.RaygunErrorMessage(Exception, None, None, {})
         msg.set_exception_details(errorMessage)
         return msg.build()
