@@ -1,3 +1,8 @@
+## 4.3.0 (06/06/2019):
+Features:
+  - Added a new config option, `transmit_environment_variables`, to control sending any environment variables at all
+  - Added support to `filter_keys` config option for ignoring keys with a simple wildcard approach. See README for more information
+
 ## 4.2.3 (28/03/2019):
 Bugfixes
   - Add request rawData to the build_wsgi_compliant_request utilities to fix a bug where rawData is set manually then overwritten by an empty object.

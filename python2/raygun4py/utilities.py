@@ -16,11 +16,18 @@ def filter_keys(filtered_keys, object):
         iteration_target = object.__dict__
 
     for key in iteration_target.iterkeys():
-        if key in filtered_keys:
-            iteration_target[key] = '<filtered>'
-
-        elif isinstance(iteration_target[key], dict):
+        if isinstance(iteration_target[key], dict):
             iteration_target[key] = filter_keys(filtered_keys, iteration_target[key])
+        else:
+            for filter_key in filtered_keys:
+                if key in filtered_keys:
+                    iteration_target[key] = '<filtered>'
+                elif '*' in filter_key:
+                    sanitised_key = filter_key.replace('*', '')
+
+                    if sanitised_key in key:
+                        iteration_target[key] = '<filtered>'
+
 
     return iteration_target
 

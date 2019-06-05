@@ -119,6 +119,7 @@ The above configuration is the minimal required setup. The full set of options s
       'ignored_exceptions': [],
       'transmit_global_variables': True,
       'transmit_local_variables': True,
+      'transmit_environment_variables:': True,
       'userversion': "Not defined",
       'user': None
   }
@@ -195,11 +196,12 @@ Initialization options
       'ignored_exceptions': [],
       'transmit_global_variables': True,
       'transmit_local_variables': True,
+      'transmit_environment_variables:': True,
       'userversion': "Not defined",
       'user': None
   })
 
-For the local/global variables, if their options are set to False the corresponding variables will not be sent with exception payloads.
+For the local/global/environment variables, if their options are set to False the corresponding variables will not be sent with exception payloads.
 
 httpTimeout controls the maximum time the HTTP request can take when POSTing to the Raygun API, and is of type 'float'.
 
@@ -258,7 +260,7 @@ Config and data functions
 | filter_keys        | keys          | List               |
 +--------------------+---------------+--------------------+
 
-If you want to filter sensitive data out of the payload that is sent to Raygun, pass in a list of keys here. Any matching keys on the top level Raygun message object, or within dictionaries on the top level Raygun message object (including dictionaries nested within dictionaries) will have their value replaced with :code:`<filtered>` - useful for passwords, credit card data etc.
+If you want to filter sensitive data out of the payload that is sent to Raygun, pass in a list of keys here. Any matching keys on the top level Raygun message object, or within dictionaries on the top level Raygun message object (including dictionaries nested within dictionaries) will have their value replaced with :code:`<filtered>` - useful for passwords, credit card data etc. Supports * at the end of a key to indicate you want to filter any key that contains that key, ie foo_* will filter foo_bar, foo_qux, foo_baz etc
 
 +------------------+---------------+--------------------+
 | Function         | Arguments     | Type               |

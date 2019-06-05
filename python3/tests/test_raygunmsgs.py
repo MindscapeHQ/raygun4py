@@ -5,7 +5,7 @@ from raygun4py import raygunmsgs
 class TestRaygunMessageBuilder(unittest.TestCase):
 
     def setUp(self):
-        self.builder = raygunmsgs.RaygunMessageBuilder().new()
+        self.builder = raygunmsgs.RaygunMessageBuilder({}).new()
         self.request = {
             "headers": {
                 "referer": "localhost",
@@ -113,6 +113,19 @@ class TestRaygunMessageBuilder(unittest.TestCase):
         self.builder \
                 .set_request_details(self.raw_wsgi_request) \
                 .set_tags(['foo', 'bar'])
+
+    def test_environment_variables(self):
+        self.builder.set_environment_details(None)
+
+        self.assertIsNotNone(self.builder.raygunMessage.details['environment']['environmentVariables'])
+
+    def test_environment_variables_are_ignored(self):
+        self.builder.options = {
+            'transmit_environment_variables': False
+        }
+        self.builder.set_environment_details(None)
+
+        self.assertIsNone(self.builder.raygunMessage.details['environment']['environmentVariables'])
 
 
 class TestRaygunErrorMessage(unittest.TestCase):

@@ -8,7 +8,7 @@ from raygun4py import raygunmsgs
 class TestRaygunMessageBuilder(unittest.TestCase):
 
     def setUp(self):
-        self.builder = raygunmsgs.RaygunMessageBuilder().new()
+        self.builder = raygunmsgs.RaygunMessageBuilder({}).new()
         self.request = {
             "headers": {
                 "referer": "localhost",
@@ -111,6 +111,19 @@ class TestRaygunMessageBuilder(unittest.TestCase):
                         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36")
         self.assertEqual(self.builder.raygunMessage.details['request']['headers']['Referer'],
                         "https://www.google.com/")
+
+    def test_environment_variables(self):
+        self.builder.set_environment_details(None)
+
+        self.assertIsNotNone(self.builder.raygunMessage.details['environment']['environmentVariables'])
+
+    def test_environment_variables_are_ignored(self):
+        self.builder.options = {
+            'transmit_environment_variables': False
+        }
+        self.builder.set_environment_details(None)
+
+        self.assertIsNone(self.builder.raygunMessage.details['environment']['environmentVariables'])
 
 
 class TestRaygunErrorMessage(unittest.TestCase):
