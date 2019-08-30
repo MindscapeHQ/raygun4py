@@ -165,6 +165,19 @@ class TestRaygunErrorMessage(unittest.TestCase):
 
         inspect.getinnerframes = originalGetinnerframes
 
+    def test_inspect_traceback_parameter(self):
+        should_include_me_too = "i'm local"
+        exception = ValueError("Hey there")
+
+        msg = raygunmsgs.RaygunErrorMessage(type(exception), exception, inspect.stack(), { 'transmitLocalVariables': True })
+        localVars = msg.__dict__['stackTrace'][0]['localVariables']
+
+        self.assertTrue('exception' in localVars)
+        self.assertEqual(exception.message, localVars['exception'])
+        self.assertTrue('should_include_me_too' in localVars)
+        self.assertEqual(should_include_me_too, localVars['should_include_me_too'])
+
+
 def getinnerframes_mock_methodname_none(exception):
     return [(
         'localVar',
