@@ -135,7 +135,7 @@ class RaygunErrorMessage(object):
         self.stackTrace = []
 
         try:
-            if type(exc_traceback) == list and type(exc_traceback[0]) == inspect.FrameInfo:
+            if type(exc_traceback) == list and 'frame' in str(type(exc_traceback[0])).lower():
                 frames = exc_traceback
             else:
                 frames = inspect.getinnerframes(exc_traceback)
