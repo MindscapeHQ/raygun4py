@@ -14,6 +14,18 @@ matrix:
       dist: xenial
       sudo: true
 
+matrix:
+  include:
+    - python: 3.2
+      dist: xenial
+      sudo: true
+
+matrix:
+  include:
+    - python: 3.3
+      dist: xenial
+      sudo: true
+
 install:
   - pip install .[dev]
 
