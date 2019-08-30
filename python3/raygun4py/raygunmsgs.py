@@ -135,7 +135,11 @@ class RaygunErrorMessage(object):
         self.stackTrace = []
 
         try:
-            frames = inspect.getinnerframes(exc_traceback)
+            if type(exc_traceback) == list and type(exc_traceback[0]) == inspect.FrameInfo:
+                frames = exc_traceback
+            else:
+                frames = inspect.getinnerframes(exc_traceback)
+
 
             if frames:
                 for frame in frames:
@@ -193,7 +197,10 @@ class RaygunErrorMessage(object):
             for key in localVars:
                 try:
                     # Note that str() *can* fail; thus protect against it as much as we can.
-                    result[key] = str(localVars[key])
+                    if type(localVars[key]) is unicode:
+                        result[key] = localVars[key]
+                    else:
+                        result[key] = str(localVars[key])
                 except Exception as e:
                     try:
                         r = repr(localVars[key])

@@ -135,7 +135,10 @@ class RaygunErrorMessage(object):
 
         frames = None
         try:
-            frames = inspect.getinnerframes(exc_traceback)
+            if type(exc_traceback) == list and type(exc_traceback[0]) == tuple and str(exc_traceback[0][0].__class__) == "<type 'frame'>":
+                frames = exc_traceback
+            else:
+                frames = inspect.getinnerframes(exc_traceback)
 
             if frames:
                 for frame in frames:
@@ -181,10 +184,7 @@ class RaygunErrorMessage(object):
             for key in localVars:
                 try:
                     # Note that str() *can* fail; thus protect against it as much as we can.
-                    if type(localVars[key]) is unicode:
-                        result[key] = localVars[key]
-                    else:
-                        result[key] = str(localVars[key])
+                    result[key] = str(localVars[key])
                 except Exception as e:
                     try:
                         r = repr(localVars[key])
