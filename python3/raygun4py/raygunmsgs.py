@@ -140,7 +140,6 @@ class RaygunErrorMessage(object):
             else:
                 frames = inspect.getinnerframes(exc_traceback)
 
-
             if frames:
                 for frame in frames:
                     localVariables = None

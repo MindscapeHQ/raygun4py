@@ -209,7 +209,7 @@ class TestRaygunErrorMessage(unittest.TestCase):
         localVars = msg.__dict__['stackTrace'][0]['localVariables']
 
         self.assertTrue('exception' in localVars)
-        self.assertEqual(exception.message, localVars['exception'])
+        self.assertEqual(str(exception), localVars['exception'])
         self.assertTrue('should_include_me_too' in localVars)
         self.assertEqual(should_include_me_too, localVars['should_include_me_too'])
 
