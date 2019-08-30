@@ -242,9 +242,10 @@ Call this function from within a catch block to send the current exception to Ra
 
   # Send custom traceback
   exception = ValueError("new error")
-  mutated_stack = inspect.stack()
-  # modify mutated_stack.append(...)
-  httpResult = client.send_exception(exc_info=[type(exception), exception, mutated_stack])
+  new_stack = inspect.stack()
+  # You can even modify the stack:
+  # new_stack = new_stack.append(...)
+  httpResult = client.send_exception(exc_info=[type(exception), exception, new_stack])
 
 You can pass in **either** of these two exception params:
 
