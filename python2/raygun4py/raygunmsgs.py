@@ -1,5 +1,6 @@
 import sys
 import os
+import re
 import inspect
 import jsonpickle
 from raygun4py import __version__
@@ -128,6 +129,8 @@ class RaygunMessage(object):
 
 class RaygunErrorMessage(object):
 
+    INSPECT_FRAME_TYPE_SIGNATURE = r'<frame [\w ]*0x\w*[>,]'
+
     def __init__(self, exc_type, exc_value, exc_traceback, options):
         self.className = exc_type.__name__
         self.message = "%s: %s" % (exc_type.__name__, exc_value)
@@ -173,13 +176,17 @@ class RaygunErrorMessage(object):
         return self.className
 
     def _get_frames(self, exc_traceback):
-        if self._is_stack(exc_traceback):
+        if self._is_stack_frame_type(exc_traceback):
             return exc_traceback
         else:
             return inspect.getinnerframes(exc_traceback)
 
-    def _is_stack(self, exc_traceback):
-        return type(exc_traceback) == list and type(exc_traceback[0]) == tuple and 'frame' in str(type(exc_traceback[0][0])).lower()
+    def _is_stack_frame_type(self, exc_traceback):
+        try:
+            matches = re.findall(INSPECT_FRAME_TYPE_REGEX, str(exc_traceback).lower())
+            return len(matches) > 1
+        except Exception as e:
+            return False
 
     def _get_locals(self, frame):
         result = {}
