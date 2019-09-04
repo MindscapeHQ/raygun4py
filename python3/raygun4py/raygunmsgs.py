@@ -135,12 +135,7 @@ class RaygunErrorMessage(object):
         self.stackTrace = []
 
         try:
-            if type(exc_traceback) == list and type(exc_traceback[0]) == tuple and 'frame' in str(type(exc_traceback[0][0])).lower():
-                frames = exc_traceback
-            elif type(exc_traceback) == list and 'frame' in str(type(exc_traceback[0])).lower():
-                frames = exc_traceback
-            else:
-                frames = inspect.getinnerframes(exc_traceback)
+            frames = self._get_frames(exc_traceback)
 
             if frames:
                 for frame in frames:
@@ -189,6 +184,21 @@ class RaygunErrorMessage(object):
 
     def get_classname(self):
         return self.className
+
+    def _get_frames(self, exc_traceback):
+        if self._is_stack(exc_traceback):
+            return exc_traceback
+        else:
+            return inspect.getinnerframes(exc_traceback)
+
+    def _is_stack(self, exc_traceback):
+        if type(exc_traceback) == list:
+            if type(exc_traceback[0]) == tuple and 'frame' in str(type(exc_traceback[0][0])).lower():
+                return True
+            elif 'frame' in str(type(exc_traceback[0])).lower():
+                return True
+        else:
+            return False
 
     def _get_locals(self, frame):
         result = {}
