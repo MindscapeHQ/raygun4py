@@ -6,8 +6,8 @@ cache: pip
 
 python: ["2.7", "3.2", "3.3", "3.4", "3.5", "3.6", "pypy"]
 
-os:
-  - linux
+os: linux
+dist: trusty
 
 # Workaround to install Python 3.7
 # https://github.com/travis-ci/travis-ci/issues/9815
