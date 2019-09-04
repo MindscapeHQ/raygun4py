@@ -136,6 +136,7 @@ class RaygunErrorMessage(object):
         self.message = "%s: %s" % (exc_type.__name__, exc_value)
         self.stackTrace = []
 
+        frames = None
         try:
             frames = self._get_frames(exc_traceback)
 
@@ -182,11 +183,8 @@ class RaygunErrorMessage(object):
             return inspect.getinnerframes(exc_traceback)
 
     def _is_stack_frame_type(self, exc_traceback):
-        try:
-            matches = re.findall(INSPECT_FRAME_TYPE_REGEX, str(exc_traceback).lower())
-            return len(matches) > 1
-        except Exception as e:
-            return False
+        matches = re.findall(self.INSPECT_FRAME_TYPE_SIGNATURE, str(exc_traceback).lower())
+        return len(matches) >= 1
 
     def _get_locals(self, frame):
         result = {}
