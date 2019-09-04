@@ -4,7 +4,7 @@ language: python
 
 cache: pip
 
-python: ["2.7", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "pypy"]
+python: ["2.7", "3.4", "3.5", "3.6", "pypy"]
 
 dist: trusty
 
@@ -12,8 +12,13 @@ dist: trusty
 # https://github.com/travis-ci/travis-ci/issues/9815
 matrix:
   include:
-    - name: "Python 3.7"
-      python: "3.7"
+    - python: 3.2
+      dist: trusty
+      sudo: true
+    - python: 3.3
+      dist: trusty
+      sudo: true
+    - python: 3.7
       dist: xenial
       sudo: true
 
