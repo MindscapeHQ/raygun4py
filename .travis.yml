@@ -13,9 +13,15 @@ matrix:
     - python: 3.2
       dist: trusty
       sudo: true
+
+matrix:
+  include:
     - python: 3.3
       dist: trusty
       sudo: true
+
+matrix:
+  include:
     - python: 3.7
       dist: xenial
       sudo: true
