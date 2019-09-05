@@ -130,7 +130,7 @@ class RaygunMessage(object):
 
 class RaygunErrorMessage(object):
 
-    INSPECT_FRAME_TYPE_SIGNATURE = r'<frame [\w ]*0x\w*[>,]'
+    INSPECT_FRAME_TYPE_SIGNATURE = re.compile(r'<frame [\w ]*0x')
 
     def __init__(self, exc_type, exc_value, exc_traceback, options):
         self.className = exc_type.__name__
@@ -189,14 +189,15 @@ class RaygunErrorMessage(object):
         return self.className
 
     def _get_frames(self, exc_traceback):
-        if self._is_stack_frame_type(exc_traceback):
+        if type(exc_traceback) == list and self._is_stack_frame_type(exc_traceback):
             return exc_traceback
         else:
             return inspect.getinnerframes(exc_traceback)
 
     def _is_stack_frame_type(self, exc_traceback):
-        matches = re.findall(self.INSPECT_FRAME_TYPE_SIGNATURE, str(exc_traceback).lower())
-        return len(matches) >= 1
+        short_traceback = str(exc_traceback).lower()[0:100]
+        is_found = re.search(self.INSPECT_FRAME_TYPE_SIGNATURE, short_traceback)
+        return is_found
 
     def _get_locals(self, frame):
         result = {}

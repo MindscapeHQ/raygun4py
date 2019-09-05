@@ -1,5 +1,9 @@
-import sys, unittest, socket
+import sys
+import unittest
+import socket
 import inspect
+import mock
+
 from raygun4py import raygunmsgs
 
 class TestRaygunMessageBuilder(unittest.TestCase):
@@ -145,7 +149,17 @@ class TestRaygunErrorMessage(unittest.TestCase):
             self.theException = e
 
             exc_info = sys.exc_info()
-            self.msg = raygunmsgs.RaygunErrorMessage(exc_info[0], exc_info[1], exc_info[2], { 'transmitLocalVariables': True })
+
+            with mock.patch.object(raygunmsgs.RaygunErrorMessage, '_is_stack_frame_type') as _is_stack_frame_type:
+
+                # When given a traceback
+                self.assertTrue('traceback' in str(exc_info[2].__class__).lower())
+
+                self.msg = raygunmsgs.RaygunErrorMessage(exc_info[0], exc_info[1], exc_info[2], { 'transmitLocalVariables': True })
+
+                # It won't be checked with Regex to see if it's a <list> of <frames>.
+                # Thus a speedy result, with less overhead.
+                _is_stack_frame_type.assert_not_called()
 
     def parent(self):
             try:
@@ -212,6 +226,11 @@ class TestRaygunErrorMessage(unittest.TestCase):
         self.assertEqual(str(exception), localVars['exception'])
         self.assertTrue('should_include_me_too' in localVars)
         self.assertEqual(should_include_me_too, localVars['should_include_me_too'])
+
+    def test_inspect_traceback_argument_failure(self):
+        exception = ValueError("")
+        fake_traceback = ["not real <frames>", "<frame fake>"]
+        self.assertRaises(AttributeError, raygunmsgs.RaygunErrorMessage, type(exception), exception, fake_traceback, {'transmitLocalVariables': True})
 
 
 def getinnerframes_mock_methodname_none(exception):
