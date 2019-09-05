@@ -137,6 +137,7 @@ class RaygunErrorMessage(object):
         self.message = "%s: %s" % (exc_type.__name__, exc_value)
         self.stackTrace = []
 
+        frames = None
         try:
             frames = self._get_frames(exc_traceback)
 
