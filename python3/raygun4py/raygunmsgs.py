@@ -196,7 +196,8 @@ class RaygunErrorMessage(object):
             return inspect.getinnerframes(exc_traceback)
 
     def _is_stack_frame_type(self, exc_traceback):
-        # Should we have to search through a string, "<frame" should be found within the first 50 characters.
+        # Try not to search through entire string, (which could be an entire stack trace) by truncating to 100.
+        # "<frame" should be found within the first 50 characters.
         # Example:
         # >>> str(inspect.stack()).lower()[0:50]
         #     "[frameinfo(frame=<frame at 0x1074b8528, file '<std"
