@@ -3,6 +3,8 @@ The following will show you how to get started with local development
 
 ## Python 2
 1. `cd <project folder> && virtualenv -p <PATH TO PYTHON2> venv2`
+ 
+   (Example: `virtualenv -p $(which python) venv2` )
 1. activate the virtual env
 1. `pip install .[dev]`
 1. Run tests

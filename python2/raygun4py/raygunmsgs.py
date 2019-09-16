@@ -1,6 +1,5 @@
 import sys
 import os
-import re
 import inspect
 import jsonpickle
 from raygun4py import __version__
@@ -129,7 +128,8 @@ class RaygunMessage(object):
 
 class RaygunErrorMessage(object):
 
-    INSPECT_FRAME_TYPE_SIGNATURE = re.compile(r'<frame [\w ]*0x')
+    INSPECT_STACK_BASE_TYPE = list
+    INSPECT_STACK_CLASS_SUBTYPE = tuple
 
     def __init__(self, exc_type, exc_value, exc_traceback, options):
         self.className = exc_type.__name__
@@ -177,21 +177,23 @@ class RaygunErrorMessage(object):
         return self.className
 
     def _get_frames(self, exc_traceback):
-        if type(exc_traceback) == list and self._is_stack_frame_type(exc_traceback):
+        if self._is_stack_frame_type(exc_traceback):
             return exc_traceback
         else:
             return inspect.getinnerframes(exc_traceback)
 
     def _is_stack_frame_type(self, exc_traceback):
-        # Try not to search through entire string, (which could be an entire stack trace) by truncating to 100.
-        # "<frame" should be found within the first 50 characters.
-        # Example:
-        # >>> str(inspect.stack()).lower()[0:50]
-        #     "[frameinfo(frame=<frame at 0x1074b8528, file '<std"
-        #
-        short_traceback = str(exc_traceback).lower()[0:100]
-        is_found = re.search(self.INSPECT_FRAME_TYPE_SIGNATURE, short_traceback)
-        return is_found
+        if type(exc_traceback) != self.INSPECT_STACK_BASE_TYPE:
+            return False
+
+        for frame in exc_traceback:
+            if type(frame) != self.INSPECT_STACK_CLASS_SUBTYPE:
+                return False
+            else:
+                if not inspect.isframe(frame[0]):
+                    return False
+
+        return True
 
     def _get_locals(self, frame):
         result = {}
