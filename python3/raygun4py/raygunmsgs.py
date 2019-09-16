@@ -130,7 +130,7 @@ class RaygunMessage(object):
 class RaygunErrorMessage(object):
 
     INSPECT_STACK_BASE_TYPE = list
-    INSPECT_STACK_CLASS_SUBTYPE = inspect.FrameInfo
+    INSPECT_STACK_CLASS_SUBTYPE = getattr(inspect, 'FrameInfo', tuple)
 
     def __init__(self, exc_type, exc_value, exc_traceback, options):
         self.className = exc_type.__name__
