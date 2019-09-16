@@ -147,19 +147,10 @@ class TestRaygunErrorMessage(unittest.TestCase):
             self.parent()
         except Exception as e:
             self.theException = e
-
             exc_info = sys.exc_info()
 
-            with mock.patch.object(raygunmsgs.RaygunErrorMessage, '_is_stack_frame_type') as _is_stack_frame_type:
-
-                # When given a traceback
-                self.assertTrue('traceback' in str(exc_info[2].__class__).lower())
-
-                self.msg = raygunmsgs.RaygunErrorMessage(exc_info[0], exc_info[1], exc_info[2], { 'transmitLocalVariables': True })
-
-                # It won't be checked with Regex to see if it's a <list> of <frames>.
-                # Thus a speedy result, with less overhead.
-                _is_stack_frame_type.assert_not_called()
+            self.assertTrue(inspect.istraceback(exc_info[2]))
+            self.msg = raygunmsgs.RaygunErrorMessage(exc_info[0], exc_info[1], exc_info[2], { 'transmitLocalVariables': True })
 
     def parent(self):
             try:
