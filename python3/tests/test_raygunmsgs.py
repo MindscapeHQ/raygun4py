@@ -224,19 +224,6 @@ class TestRaygunErrorMessage(unittest.TestCase):
         self.assertRaises(AttributeError, raygunmsgs.RaygunErrorMessage, type(exception), exception, fake_traceback, {'transmitLocalVariables': True})
 
     def test_it_raises_DeveloperException_on_incorrect_stack(self):
-        incorrect_stack = inspect.stack()
-        fake_frame_object = {'my object': 'error'}
-        klass = getattr(inspect, 'FrameInfo', tuple)
-
-        if type(klass) == tuple:
-            fake_frame_info = klass([fake_frame_object, None, "", None])
-        else:
-            fake_frame_info = klass(filename='/tmp/specs/etc.py', lineno=666, function='def abc', code_context='idk', index=0)
-
-        incorrect_stack.append(fake_frame_info)
-        self.assertRaises(raygunmsgs.DeveloperException, raygunmsgs.RaygunErrorMessage, type(ValueError("")), ValueError(""), incorrect_stack, {'transmitLocalVariables': True})
-
-    def test_it_raises_DeveloperException_on_incorrect_stack_999(self):
         class frame(object):
             def __init__(self):
                 pass
@@ -245,7 +232,7 @@ class TestRaygunErrorMessage(unittest.TestCase):
         fake_frame_object = frame()
         klass = getattr(inspect, 'FrameInfo', tuple)
 
-        if type(klass) == tuple:
+        if klass == tuple:
             fake_frame_info = klass([fake_frame_object, None, "", None])
         else:
             fake_frame_info = klass(frame=fake_frame_object, filename='/tmp/specs/etc.py', lineno=666, function='<module>', code_context=None, index=None)
