@@ -226,6 +226,8 @@ class TestRaygunErrorMessage(unittest.TestCase):
             raygunmsgs.RaygunErrorMessage(type(exception), exception, fake_traceback, {'transmitLocalVariables': True})
 
     def test_it_raises_DeveloperException_on_incorrect_stack(self):
+
+        # Try to mimic the original frame class objects, to try and spoof the system. (inspect.isframe() should return False)
         class frame(object):
             def __init__(self):
                 pass
