@@ -15,6 +15,10 @@ from datetime import datetime
 from raygun4py import http_utilities
 
 
+class DeveloperException(Exception):
+    pass
+
+
 class RaygunMessageBuilder(object):
 
     def __init__(self, options):
@@ -191,7 +195,7 @@ class RaygunErrorMessage(object):
                 return False
             else:
                 if not inspect.isframe(frame[0]):
-                    return False
+                    raise DeveloperException("Expected frame type. Got '{}' instead.".format(type(frame[0])))
 
         return True
 
