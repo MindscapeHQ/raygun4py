@@ -242,7 +242,7 @@ Call this function from within a catch block to send the current exception to Ra
 
   # Send custom traceback, or a full traceback using `inspect.stack()`
   exception = ValueError("new error")
-  # inspect's stack() will have all local variables from stacks proceeding it (which a rescued exception might not have the full picture).
+  # inspect's stack() will have all local variables from stacks proceeding it (which a rescued exception may not have the full picture).
   new_stack = inspect.stack()
   httpResult = client.send_exception(exc_info=[type(exception), exception, new_stack])
 
