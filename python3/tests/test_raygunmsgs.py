@@ -221,7 +221,9 @@ class TestRaygunErrorMessage(unittest.TestCase):
     def test_inspect_traceback_argument_failure(self):
         exception = ValueError("")
         fake_traceback = ["not real <frames>", "<frame fake>"]
-        self.assertRaises(AttributeError, raygunmsgs.RaygunErrorMessage, type(exception), exception, fake_traceback, {'transmitLocalVariables': True})
+
+        with self.assertRaises(raygunmsgs.DeveloperException):
+            raygunmsgs.RaygunErrorMessage(type(exception), exception, fake_traceback, {'transmitLocalVariables': True})
 
     def test_it_raises_DeveloperException_on_incorrect_stack(self):
         class frame(object):
@@ -241,6 +243,9 @@ class TestRaygunErrorMessage(unittest.TestCase):
 
         with self.assertRaises(raygunmsgs.DeveloperException):
             raygunmsgs.RaygunErrorMessage(type(ValueError("")), ValueError(""), incorrect_stack, {'transmitLocalVariables': True})
+
+        with self.assertRaises(raygunmsgs.DeveloperException):
+            raygunmsgs.RaygunErrorMessage(type(ValueError("")), ValueError(""), frame(), {'transmitLocalVariables': True})
 
 
 def getinnerframes_mock_methodname_none(exception):

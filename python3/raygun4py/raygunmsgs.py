@@ -194,10 +194,13 @@ class RaygunErrorMessage(object):
         return self.className
 
     def _get_frames(self, exc_traceback):
+        if not exc_traceback or inspect.istraceback(exc_traceback):
+            return inspect.getinnerframes(exc_traceback)
+
         if self._is_stack_frame_type(exc_traceback):
             return exc_traceback
-        else:
-            return inspect.getinnerframes(exc_traceback)
+
+        raise DeveloperException("Expected traceback type. Got '{}' instead.".format(type(exc_traceback)))
 
     def _is_stack_frame_type(self, exc_traceback):
         if type(exc_traceback) != self.INSPECT_STACK_BASE_TYPE:
