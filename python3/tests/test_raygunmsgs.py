@@ -236,6 +236,23 @@ class TestRaygunErrorMessage(unittest.TestCase):
         incorrect_stack.append(fake_frame_info)
         self.assertRaises(raygunmsgs.DeveloperException, raygunmsgs.RaygunErrorMessage, type(ValueError("")), ValueError(""), incorrect_stack, {'transmitLocalVariables': True})
 
+    def test_it_raises_DeveloperException_on_incorrect_stack_999(self):
+        class frame(object):
+            def __init__(self):
+                pass
+
+        incorrect_stack = inspect.stack()
+        fake_frame_object = frame()
+        klass = getattr(inspect, 'FrameInfo', tuple)
+
+        if type(klass) == tuple:
+            fake_frame_info = klass([fake_frame_object, None, "", None])
+        else:
+            fake_frame_info = klass(frame=fake_frame_object, filename='/tmp/specs/etc.py', lineno=666, function='<module>', code_context=None, index=None)
+
+        incorrect_stack.append(fake_frame_info)
+        self.assertRaises(raygunmsgs.DeveloperException, raygunmsgs.RaygunErrorMessage, type(ValueError("")), ValueError(""), incorrect_stack, {'transmitLocalVariables': True})
+
 
 def getinnerframes_mock_methodname_none(exception):
     return [(
