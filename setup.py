@@ -1,7 +1,7 @@
 import sys
 from setuptools import setup
 
-packages = ['raygun4py', 'raygun4py.middleware']
+packages = ['raygun4py', 'raygun4py.middleware', 'raygun4py.extension']
 
 base_dir = 'python2'
 if sys.version_info[0] == 3:
@@ -20,7 +20,8 @@ dev_requirements = [
     'mock >= 2.0.0',
     'django == 1.8.8',
     'flask >= 0.10',
-    'WebTest >= 2.0.32'
+    'WebTest >= 2.0.32',
+    'scrapy >= 1.8.0'
 ]
 
 setup(
