@@ -173,6 +173,21 @@ Attaching raw HTTP request data
 
 If you are in a web server environment and have HTTP request details available, you can pass these and the headers through in a dictionary (see :code:`sample.py`).
 
+Scrapy
+++++++
+
+To configure scrapy to automatically send all exceptions raised in spiders and item pipelines to Raygun:
+
+settings.py
+
+.. code:: python
+
+  RAYGUN_API_KEY = 'paste_your_api_key_here'
+
+  EXTENSIONS = {
+      'raygun4py.extension.scrapy.Provider': 400
+  }
+
 Code running on Google App Engine should now be supported - you can test this locally, and has been reported working once deployed (the latter currently requires a paid account due to needed SSL support).
 
 Documentation
