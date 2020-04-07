@@ -22,9 +22,9 @@ def build_wsgi_compliant_request(request):
         # fallback to wsgi.input
         if http_form is None and 'wsgi.input' in request:
             # we can assume WSGI keys inside this block
-            content_length = int(request.get('CONTENT_LENGTH', 0))
-            if content_length:
-                http_form = request['wsgi.input'].read(content_length)
+            content_length = request.get('CONTENT_LENGTH', 0)
+            if content_length and content_length != '':
+                http_form = request['wsgi.input'].read(int(content_length))
 
         rg_request = {
             'httpMethod': (request.get('httpMethod') or request.get('REQUEST_METHOD')),
@@ -43,10 +43,12 @@ def build_wsgi_compliant_request(request):
     _headers = request.get('headers')
     if _headers is None:
         # manually try to build up headers given known WSGI keys
-        _headers = {
-            'Content-Type': request.get('CONTENT_TYPE'),
-            'Content-Length': request.get('CONTENT_LENGTH'),
-        }
+        _headers = {}
+        # don't add content headers if they are empty strings, Werkzeug has strange defaults
+        if request.get('CONTENT_TYPE') != '':
+            _headers['Content-Type'] = request.get('CONTENT_TYPE')
+        if request.get('CONTENT_LENGTH') != '':
+            _headers['Content-Length'] = request.get('CONTENT_LENGTH')
 
         for key, value in request.items():
             if key.startswith('HTTP_'):
