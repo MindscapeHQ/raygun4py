@@ -14,12 +14,19 @@ class DjangoProviderTests(SimpleTestCase):
     def setUp(self):
         request_factory = RequestFactory()
         self.get_request = request_factory.get('/foo')
+        self.post_request = request_factory.post('/foo')
 
-    def test_map_request(self):
+    def test_get_map_request(self):
         provider = Provider()
         request_payload = provider._mapRequest(self.get_request)
         self.assertEqual(request_payload['url'], '/foo')
         self.assertEqual(request_payload['httpMethod'], 'GET')
+
+    def test_post_map_request(self):
+        provider = Provider()
+        request_payload = provider._mapRequest(self.post_request)
+        self.assertEqual(request_payload['url'], '/foo')
+        self.assertEqual(request_payload['httpMethod'], 'POST')
 
     def test_get_django_environment(self):
         provider = Provider()

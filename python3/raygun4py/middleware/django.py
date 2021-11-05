@@ -38,7 +38,7 @@ class Provider(MiddlewareMixin):
             'queryString': dict((key, request.GET[key]) for key in request.GET),
             'form': dict((key, request.POST[key]) for key in request.POST),
             'headers': _headers,
-            'rawData': request.body if hasattr(request, 'body') else getattr(request, 'raw_post_data', {})
+            'rawData': request.data if hasattr(request, 'data') else getattr(request, 'raw_post_data', {})
         }
 
     def _get_django_environment(self):
