@@ -103,6 +103,30 @@ class TestRaygun4PyFunctional(unittest.TestCase):
 
             self.assertEqual(httpResult[0], 202)
 
+    def test_sending_user_override(self):
+        client = raygunprovider.RaygunSender(self.apiKey)
+        client.set_user({
+            'firstName': 'baz',
+            'fullName': 'baz bar',
+            'email': 'baz@bar.com',
+            'isAnonymous': False,
+            'identifier': 'baz@bar.com'
+          })
+
+        try:
+            raise Exception("Raygun4py3 manual sending test - user override")
+        except:
+            exc_info = sys.exc_info()
+            httpResult = client.send_exception(exc_info=exc_info, user_override={
+                'firstName': 'foo',
+                'fullName': 'foo bar',
+                'email': 'foo@bar.com',
+                'isAnonymous': False,
+                'identifier': 'foo@bar.com'
+            })
+
+            self.assertEqual(httpResult[0], 202)
+
     def log_send(self, logger):
         try:
             raise Exception("Raygun4py3 Logging Test")
@@ -167,7 +191,7 @@ class TestRaygun4PyFunctional(unittest.TestCase):
             raise Exception("Raygun4py3 functional test - on_before_send")
         except Exception as e:
             httpResult = client.send_exception(e, exc_info = sys.exc_info())
-        
+
         self.assertEqual(httpResult[0], 202)
 
     def test_before_send_callback_sets_none_cancels_send(self):
@@ -178,7 +202,7 @@ class TestRaygun4PyFunctional(unittest.TestCase):
             raise Exception("Raygun4py3 functional test - on_before_send")
         except Exception as e:
             result = client.send_exception(e, exc_info = sys.exc_info())
-        
+
         self.assertIsNone(result)
 
     def test_request(self):
@@ -260,7 +284,7 @@ class TestRaygun4PyFunctional(unittest.TestCase):
         except Exception as e:
             result = client.send_exception(httpRequest={})
 
-            
+
 def before_send_mutate_payload(message):
     message['newKey'] = 'newValue'
     return message
