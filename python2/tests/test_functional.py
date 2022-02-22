@@ -26,6 +26,29 @@ class TestRaygun4PyFunctional(unittest.TestCase):
 
             self.assertEqual(httpResult[0], 202)
 
+    def test_send_with_user_override(self):
+        client = raygunprovider.RaygunSender(self.apiKey)
+        client.set_user({
+            'firstName': 'baz',
+            'fullName': 'baz bar',
+            'email': 'baz@bar.com',
+            'isAnonymous': False,
+            'identifier': 'baz@bar.com'
+          })
+
+        try:
+            raise Exception("Raygun4py manual sending test - user override")
+        except:
+            httpResult = client.send_exception(exc_info=sys.exc_info(), user_override={
+                'firstName': 'foo',
+                'fullName': 'foo bar',
+                'email': 'foo@bar.com',
+                'isAnonymous': False,
+                'identifier': 'foo@bar.com'
+            })
+
+            self.assertEqual(httpResult[0], 202)
+
     def test_send_with_version(self):
         client = raygunprovider.RaygunSender(self.apiKey)
         client.set_version('v1.0.0')

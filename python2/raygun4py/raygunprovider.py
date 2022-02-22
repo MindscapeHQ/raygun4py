@@ -81,7 +81,7 @@ class RaygunSender:
         if callable(callback):
             self.grouping_key_callback = callback
 
-    def send_exception(self, exception=None, exc_info=None, **kwargs):
+    def send_exception(self, exception=None, exc_info=None, user_override=None, **kwargs):
         options = {
             'transmitLocalVariables': self.transmit_local_variables,
             'transmitGlobalVariables': self.transmit_global_variables
@@ -123,7 +123,7 @@ class RaygunSender:
 
         return tags, custom_data, http_request, extra_environment_data
 
-    def _create_message(self, raygunExceptionMessage, tags, user_custom_data, http_request, extra_environment_data):
+    def _create_message(self, raygunExceptionMessage, tags, user_custom_data, http_request, extra_environment_data, user_override=None):
         options = {
             'transmit_environment_variables': self.transmit_environment_variables
         }
@@ -137,7 +137,7 @@ class RaygunSender:
             .set_tags(tags) \
             .set_customdata(user_custom_data) \
             .set_request_details(http_request) \
-            .set_user(self.user) \
+            .set_user(user_override if user_override else self.user) \
             .build()
 
     def _transform_message(self, message):
