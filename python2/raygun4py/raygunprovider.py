@@ -31,7 +31,7 @@ class RaygunSender:
 
     api_key = None
     endpointprotocol = 'https://'
-    endpointhost = 'api.raygun.io'
+    endpointhost = 'api.raygun.com'
     endpointpath = '/entries'
 
     def __init__(self, api_key, config=None):
