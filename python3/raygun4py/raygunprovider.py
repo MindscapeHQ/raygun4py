@@ -29,6 +29,7 @@ class RaygunSender:
     endpointprotocol = 'https://'
     endpointhost = 'api.raygun.io'
     endpointpath = '/entries'
+    process_tags = None
 
     def __init__(self, api_key, config={}):
         if (api_key):
@@ -54,6 +55,10 @@ class RaygunSender:
 
     def set_user(self, user):
         self.user = user
+
+    def set_tags(self, tags):
+        if type(tags) is list or tuple:
+            self.process_tags = tags
 
     def ignore_exceptions(self, exceptions):
         if isinstance(exceptions, list):
@@ -124,6 +129,7 @@ class RaygunSender:
             .set_client_details() \
             .set_exception_details(raygunExceptionMessage) \
             .set_environment_details(extra_environment_data) \
+            .set_tags(self.process_tags) \
             .set_tags(tags) \
             .set_customdata(user_custom_data) \
             .set_request_details(http_request) \
