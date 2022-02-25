@@ -61,7 +61,7 @@ class RaygunSender:
         self.user = user
 
     def set_tags(self, tags):
-        if type(tags) is list or tuple:
+        if type(tags) is list:
             self.process_tags = tags
 
     def ignore_exceptions(self, exceptions):
