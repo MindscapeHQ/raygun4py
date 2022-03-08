@@ -27,7 +27,7 @@ class RaygunSender:
 
     api_key = None
     endpointprotocol = 'https://'
-    endpointhost = 'api.raygun.com'
+    endpointhost = 'api.raygun.io'
     endpointpath = '/entries'
     process_tags = []
 
