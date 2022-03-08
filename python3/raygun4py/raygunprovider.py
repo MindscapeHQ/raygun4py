@@ -29,7 +29,7 @@ class RaygunSender:
     endpointprotocol = 'https://'
     endpointhost = 'api.raygun.com'
     endpointpath = '/entries'
-    process_tags = None
+    process_tags = []
 
     def __init__(self, api_key, config={}):
         if (api_key):
