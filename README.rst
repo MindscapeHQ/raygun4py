@@ -330,11 +330,23 @@ Customer data can be passed in which will be displayed in the Raygun web app. Th
 | set_tags       | tags          | List               |
 +----------------+---------------+--------------------+
 
-A List of tags can be passed in which will be added to each exception that is raised. 
+A List of tags can be passed in which will be added to each exception that is raised. When this is used in conjunction with the tags argument on send_exception the set will be unioned with the argument to send_exception taking priority.
 
 .. code:: python
 
   client.set_tags(["tag1", "tag2"])
+
++----------------+--------------------+--------------------+
+| Function       | Arguments          | Type               |
++================+====================+====================+
+| set_customdata | user_custom_data   | Dict               |
++----------------+--------------------+--------------------+
+
+A Dict containing user specified key/value pairs can be passed in which will be added as custom data to each exception that is raised. This allows additional state to be supplied to help provide context for exceptions that are raised. When this is used in conjunction with the userCustomData argument on send_exception the 2 Dictionary instances will be merged with the argument to send_exception taking priority.
+
+.. code:: python
+
+  client.set_customdata({'key1':'foo','key2':'bar'})
 
 Custom grouping logic
 ---------------------
