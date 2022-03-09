@@ -324,6 +324,18 @@ Customer data can be passed in which will be displayed in the Raygun web app. Th
 
 `identifier` should be whatever unique key you use to identify customers, for instance an email address. This will be used to create the count of affected customers. If you wish to anonymize it, you can generate and store a UUID or hash one or more of their unique login data fields, if available.
 
++----------------+---------------+--------------------+
+| Function       | Arguments     | Type               |
++================+===============+====================+
+| set_tags       | tags          | List               |
++----------------+---------------+--------------------+
+
+A List of tags can be passed in which will be added to each exception that is raised. 
+
+.. code:: python
+
+  client.set_tags(["tag1", "tag2"])
+
 Custom grouping logic
 ---------------------
 
@@ -360,7 +372,7 @@ Troubleshooting
 
 To see the HTTP response code from sending the message to raygun, `print client.send()` (as in line 27 of test.py). It will be 403 if an invalid API key was entered, and 202 if successful.
 
-Create a thread in the official support forums at http://raygun.io/forums, and we'll help you out.
+Create a thread in the official support forums at https://raygun.com/forums, and we'll help you out.
 
 Changelog
 =========
