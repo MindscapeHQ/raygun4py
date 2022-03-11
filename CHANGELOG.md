@@ -1,3 +1,16 @@
+## 4.4.0 (9/03/2022):
+Features:
+  - Added set_tags method to client to allow globally scoped tags to be specified once rather than per exception
+  - Added set_customdata method to client to allow globally scoped custom data to be specified once rather than per exception
+
+## 4.3.2 (24/02/2022):
+Features:
+  - Added user_override method to send_exception to resolve an issue with specifying the user with concurrent connections
+
+## 4.3.1 (5/11/2021):
+Bugfixes
+  - Fix for a crash under Django ([#93](https://github.com/MindscapeHQ/raygun4py/issues/93))
+
 ## 4.3.0 (06/06/2019):
 Features:
   - Added a new config option, `transmit_environment_variables`, to control sending any environment variables at all
