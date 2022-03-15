@@ -96,7 +96,7 @@ settings.py
 
 .. code:: python
 
-  MIDDLEWARE_CLASSES = (
+  MIDDLEWARE = (
       'raygun4py.middleware.django.Provider'
   )
 
