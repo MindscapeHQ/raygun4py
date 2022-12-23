@@ -8,9 +8,9 @@ log = logging.getLogger(__name__)
 
 class Provider(object):
 
-    def __init__(self, app, apiKey):
+    def __init__(self, app, apiKey, config={}):
         self.app = app
-        self.sender = raygunprovider.RaygunSender(apiKey)
+        self.sender = raygunprovider.RaygunSender(apiKey, config)
 
     def __call__(self, environ, start_response):
         if not self.sender:

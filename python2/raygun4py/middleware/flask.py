@@ -11,10 +11,11 @@ log = logging.getLogger(__name__)
 
 
 class Provider(object):
-    def __init__(self, flaskApp, apiKey):
+    def __init__(self, flaskApp, apiKey, config={}):
         self.flaskApp = flaskApp
         self.apiKey = apiKey
         self.sender = None
+        self.config = config
 
         got_request_exception.connect(self.send_exception, sender=flaskApp)
 
@@ -24,7 +25,7 @@ class Provider(object):
         if not hasattr(self.flaskApp, 'extensions'):
             self.flaskApp.extensions = {}
 
-        self.sender = raygunprovider.RaygunSender(self.apiKey)
+        self.sender = raygunprovider.RaygunSender(self.apiKey, self.config)
         return self.sender
 
     def send_exception(self, *args, **kwargs):
