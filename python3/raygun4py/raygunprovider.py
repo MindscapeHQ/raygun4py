@@ -1,11 +1,12 @@
-import sys
 import copy
-import socket
 import logging
+import socket
+import sys
+
 import jsonpickle
 import requests
-from raygun4py import raygunmsgs
-from raygun4py import utilities
+
+from raygun4py import raygunmsgs, utilities
 
 DEFAULT_CONFIG = {
     'before_send_callback': None,
@@ -21,6 +22,7 @@ DEFAULT_CONFIG = {
     'http_timeout': 10.0
 }
 
+
 class RaygunSender:
 
     log = logging.getLogger(__name__)
@@ -35,16 +37,18 @@ class RaygunSender:
         if (api_key):
             self.api_key = api_key
         else:
-            self.log.warning("RaygunProvider error: ApiKey not set, errors will not be transmitted")
+            self.log.warning(
+                "RaygunProvider error: ApiKey not set, errors will not be transmitted.")
 
         try:
             import ssl
         except ImportError:
             self.log.warning("RaygunProvider error: No SSL support available, cannot send. Please"
-                        "compile the socket module with SSL support.")
+                             "compile the socket module with SSL support.")
 
         # Set up the default values
-        default_config = utilities.snakecase_dict(copy.deepcopy(DEFAULT_CONFIG))
+        default_config = utilities.snakecase_dict(
+            copy.deepcopy(DEFAULT_CONFIG))
         default_config.update(utilities.snakecase_dict(config or {}))
         for k, v in default_config.items():
             setattr(self, k, v)
@@ -94,12 +98,16 @@ class RaygunSender:
         exc_type, exc_value, exc_traceback = exc_info
 
         if exception is not None:
-            errorMessage = raygunmsgs.RaygunErrorMessage(type(exception), exception, exception.__traceback__, options)
+            errorMessage = raygunmsgs.RaygunErrorMessage(
+                type(exception), exception, exception.__traceback__, options)
         else:
-            errorMessage = raygunmsgs.RaygunErrorMessage(exc_type, exc_value, exc_traceback, options)
+            errorMessage = raygunmsgs.RaygunErrorMessage(
+                exc_type, exc_value, exc_traceback, options)
 
-        tags, custom_data, http_request, extra_environment_data = self._parse_args(kwargs)
-        message = self._create_message(errorMessage, tags, custom_data, http_request, extra_environment_data, user_override)
+        tags, custom_data, http_request, extra_environment_data = self._parse_args(
+            kwargs)
+        message = self._create_message(
+            errorMessage, tags, custom_data, http_request, extra_environment_data, user_override)
         message = self._transform_message(message)
 
         if message is not None:
@@ -141,7 +149,8 @@ class RaygunSender:
 
         if message is not None:
             message = utilities.filter_keys(self.filtered_keys, message)
-            message['details']['groupingKey'] = utilities.execute_grouping_key(self.grouping_key_callback, message)
+            message['details']['groupingKey'] = utilities.execute_grouping_key(
+                self.grouping_key_callback, message)
 
         if self.before_send_callback is not None:
             mutated_payload = self.before_send_callback(message['details'])
@@ -172,13 +181,19 @@ class RaygunSender:
 
 
 class RaygunHandler(logging.Handler):
-    def __init__(self, api_key, version=None):
-        logging.Handler.__init__(self)
+    def __init__(self, api_key, version=None, level=logging.ERROR):
+        logging.Handler.__init__(self, level)
         self.sender = RaygunSender(api_key)
-        self.version = version
+        self.sender.setVersion(version)  # TODO: is this right?
+        self.sender.setTags(["Logger"])  # TODO: do this?
 
     def emit(self, record):
         userCustomData = {
             "Logger Message": record.msg
         }
-        self.sender.send_exception(userCustomData=userCustomData)
+        if record.exc_info:
+            # exc_info was provided, so send it
+            self.sender.send_exception(
+                exc_info=record.exc_info, userCustomData=userCustomData)
+        else:
+            self.sender.send_exception(userCustomData=userCustomData)
