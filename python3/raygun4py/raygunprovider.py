@@ -184,8 +184,8 @@ class RaygunHandler(logging.Handler):
     def __init__(self, api_key, version=None, level=logging.ERROR):
         logging.Handler.__init__(self, level)
         self.sender = RaygunSender(api_key)
-        self.sender.setVersion(version)  # TODO: is this right?
-        self.sender.setTags(["Logger"])  # TODO: do this?
+        self.sender.setVersion(version)
+        self.sender.setTags(["Logger"])
 
     def emit(self, record):
         userCustomData = {
