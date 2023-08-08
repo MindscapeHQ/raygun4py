@@ -184,16 +184,39 @@ class RaygunHandler(logging.Handler):
     def __init__(self, api_key, version=None, level=logging.ERROR):
         logging.Handler.__init__(self, level)
         self.sender = RaygunSender(api_key)
-        self.sender.setVersion(version)
-        self.sender.setTags(["Logger"])
+        if version:
+            self.sender.setVersion(version)
 
     def emit(self, record):
+        # Use log level as a tag
+        tag = self.get_tag_from_levelname(record.levelname)
+        tags = [tag] if tag else []
+        # Include other information from log record
         userCustomData = {
-            "Logger Message": record.msg
+            "Logger Message": record.getMessage(),
+            "Logger Name": record.name,
+            "File": record.filename,
+            "Line": record.lineno,
         }
+        # Include function name only if not called from global scope
+        if record.funcName != "<module>":
+            userCustomData["Function"] = record.funcName
+
         if record.exc_info:
             # exc_info was provided, so send it
             self.sender.send_exception(
-                exc_info=record.exc_info, userCustomData=userCustomData)
+                exc_info=record.exc_info, userCustomData=userCustomData, tags=tags)
         else:
-            self.sender.send_exception(userCustomData=userCustomData)
+            self.sender.send_exception(
+                userCustomData=userCustomData, tags=tags)
+
+    @staticmethod
+    def get_tag_from_levelname(levelname):
+        tag_map = {
+            'DEBUG': 'Debug Log',
+            'INFO': 'Info Log',
+            'WARNING': 'Warning Log',
+            'ERROR': 'Error Log',
+            'CRITICAL': 'Critical Log'
+        }
+        return tag_map.get(levelname)
