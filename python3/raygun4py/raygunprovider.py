@@ -92,17 +92,10 @@ class RaygunSender:
             'transmitGlobalVariables': self.transmit_global_variables
         }
 
-        if exc_info is None:
-            exc_info = sys.exc_info()
+        exc_type, exc_value, exc_traceback = exc_info or sys.exc_info()
 
-        exc_type, exc_value, exc_traceback = exc_info
-
-        if exception is not None:
-            errorMessage = raygunmsgs.RaygunErrorMessage(
-                type(exception), exception, exception.__traceback__, options)
-        else:
-            errorMessage = raygunmsgs.RaygunErrorMessage(
-                exc_type, exc_value, exc_traceback, options)
+        errorMessage = self._create_error_message(
+            exception, exc_type, exc_value, exc_traceback, options)
 
         tags, custom_data, http_request, extra_environment_data = self._parse_args(
             kwargs)
@@ -112,6 +105,13 @@ class RaygunSender:
 
         if message is not None:
             return self._post(message)
+
+    def _create_error_message(self, exception, exc_type, exc_value, exc_traceback, options):
+        if exception:
+            return raygunmsgs.RaygunErrorMessage(type(exception), exception, exception.__traceback__, options)
+        elif exc_type:
+            return raygunmsgs.RaygunErrorMessage(exc_type, exc_value, exc_traceback, options)
+        return None
 
     def _parse_args(self, kwargs):
         tags = kwargs['tags'] if 'tags' in kwargs else None
@@ -130,19 +130,21 @@ class RaygunSender:
         options = {
             'transmit_environment_variables': self.transmit_environment_variables
         }
-
-        return raygunmsgs.RaygunMessageBuilder(options).new() \
+        builder = raygunmsgs.RaygunMessageBuilder(options).new() \
             .set_machine_name(socket.gethostname()) \
             .set_version(self.userversion) \
             .set_client_details() \
-            .set_exception_details(raygunExceptionMessage) \
             .set_environment_details(extra_environment_data) \
             .set_tags(self.process_tags) \
             .set_tags(tags) \
             .set_customdata(user_custom_data) \
             .set_request_details(http_request) \
-            .set_user(user_override if user_override else self.user) \
-            .build()
+            .set_user(user_override if user_override else self.user)
+
+        if raygunExceptionMessage is not None:
+            builder = builder.set_exception_details(raygunExceptionMessage)
+
+        return builder.build()
 
     def _transform_message(self, message):
         message = utilities.ignore_exceptions(self.ignored_exceptions, message)
@@ -181,11 +183,10 @@ class RaygunSender:
 
 
 class RaygunHandler(logging.Handler):
-    def __init__(self, api_key, version=None, level=logging.ERROR):
+    def __init__(self, api_key, sender=None, level=logging.ERROR):
         logging.Handler.__init__(self, level)
-        self.sender = RaygunSender(api_key)
-        if version:
-            self.sender.setVersion(version)
+        if not sender:
+            self.sender = RaygunSender(api_key)
 
     def emit(self, record):
         # Use log level as a tag
