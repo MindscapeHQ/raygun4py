@@ -24,7 +24,12 @@ DEFAULT_CONFIG = {
 
 
 class RaygunSender:
+    """
+    A sender for reporting errors to Raygun.
 
+    Attributes:
+        api_key (str): The API key for Raygun.
+    """
     log = logging.getLogger(__name__)
 
     api_key = None
@@ -34,6 +39,13 @@ class RaygunSender:
     process_tags = []
 
     def __init__(self, api_key, config={}):
+        """
+        Initialize the RaygunSender.
+
+        Parameters:
+            api_key (str): The API key for Raygun.
+            config (dict, optional): Configuration options. Defaults to an empty dictionary.
+        """
         if (api_key):
             self.api_key = api_key
         else:
@@ -54,39 +66,101 @@ class RaygunSender:
             setattr(self, k, v)
 
     def set_version(self, version):
+        """
+        Set the version for the error reports.
+
+        Parameters:
+            version (str): Version string.
+        """
         if isinstance(version, str):
             self.userversion = version
 
     def set_user(self, user):
+        """
+        Set user information for the error reports.
+
+        Parameters:
+            user: User information.
+        """
         self.user = user
 
     def set_tags(self, tags):
+        """
+        Set tags for the error reports.
+
+        Parameters:
+            tags (list): List of tags.
+        """
         if type(tags) is list:
             self.process_tags = tags
 
     def ignore_exceptions(self, exceptions):
+        """
+        Set exceptions that should be ignored.
+
+        Parameters:
+            exceptions (list): List of exceptions to ignore.
+        """
         if isinstance(exceptions, list):
             self.ignored_exceptions = exceptions
 
     def filter_keys(self, keys):
+        """
+        Set keys to be filtered out from the error reports.
+
+        Parameters:
+            keys (list): List of keys to filter out.
+        """
         if isinstance(keys, list):
             self.filtered_keys = keys
 
     def set_proxy(self, host, port):
+        """
+        Set a proxy for the sender.
+
+        Parameters:
+            host (str): Proxy host.
+            port (int): Proxy port.
+        """
         self.proxy = {
             'host': host,
             'port': port
         }
 
     def on_before_send(self, callback):
+        """
+        Set a callback to be executed before sending a report.
+
+        Parameters:
+            callback (callable): Callback function to be executed.
+        """
         if callable(callback):
             self.before_send_callback = callback
 
     def on_grouping_key(self, callback):
+        """
+        Set a callback to customize the grouping key for the report.
+
+        Parameters:
+            callback (callable): Callback function to customize grouping.
+        """
         if callable(callback):
             self.grouping_key_callback = callback
 
     def send_exception(self, exception=None, exc_info=None, user_override=None, **kwargs):
+        """
+        Send an exception report to Raygun.
+
+        One of the parameters 'exception' or 'exc_info' must be non-None to send a valid exception report.
+
+        Parameters:
+            exception (Exception, optional): An exception instance to report.
+            exc_info (tuple, optional): A 3-tuple containing exception type, exception instance, and traceback.
+            user_override (dict or str, optional): Information about the affected user. If not provided, 'self.user' will be used.
+
+        Returns:
+            The result of the post request, typically indicating the success or failure of the exception report transmission.
+        """
         options = {
             'transmitLocalVariables': self.transmit_local_variables,
             'transmitGlobalVariables': self.transmit_global_variables
@@ -183,10 +257,35 @@ class RaygunSender:
 
 
 class RaygunHandler(logging.Handler):
+    """ 
+    Logging handler for sending error logs to Raygun.
+
+    Attributes:
+        api_key (str): The API key for Raygun.
+        sender (optional): Custom sender object. Defaults to RaygunSender with provided API key.
+        level (optional): Logging level. Defaults to logging.ERROR.
+    """
+
     def __init__(self, api_key, sender=None, level=logging.ERROR):
-        logging.Handler.__init__(self, level)
-        if not sender:
-            self.sender = RaygunSender(api_key)
+        """
+        Initialize the RaygunHandler for logging.
+
+        Parameters:
+            api_key (str): The API key for Raygun.
+            sender (RaygunSender, optional): Custom sender object. Defaults to None.
+                If not provided, a new RaygunSender instance is created using the api_key.
+            level (int, optional): Logging level. Defaults to logging.ERROR.
+
+        Raises:
+            TypeError: If the provided sender is not an instance of RaygunSender.
+        """
+        super().__init__(level)
+
+        if sender and not isinstance(sender, RaygunSender):
+            raise TypeError(
+                f"Expected sender of type RaygunSender, but got {type(sender).__name__}")
+
+        self.sender = sender or RaygunSender(api_key)
 
     def emit(self, record):
         # Use log level as a tag
