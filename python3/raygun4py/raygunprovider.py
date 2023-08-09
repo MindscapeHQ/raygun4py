@@ -29,6 +29,7 @@ class RaygunSender:
 
     Attributes:
         api_key (str): The API key for Raygun.
+        config (dict): Configuration options.
     """
     log = logging.getLogger(__name__)
 
@@ -40,17 +41,20 @@ class RaygunSender:
 
     def __init__(self, api_key, config={}):
         """
-        Initialize the RaygunSender.
+        Initialize a RaygunSender.
 
         Parameters:
             api_key (str): The API key for Raygun.
             config (dict, optional): Configuration options. Defaults to an empty dictionary.
         """
-        if (api_key):
+        if api_key:
+            if not isinstance(api_key, str):
+                raise TypeError(
+                    f"Expected api_key of type str, but got {type(api_key).__name__}")
             self.api_key = api_key
         else:
             self.log.warning(
-                "RaygunProvider error: ApiKey not set, errors will not be transmitted.")
+                "RaygunProvider error: api_key not set, errors will not be transmitted.")
 
         try:
             import ssl
@@ -166,13 +170,13 @@ class RaygunSender:
             'transmitGlobalVariables': self.transmit_global_variables
         }
 
-        exc_type, exc_value, exc_traceback = exc_info or sys.exc_info()
-
-        errorMessage = self._create_error_message(
-            exception, exc_type, exc_value, exc_traceback, options)
-
-        tags, custom_data, http_request, extra_environment_data = self._parse_args(
+        tags, custom_data, http_request, extra_environment_data, custom_message = self._parse_args(
             kwargs)
+
+        exc_type, exc_value, exc_traceback = exc_info or sys.exc_info()
+        errorMessage = self._create_error_message(
+            exception, exc_type, exc_value, exc_traceback, options, custom_message)
+
         message = self._create_message(
             errorMessage, tags, custom_data, http_request, extra_environment_data, user_override)
         message = self._transform_message(message)
@@ -180,17 +184,18 @@ class RaygunSender:
         if message is not None:
             return self._post(message)
 
-    def _create_error_message(self, exception, exc_type, exc_value, exc_traceback, options):
+    def _create_error_message(self, exception, exc_type, exc_value, exc_traceback, options, custom_message):
         if exception:
-            return raygunmsgs.RaygunErrorMessage(type(exception), exception, exception.__traceback__, options)
+            return raygunmsgs.RaygunErrorMessage(type(exception), exception, exception.__traceback__, options, custom_message)
         elif exc_type:
-            return raygunmsgs.RaygunErrorMessage(exc_type, exc_value, exc_traceback, options)
+            return raygunmsgs.RaygunErrorMessage(exc_type, exc_value, exc_traceback, options, custom_message)
         return None
 
     def _parse_args(self, kwargs):
         tags = kwargs['tags'] if 'tags' in kwargs else None
         custom_data = kwargs['userCustomData'] if 'userCustomData' in kwargs else None
         extra_environment_data = kwargs['extra_environment_data'] if 'extra_environment_data' in kwargs else None
+        custom_message = kwargs['custom_message'] if 'custom_message' in kwargs else None
 
         http_request = None
         if 'httpRequest' in kwargs:
@@ -198,27 +203,24 @@ class RaygunSender:
         elif 'request' in kwargs:
             http_request = kwargs['request']
 
-        return tags, custom_data, http_request, extra_environment_data
+        return tags, custom_data, http_request, extra_environment_data, custom_message
 
     def _create_message(self, raygunExceptionMessage, tags, user_custom_data, http_request, extra_environment_data, user_override=None):
         options = {
             'transmit_environment_variables': self.transmit_environment_variables
         }
-        builder = raygunmsgs.RaygunMessageBuilder(options).new() \
+        return raygunmsgs.RaygunMessageBuilder(options).new() \
             .set_machine_name(socket.gethostname()) \
             .set_version(self.userversion) \
             .set_client_details() \
+            .set_exception_details(raygunExceptionMessage) \
             .set_environment_details(extra_environment_data) \
             .set_tags(self.process_tags) \
             .set_tags(tags) \
             .set_customdata(user_custom_data) \
             .set_request_details(http_request) \
-            .set_user(user_override if user_override else self.user)
-
-        if raygunExceptionMessage is not None:
-            builder = builder.set_exception_details(raygunExceptionMessage)
-
-        return builder.build()
+            .set_user(user_override if user_override else self.user) \
+            .build()
 
     def _transform_message(self, message):
         message = utilities.ignore_exceptions(self.ignored_exceptions, message)
@@ -257,35 +259,57 @@ class RaygunSender:
 
 
 class RaygunHandler(logging.Handler):
-    """ 
+    """
     Logging handler for sending error logs to Raygun.
 
     Attributes:
-        api_key (str): The API key for Raygun.
-        sender (optional): Custom sender object. Defaults to RaygunSender with provided API key.
-        level (optional): Logging level. Defaults to logging.ERROR.
+        sender (RaygunSender): The RaygunSender to use for sending.
+        level (int): The logging level to capture.
     """
 
-    def __init__(self, api_key, sender=None, level=logging.ERROR):
+    def __init__(self, api_key=None, version=None, level=logging.ERROR, sender=None):
         """
-        Initialize the RaygunHandler for logging.
+        Initialize a RaygunHandler for logging.
+
+        For constructing instances using an existing RaygunSender, it is recommended to use the `RaygunHandler.from_sender()` class method.
 
         Parameters:
             api_key (str): The API key for Raygun.
-            sender (RaygunSender, optional): Custom sender object. Defaults to None.
-                If not provided, a new RaygunSender instance is created using the api_key.
+            version (str, optional): Version for the RaygunSender. Defaults to None.
+            level (int, optional): Logging level. Defaults to logging.ERROR.
+
+        Raises:
+            ValueError: If 'api_key' is not provided.
+        """
+        super().__init__(level)
+        if api_key:
+            self.sender = RaygunSender(api_key)
+            if version:
+                self.sender.set_version(version)
+        elif sender:
+            self.sender = sender
+        else:
+            raise ValueError("Either 'api_key' or 'sender' must be provided.")
+
+    @classmethod
+    def from_sender(cls, sender, level=logging.ERROR):
+        """
+        Construct a RaygunHandler instance using an existing RaygunSender object.
+
+        Parameters:
+            sender (RaygunSender): The RaygunSender to use for sending.
             level (int, optional): Logging level. Defaults to logging.ERROR.
 
         Raises:
             TypeError: If the provided sender is not an instance of RaygunSender.
-        """
-        super().__init__(level)
 
-        if sender and not isinstance(sender, RaygunSender):
+        Returns:
+            RaygunHandler: A new instance of RaygunHandler.
+        """
+        if not isinstance(sender, RaygunSender):
             raise TypeError(
                 f"Expected sender of type RaygunSender, but got {type(sender).__name__}")
-
-        self.sender = sender or RaygunSender(api_key)
+        return cls(level=level, sender=sender)
 
     def emit(self, record):
         # Use log level as a tag
@@ -293,22 +317,21 @@ class RaygunHandler(logging.Handler):
         tags = [tag] if tag else []
         # Include other information from log record
         userCustomData = {
-            "Logger Message": record.getMessage(),
-            "Logger Name": record.name,
-            "File": record.filename,
-            "Line": record.lineno,
+            "Logger name": record.name,
+            "Logger called in file": record.filename,
+            "Logger called on line": record.lineno,
         }
         # Include function name only if not called from global scope
         if record.funcName != "<module>":
-            userCustomData["Function"] = record.funcName
+            userCustomData["Logger called in function"] = record.funcName
 
         if record.exc_info:
             # exc_info was provided, so send it
             self.sender.send_exception(
-                exc_info=record.exc_info, userCustomData=userCustomData, tags=tags)
+                exc_info=record.exc_info, userCustomData=userCustomData, tags=tags, custom_message=record.getMessage())
         else:
             self.sender.send_exception(
-                userCustomData=userCustomData, tags=tags)
+                userCustomData=userCustomData, tags=tags, custom_message=record.getMessage())
 
     @staticmethod
     def get_tag_from_levelname(levelname):

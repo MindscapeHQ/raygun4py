@@ -53,12 +53,14 @@ class RaygunMessageBuilder(object):
             pass
 
         try:
-            self.raygunMessage.details['environment']["architecture"] = platform.architecture()[0]
+            self.raygunMessage.details['environment']["architecture"] = platform.architecture()[
+                0]
         except Exception:  # pragma: no cover
             pass
 
         try:
-            self.raygunMessage.details['environment']["cpu"] = platform.processor()
+            self.raygunMessage.details['environment']["cpu"] = platform.processor(
+            )
         except Exception:  # pragma: no cover
             pass
 
@@ -103,7 +105,8 @@ class RaygunMessageBuilder(object):
         if not request:
             return self
 
-        rg_request_details = http_utilities.build_wsgi_compliant_request(request)
+        rg_request_details = http_utilities.build_wsgi_compliant_request(
+            request)
         self.raygunMessage.details['request'] = rg_request_details
 
         return self
@@ -125,7 +128,7 @@ class RaygunMessage(object):
         self.details = {}
 
     def get_error(self):
-        return self.details['error']
+        return self.details.get('error')
 
     def get_details(self):
         return self.details
@@ -133,9 +136,9 @@ class RaygunMessage(object):
 
 class RaygunErrorMessage(object):
 
-    def __init__(self, exc_type=None, exc_value=None, exc_traceback=None, options=None):
+    def __init__(self, exc_type=None, exc_value=None, exc_traceback=None, options=None, custom_message=None):
         self.className = exc_type.__name__ if exc_type is not None else None
-        self.message = "%s: %s" % (
+        self.message = custom_message or "%s: %s" % (
             exc_type.__name__, exc_value) if exc_type is not None else str(exc_value)
         self.stackTrace = []
         self.globalVariables = None

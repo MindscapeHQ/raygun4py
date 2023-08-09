@@ -1,21 +1,28 @@
-import sys, logging, os
+import logging
+
 from raygun4py import raygunprovider
 
-# Hook the Raygun logging handler up:
+sender = raygunprovider.RaygunSender("fbbUf14bTUapOz1YAvURw")
+sender.set_version("1.3")
+sender.set_user({
+    'identifier': 'example@email_or_user_id.com',
+    'firstName': 'John',
+    'fullName': 'John Smith',
+    'email': 'example@email_or_user_id.com'
+})
+logging_handler = raygunprovider.RaygunHandler.from_sender(
+    sender, level=logging.INFO)
 
-logger = logging.getLogger("mylogger")
-rgHandler = raygunprovider.RaygunHandler("paste_your_api_key_here")
-logger.addHandler(rgHandler)
+logging.getLogger().setLevel(logging.INFO)
+logging.getLogger().addHandler(logging_handler)
 
-def log_exception(exc_type, exc_value, exc_traceback):
-    logger.error("A python error occurred", exc_info=(exc_type, exc_value, exc_traceback))
-    print("Logging: %s" % exc_value)
 
-sys.excepthook = log_exception
+def very_buggy_request():
+    logging.info("Test error log sent from raygun4py")
 
-## Example exception:
 
-def buggyMethod():
-    raise Exception("Test exception sent via built-in handler")
+def methodtwo():
+    raise Exception("Test exception sent from raygun4py")
 
-buggyMethod()
+
+very_buggy_request()
