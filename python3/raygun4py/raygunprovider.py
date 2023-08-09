@@ -169,13 +169,15 @@ class RaygunSender:
             'transmitLocalVariables': self.transmit_local_variables,
             'transmitGlobalVariables': self.transmit_global_variables
         }
-
-        tags, custom_data, http_request, extra_environment_data, custom_message = self._parse_args(
+        tags, custom_data, http_request, extra_environment_data, custom_message, fallback_error = self._parse_args(
             kwargs)
 
         exc_type, exc_value, exc_traceback = exc_info or sys.exc_info()
-        errorMessage = self._create_error_message(
-            exception, exc_type, exc_value, exc_traceback, options, custom_message)
+        if fallback_error and not (exc_type or exception):
+            errorMessage = fallback_error
+        else:
+            errorMessage = self._create_error_message(
+                exception, exc_type, exc_value, exc_traceback, options, custom_message)
 
         message = self._create_message(
             errorMessage, tags, custom_data, http_request, extra_environment_data, user_override)
@@ -184,18 +186,18 @@ class RaygunSender:
         if message is not None:
             return self._post(message)
 
-    def _create_error_message(self, exception, exc_type, exc_value, exc_traceback, options, custom_message):
+    def _create_error_message(self, exception, exc_type, exc_value, exc_traceback, options, custom_message=None):
         if exception:
             return raygunmsgs.RaygunErrorMessage(type(exception), exception, exception.__traceback__, options, custom_message)
-        elif exc_type:
+        else:
             return raygunmsgs.RaygunErrorMessage(exc_type, exc_value, exc_traceback, options, custom_message)
-        return None
 
     def _parse_args(self, kwargs):
         tags = kwargs['tags'] if 'tags' in kwargs else None
         custom_data = kwargs['userCustomData'] if 'userCustomData' in kwargs else None
         extra_environment_data = kwargs['extra_environment_data'] if 'extra_environment_data' in kwargs else None
         custom_message = kwargs['custom_message'] if 'custom_message' in kwargs else None
+        fallback_error = kwargs['fallback_error'] if 'fallback_error' in kwargs else None
 
         http_request = None
         if 'httpRequest' in kwargs:
@@ -203,7 +205,7 @@ class RaygunSender:
         elif 'request' in kwargs:
             http_request = kwargs['request']
 
-        return tags, custom_data, http_request, extra_environment_data, custom_message
+        return tags, custom_data, http_request, extra_environment_data, custom_message, fallback_error
 
     def _create_message(self, raygunExceptionMessage, tags, user_custom_data, http_request, extra_environment_data, user_override=None):
         options = {
@@ -315,23 +317,21 @@ class RaygunHandler(logging.Handler):
         # Use log level as a tag
         tag = self.get_tag_from_levelname(record.levelname)
         tags = [tag] if tag else []
-        # Include other information from log record
-        userCustomData = {
-            "Logger name": record.name,
-            "Logger called in file": record.filename,
-            "Logger called on line": record.lineno,
-        }
-        # Include function name only if not called from global scope
-        if record.funcName != "<module>":
-            userCustomData["Logger called in function"] = record.funcName
 
         if record.exc_info:
             # exc_info was provided, so send it
+            userCustomData = {
+                "Logger Name": record.name,
+            }
             self.sender.send_exception(
                 exc_info=record.exc_info, userCustomData=userCustomData, tags=tags, custom_message=record.getMessage())
         else:
+            # Proide a fallback error to use if exc_info cannot be obtained from sys
+            fallback_error = raygunmsgs.RaygunLoggerFallbackErrorMessage(
+                record.name, record.getMessage(), record.filename, record.funcName, record.lineno
+            )
             self.sender.send_exception(
-                userCustomData=userCustomData, tags=tags, custom_message=record.getMessage())
+                tags=tags, fallback_error=fallback_error)
 
     @staticmethod
     def get_tag_from_levelname(levelname):

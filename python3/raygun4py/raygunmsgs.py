@@ -215,3 +215,30 @@ class RaygunErrorMessage(object):
                     result[key] = "!!! Couldn't convert {0!r} (repr: {1}) due to {2!r} !!!".format(
                         key, r, e)
         return result
+
+
+class RaygunLoggerFallbackErrorMessage(object):
+
+    def __init__(self, name, message, filename, funcName, lineno):
+        self.className = "Logger (" + name + ")"
+        self.message = message
+        # Create a single stackTrace entry using logger data
+        self.stackTrace = [{
+            'lineNumber': lineno,
+            'className': self.className,
+            'fileName': filename,
+            'methodName': funcName or 'UnknownMethod',
+            'localVariables': None  # We don't have access to local variables
+        }]
+        self.globalVariables = None  # We don't have access to global variables
+        self.data = ""
+
+        try:
+            jsonpickle.encode(self, unpicklable=False)
+        except Exception:
+            for frame in self.stackTrace:
+                if 'localVariables' in frame:
+                    frame['localVariables'] = None
+
+    def get_classname(self):
+        return self.className
