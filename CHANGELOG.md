@@ -1,3 +1,18 @@
+## 4.4.0 (11/08/2023):
+Features:
+  - Added `RaygunHandler.from_sender()` factory to construct a `RaygunHandler` instance using an existing `RaygunSender`. This allows for additional configuration of the sender.
+  - Added a `config` parameter the to Flask and WSGI middleware provider constructors. This also allows for additional configuration of the sender.
+  - The `RaygunHandler` now adds tags corresponding to the logging level, which now defaults to `logging.ERROR`.
+  - Errors/exceptions sent via the `RaygunHandler` now have their message overriden by the logged message.
+Bugfixes:
+  - The `RaygunHandler` now attempts to capture `exc_info` from the `record`. This can be obtained if `logger.exception()` is used or if `exc_info=True` is set in the logger call.
+    - If `exc_info` cannot be obtained by the `RaygunHandler`, it no longer attempts to construct a `RaygunErrorMessage` with `None` values. Instead, it generates a fallback error message using information gathered from the `record`. This is essentially an error with a single stack frame representing the call to the logger.
+Quality of life updates:
+  - Updated `CONTRIBUTING.MD`.
+  - Got unit tests running again (`django` upgrade).
+  - Updated `python3/samples/sample.py` and `python3/samples/sampleWithLogging.py`.
+  - Cleaned up `python3/raygun4py/cli.py`.
+
 ## 4.3.0 (06/06/2019):
 Features:
   - Added a new config option, `transmit_environment_variables`, to control sending any environment variables at all
@@ -5,7 +20,7 @@ Features:
 
 ## 4.2.3 (28/03/2019):
 Bugfixes
-  - Add request rawData to the build_wsgi_compliant_request utilities to fix a bug where rawData is set manually then overwritten by an empty object.
+  - Add request `rawData` to the `build_wsgi_compliant_request` utilities to fix a bug where `rawData` is set manually then overwritten by an empty object.
 
 ## 4.2.2 (23/01/2019):
 Bugfixes
