@@ -144,24 +144,23 @@ class RaygunErrorMessage(object):
         self.globalVariables = None
 
         try:
-            if exc_traceback is not None:
-                frames = inspect.getinnerframes(exc_traceback)
+            frames = inspect.getinnerframes(exc_traceback)
 
-                if frames:
-                    for frame in frames:
-                        localVariables = None
-                        if options is not None and 'transmitLocalVariables' in options and options['transmitLocalVariables'] is True:
-                            localVariables = self._get_locals(frame[0])
+            if frames:
+                for frame in frames:
+                    localVariables = None
+                    if options is not None and 'transmitLocalVariables' in options and options['transmitLocalVariables'] is True:
+                        localVariables = self._get_locals(frame[0])
 
-                        self.stackTrace.append({
-                            'lineNumber': frame[2],
-                            'className': frame[3],
-                            'fileName': frame[1],
-                            'methodName': frame[4][0] if frame[4] is not None else None,
-                            'localVariables': localVariables
-                        })
-                    if options is not None and 'transmitGlobalVariables' in options and options['transmitGlobalVariables'] is True and len(frames) > 0:
-                        self.globalVariables = frames[-1][0].f_globals
+                    self.stackTrace.append({
+                        'lineNumber': frame[2],
+                        'className': frame[3],
+                        'fileName': frame[1],
+                        'methodName': frame[4][0] if frame[4] is not None else None,
+                        'localVariables': localVariables
+                    })
+                if options is not None and 'transmitGlobalVariables' in options and options['transmitGlobalVariables'] is True and len(frames) > 0:
+                    self.globalVariables = frames[-1][0].f_globals
         except Exception as e:
             pass
         finally:

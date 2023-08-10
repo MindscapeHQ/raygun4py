@@ -29,7 +29,6 @@ class RaygunSender:
 
     Attributes:
         api_key (str): The API key for Raygun.
-        config (dict): Configuration options.
     """
     log = logging.getLogger(__name__)
 
@@ -49,9 +48,11 @@ class RaygunSender:
         """
         if api_key:
             if not isinstance(api_key, str):
-                raise TypeError(
-                    f"Expected api_key of type str, but got {type(api_key).__name__}")
-            self.api_key = api_key
+                self.log.error(
+                    f"Expected api_key of type str, but got {type(api_key).__name__}. Errors will not be transmitted.")
+                self.api_key = None
+            else:
+                self.api_key = api_key
         else:
             self.log.warning(
                 "RaygunProvider error: api_key not set, errors will not be transmitted.")
@@ -161,6 +162,9 @@ class RaygunSender:
             exception (Exception, optional): An exception instance to report.
             exc_info (tuple, optional): A 3-tuple containing exception type, exception instance, and traceback.
             user_override (dict or str, optional): Information about the affected user. If not provided, 'self.user' will be used.
+            tags (list, optional): A list of tags relating to the current context which you can define.
+            userCustomData (dict, optional): A dictionary containing custom key-values also of your choosing.
+            httpRequest (dict, optional): HTTP Request data that you wish to include with the report.
 
         Returns:
             The result of the post request, typically indicating the success or failure of the exception report transmission.
@@ -266,7 +270,7 @@ class RaygunHandler(logging.Handler):
 
     Attributes:
         sender (RaygunSender): The RaygunSender to use for sending.
-        level (int): The logging level to capture.
+        version (str): Version for the RaygunSender.
     """
 
     def __init__(self, api_key=None, version=None, level=logging.ERROR, sender=None):
@@ -279,17 +283,16 @@ class RaygunHandler(logging.Handler):
             api_key (str): The API key for Raygun.
             version (str, optional): Version for the RaygunSender. Defaults to None.
             level (int, optional): Logging level. Defaults to logging.ERROR.
-
-        Raises:
-            ValueError: If 'api_key' is not provided.
         """
         super().__init__(level)
         if api_key:
             self.sender = RaygunSender(api_key)
             if version:
                 self.sender.set_version(version)
+            self.version = version
         elif sender:
             self.sender = sender
+            self.version = sender.userversion
         else:
             raise ValueError("Either 'api_key' or 'sender' must be provided.")
 
@@ -301,9 +304,6 @@ class RaygunHandler(logging.Handler):
         Parameters:
             sender (RaygunSender): The RaygunSender to use for sending.
             level (int, optional): Logging level. Defaults to logging.ERROR.
-
-        Raises:
-            TypeError: If the provided sender is not an instance of RaygunSender.
 
         Returns:
             RaygunHandler: A new instance of RaygunHandler.

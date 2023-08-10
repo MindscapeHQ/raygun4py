@@ -2,9 +2,11 @@ import sys
 
 from raygun4py import raygunprovider
 
+API_KEY = "paste_your_api_key_here"
+
 
 def handle_exception(exc_type, exc_value, exc_traceback):
-    sender = raygunprovider.RaygunSender("fbbUf14bTUapOz1YAvURw")
+    sender = raygunprovider.RaygunSender(API_KEY)
     sender.set_version("1.3")
     sender.set_user({
         'identifier': 'example@email_or_user_id.com',
