@@ -52,7 +52,7 @@ See `sending functions`_ for more ways to send.
 Uncaught exception handler
 --------------------------
 
-To automatically send unhandled exceptions, you can provide a callback function to `sys.excepthook`:
+To automatically send unhandled exceptions, you can provide a callback function to :code:`sys.excepthook`:
 
 .. code:: python
 
@@ -63,22 +63,22 @@ To automatically send unhandled exceptions, you can provide a callback function 
 
   sys.excepthook = handle_exception
 
-Note that after sending the exception, we invoke the default `sys.__excepthook__` to maintain the expected behavior for unhandled exceptions. This ensures the program terminates as it would without the custom exception handler in place.
+Note that after sending the exception, we invoke the default :code:`sys.__excepthook__` to maintain the expected behavior for unhandled exceptions. This ensures the program terminates as it would without the custom exception handler in place.
 
 Logging
 -------
 
-You can send errors/exceptions via a logger by attaching a `RaygunHandler`:
+You can send errors/exceptions via a logger by attaching a :code:`RaygunHandler`:
 .. code:: python
   logger = logging.getLogger()
   raygun_handler = raygunprovider.RaygunHandler("paste_your_api_key_here")
   logger.addHandler(raygun_handler)
 
-A `RaygunHandler` can also be instantiated from an existing `RaygunSender`:
+A :code:`RaygunHandler` can also be instantiated from an existing :code:`RaygunSender`:
 .. code:: python
   raygun_handler = raygunprovider.RaygunHandler.from_sender(sender)
 
-It is then recommended to use `logger.exception()` or `logger.error(exc_info=True)` in the scope of an `except` block:
+It is then recommended to use :code:`logger.exception()` or :code:`logger.error(exc_info=True)` in the scope of an :code:`except` block:
 .. code:: python
   try:
       raise Exception("Example exception")
@@ -87,7 +87,7 @@ It is then recommended to use `logger.exception()` or `logger.error(exc_info=Tru
       # Or
       logger.error("Example logger.error log", exc_info=True)
 
-Note that using a `RaygunHandler` outside the scope of an `except` block will not allow it to populate a full stack trace.
+Note that using a :code:`RaygunHandler` outside the scope of an :code:`except` block will not allow it to populate a full stack trace.
 
 Web frameworks
 --------------
@@ -97,7 +97,7 @@ Raygun4py includes dedicated middleware implementations for Django and Flask, as
 Django
 ++++++
 
-To configure Django to automatically send all exceptions that are raised in views to Raygun, add the following to `settings.py`:
+To configure Django to automatically send all exceptions that are raised in views to Raygun, add the following to :code:`settings.py`:
 
 .. code:: python
 
@@ -132,7 +132,7 @@ The above configuration is the minimal required setup. The full set of options s
 Flask
 +++++
 
-To attach a request exception handler that enhances reports with Flask-specific environment data, use our middleware `flask.Provider`:
+To attach a request exception handler that enhances reports with Flask-specific environment data, use our middleware :code:`flask.Provider`:
 
 .. code:: python
 
@@ -143,7 +143,7 @@ To attach a request exception handler that enhances reports with Flask-specific 
 
   flask.Provider(app, 'your_apikey').attach()
 
-The `flask.Provider` constructor can also take an optional `config` argument. This should be a standard `Dict` of supported options, as shown in advanced configuration below. It also returns the underlying `RaygunSender`, which you may decide to use elsewhere.
+The :code:`flask.Provider` constructor can also take an optional :code:`config` argument. This should be a standard :code:`Dict` of supported options, as shown in advanced configuration below. It also returns the underlying :code:`RaygunSender`, which you may decide to use elsewhere.
 
 WSGI
 ++++
@@ -173,7 +173,7 @@ An example using **Tornado**, which will pick up exceptions that occur in the WS
     server = wsgiref.simple_server.make_server('', 8888, raygun_wrapped_app)
     server.serve_forever()
 
-The `wsgi.Provider` constructor can also take an optional `config` argument. This should be a standard `Dict` of supported options, as shown in advanced configuration below.
+The :code:`wsgi.Provider` constructor can also take an optional :code:`config` argument. This should be a standard :code:`Dict` of supported options, as shown in advanced configuration below.
 
 Note that many frameworks (tornado, pryramid, gevent et al) will swallow exceptions that occur within their domain.
 
