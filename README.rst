@@ -69,17 +69,23 @@ Logging
 -------
 
 You can send errors/exceptions via a logger by attaching a :code:`RaygunHandler`:
+
 .. code:: python
+
   logger = logging.getLogger()
   raygun_handler = raygunprovider.RaygunHandler("paste_your_api_key_here")
   logger.addHandler(raygun_handler)
 
 A :code:`RaygunHandler` can also be instantiated from an existing :code:`RaygunSender`:
+
 .. code:: python
+
   raygun_handler = raygunprovider.RaygunHandler.from_sender(sender)
 
 It is then recommended to use :code:`logger.exception()` or :code:`logger.error(exc_info=True)` in the scope of an :code:`except` block:
+
 .. code:: python
+
   try:
       raise Exception("Example exception")
   except:
