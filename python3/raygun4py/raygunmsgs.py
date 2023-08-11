@@ -139,7 +139,7 @@ class RaygunErrorMessage(object):
     def __init__(self, exc_type=None, exc_value=None, exc_traceback=None, options=None, custom_message=None):
         self.className = exc_type.__name__ if exc_type is not None else None
         self.message = custom_message or "%s: %s" % (
-            exc_type.__name__, exc_value) if exc_type is not None else str(exc_value)
+            exc_type.__name__, exc_value) if exc_type is not None else "RaygunSender.send_exception() called outside of except block"
         self.stackTrace = []
         self.globalVariables = None
 

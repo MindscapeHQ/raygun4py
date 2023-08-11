@@ -31,8 +31,6 @@ class Provider(object):
         """
         Send an exception report to Raygun. This middleware method enhances the report with Flask-specific environment data before sending.
 
-        One of the parameters 'exception' or 'exc_info' must be non-None to send a valid exception report.
-
         Parameters:
             exception (Exception, optional): An exception instance to report.
             exc_info (tuple, optional): A 3-tuple containing exception type, exception instance, and traceback.

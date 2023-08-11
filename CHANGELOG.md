@@ -4,7 +4,7 @@ Features:
   - Added a `config` parameter the to Flask and WSGI middleware provider constructors. This also allows for additional configuration of the sender.
   - The `RaygunHandler` now adds tags corresponding to the logging level, which now defaults to `logging.ERROR`.
   - Errors/exceptions sent via the `RaygunHandler` now have their message overriden by the logged message.
-Bugfixes:
+Bug fixes:
   - The `RaygunHandler` now attempts to capture `exc_info` from the `record`. This can be obtained if `logger.exception()` is used or if `exc_info=True` is set in the logger call.
     - If `exc_info` cannot be obtained by the `RaygunHandler`, it no longer attempts to construct a `RaygunErrorMessage` with `None` values. Instead, it generates a fallback error message using information gathered from the `record`. This is essentially an error with a single stack frame representing the call to the logger.
 Quality of life updates:
