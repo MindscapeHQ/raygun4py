@@ -10,6 +10,8 @@ raygun4py
 
 Official Raygun provider for **Python 2.7**, **Python 3.1+** and **PyPy**
 
+**Please refer to our `documentation site <https://raygun.com/documentation/language-guides/python/crash-reporting/installation/>`_ as this is maintained with higher priority.**
+
 
 Installation
 ============
