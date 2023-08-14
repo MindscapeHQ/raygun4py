@@ -8,7 +8,9 @@ raygun4py
   :target: https://coveralls.io/r/MindscapeHQ/raygun4py?branch=master
 
 
-Official Raygun provider for **Python 2.7**, **Python 3+** and **PyPy**
+Official Raygun provider for **Python 2.7**, **Python 3.1+** and **PyPy**
+
+Please also refer to our `documentation site <https://raygun.com/documentation/language-guides/python/crash-reporting/installation/>`_, as this is maintained with higher priority.
 
 
 Installation
@@ -18,16 +20,8 @@ The easiest way to install this is as a pip package, as it is available from PyP
 
     $ pip install raygun4py
 
-Then import and instantiate the module:
-
-.. code:: python
-
-    from raygun4py import raygunprovider
-
-    client = raygunprovider.RaygunSender('your_apikey')
-
 Test the installation
-------------------------
+---------------------
 
 From the command line, run::
 
@@ -38,6 +32,14 @@ Replace :code:`your_apikey` with the one listed on your Raygun dashboard. This w
 Usage
 =====
 
+Import and instantiate the module:
+
+.. code:: python
+
+    from raygun4py import raygunprovider
+
+    sender = raygunprovider.RaygunSender("paste_your_api_key_here")
+
 Automatically send the current exception like this:
 
 .. code:: python
@@ -45,54 +47,65 @@ Automatically send the current exception like this:
     try:
         raise Exception("foo")
     except:
-        client.send_exception()
+        sender.send_exception()
 
 See `sending functions`_ for more ways to send.
-
 
 Uncaught exception handler
 --------------------------
 
-To automatically pick up unhandled exceptions with custom logic, you can provide a callback function to sys.excepthook:
+To automatically send unhandled exceptions, you can provide a callback function to :code:`sys.excepthook`:
 
 .. code:: python
 
   def handle_exception(exc_type, exc_value, exc_traceback):
       sender = raygunprovider.RaygunSender("your_apikey")
       sender.send_exception(exc_info=(exc_type, exc_value, exc_traceback))
+      sys.__excepthook__(exc_type, exc_value, exc_traceback)
 
   sys.excepthook = handle_exception
+
+Note that after sending the exception, we invoke the default :code:`sys.__excepthook__` to maintain the expected behavior for unhandled exceptions. This ensures the program terminates as it would without the custom exception handler in place.
 
 Logging
 -------
 
-You can also send exceptions using a logger:
+You can send errors/exceptions via a logger by attaching a :code:`RaygunHandler`:
 
 .. code:: python
 
-  logger = logging.getLogger("mylogger")
-  rgHandler = raygunprovider.RaygunHandler("your_apikey")
-  logger.addHandler(rgHandler)
+  logger = logging.getLogger()
+  raygun_handler = raygunprovider.RaygunHandler("paste_your_api_key_here")
+  logger.addHandler(raygun_handler)
 
-  def log_exception(exc_type, exc_value, exc_traceback):
-      logger.error("An exception occurred", exc_info = (exc_type, exc_value, exc_traceback))
+A :code:`RaygunHandler` can also be instantiated from an existing :code:`RaygunSender`:
 
-  sys.excepthook = log_exception
+.. code:: python
 
-This uses the built-in :code:`RaygunHandler`. You can provide your own handler implementation based on that class if you need custom sending behavior.
+  raygun_handler = raygunprovider.RaygunHandler.from_sender(sender)
 
+It is then recommended to use :code:`logger.exception()` or :code:`logger.error(exc_info=True)` in the scope of an :code:`except` block:
+
+.. code:: python
+
+  try:
+      raise Exception("Example exception")
+  except:
+      logger.exception("Example logger.exception log")
+      # Or
+      logger.error("Example logger.error log", exc_info=True)
+
+Note that using a :code:`RaygunHandler` outside the scope of an :code:`except` block will not allow it to populate a full stack trace.
 
 Web frameworks
 --------------
 
-Raygun4py includes dedicated middleware implementations for Django and Flask, as well as generic WSGI frameworks (Tornado, Bottle, Ginkgo etc). These are available for both Python 2.6/2.7 and Python 3+.
+Raygun4py includes dedicated middleware implementations for Django and Flask, as well as generic WSGI frameworks (Tornado, Bottle, Ginkgo etc). These are available for both Python 2.7 and Python 3.1+.
 
 Django
 ++++++
 
-To configure Django to automatically send all exceptions that are raised in views to Raygun:
-
-settings.py
+To configure Django to automatically send all exceptions that are raised in views to Raygun, add the following to :code:`settings.py`:
 
 .. code:: python
 
@@ -127,6 +140,8 @@ The above configuration is the minimal required setup. The full set of options s
 Flask
 +++++
 
+To attach a request exception handler that enhances reports with Flask-specific environment data, use our middleware :code:`flask.Provider`:
+
 .. code:: python
 
   from flask import Flask, current_app
@@ -135,6 +150,8 @@ Flask
   app = Flask(__name__)
 
   flask.Provider(app, 'your_apikey').attach()
+
+The :code:`flask.Provider` constructor can also take an optional :code:`config` argument. This should be a standard :code:`Dict` of supported options, as shown in advanced configuration below. It also returns the underlying :code:`RaygunSender`, which you may decide to use elsewhere.
 
 WSGI
 ++++
@@ -163,6 +180,8 @@ An example using **Tornado**, which will pick up exceptions that occur in the WS
     raygun_wrapped_app = wsgi.Provider(wsgiapp, 'your_apikey')
     server = wsgiref.simple_server.make_server('', 8888, raygun_wrapped_app)
     server.serve_forever()
+
+The :code:`wsgi.Provider` constructor can also take an optional :code:`config` argument. This should be a standard :code:`Dict` of supported options, as shown in advanced configuration below.
 
 Note that many frameworks (tornado, pryramid, gevent et al) will swallow exceptions that occur within their domain.
 
@@ -354,13 +373,6 @@ Chained exceptions
 For Python 3, chained exceptions are supported and automatically sent along with their traceback.
 
 This occurs when an exception is raised while handling another exception - see tests_functional.py for an example.
-
-Troubleshooting
-===============
-
-To see the HTTP response code from sending the message to raygun, `print client.send()` (as in line 27 of test.py). It will be 403 if an invalid API key was entered, and 202 if successful.
-
-Create a thread in the official support forums at http://raygun.io/forums, and we'll help you out.
 
 Changelog
 =========

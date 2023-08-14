@@ -1,7 +1,9 @@
-import sys
-import os
 import inspect
+import os
+import sys
+
 import jsonpickle
+
 from raygun4py import __version__
 
 try:
@@ -12,6 +14,7 @@ except ImportError:
 
 import platform
 from datetime import datetime
+
 from raygun4py import http_utilities
 
 
@@ -46,23 +49,23 @@ class RaygunMessageBuilder(object):
             self.raygunMessage.details['environment']["processorCount"] = (
                 multiprocessing.cpu_count() if USE_MULTIPROCESSING else "n/a"
             )
-        except Exception: # pragma: no cover
+        except Exception:  # pragma: no cover
             pass
 
         try:
             self.raygunMessage.details['environment']["architecture"] = platform.architecture()[0]
-        except Exception: # pragma: no cover
+        except Exception:  # pragma: no cover
             pass
 
         try:
             self.raygunMessage.details['environment']["cpu"] = platform.processor()
-        except Exception: # pragma: no cover
+        except Exception:  # pragma: no cover
             pass
 
         try:
             self.raygunMessage.details['environment']["oSVersion"] = "%s %s" % \
                 (platform.system(), platform.release())
-        except Exception: # pragma: no cover
+        except Exception:  # pragma: no cover
             pass
 
         if extra_environment_data is not None:
@@ -93,7 +96,7 @@ class RaygunMessageBuilder(object):
         if type(tags) is list:
             if not self.raygunMessage.details.get('tags'):
                 self.raygunMessage.details['tags'] = []
-            self.raygunMessage.details['tags'] += tags           
+            self.raygunMessage.details['tags'] += tags
         return self
 
     def set_request_details(self, request):
@@ -104,7 +107,6 @@ class RaygunMessageBuilder(object):
         self.raygunMessage.details['request'] = rg_request_details
 
         return self
-
 
     def set_version(self, version):
         self.raygunMessage.details['version'] = version
@@ -123,7 +125,7 @@ class RaygunMessage(object):
         self.details = {}
 
     def get_error(self):
-        return self.details['error']
+        return self.details.get('error')
 
     def get_details(self):
         return self.details
@@ -131,10 +133,12 @@ class RaygunMessage(object):
 
 class RaygunErrorMessage(object):
 
-    def __init__(self, exc_type, exc_value, exc_traceback, options):
-        self.className = exc_type.__name__
-        self.message = "%s: %s" % (exc_type.__name__, exc_value)
+    def __init__(self, exc_type=None, exc_value=None, exc_traceback=None, options=None, custom_message=None):
+        self.className = exc_type.__name__ if exc_type is not None else None
+        self.message = custom_message or "%s: %s" % (
+            exc_type.__name__, exc_value) if exc_type is not None else "RaygunSender.send_exception() called outside of except block"
         self.stackTrace = []
+        self.globalVariables = None
 
         try:
             frames = inspect.getinnerframes(exc_traceback)
@@ -142,7 +146,7 @@ class RaygunErrorMessage(object):
             if frames:
                 for frame in frames:
                     localVariables = None
-                    if 'transmitLocalVariables' in options and options['transmitLocalVariables'] is True:
+                    if options is not None and 'transmitLocalVariables' in options and options['transmitLocalVariables'] is True:
                         localVariables = self._get_locals(frame[0])
 
                     self.stackTrace.append({
@@ -152,11 +156,13 @@ class RaygunErrorMessage(object):
                         'methodName': frame[4][0] if frame[4] is not None else None,
                         'localVariables': localVariables
                     })
-                if 'transmitGlobalVariables' in options and options['transmitGlobalVariables'] is True and len(frames) > 0:
+                if options is not None and 'transmitGlobalVariables' in options and options['transmitGlobalVariables'] is True and len(frames) > 0:
                     self.globalVariables = frames[-1][0].f_globals
-
+        except Exception as e:
+            pass
         finally:
-            del frames
+            if 'frames' in locals():
+                del frames
 
         self.data = ""
 
@@ -169,7 +175,8 @@ class RaygunErrorMessage(object):
                 nestedException = exc_value.__context__
 
             if nestedException is not None:
-                self.innerError = RaygunErrorMessage(type(nestedException), nestedException, nestedException.__traceback__, options)
+                self.innerError = RaygunErrorMessage(
+                    type(nestedException), nestedException, nestedException.__traceback__, options)
 
         try:
             jsonpickle.encode(self, unpicklable=False)
@@ -201,5 +208,33 @@ class RaygunErrorMessage(object):
                         r = repr(localVars[key])
                     except Exception as re:
                         r = "Couldn't convert to repr due to {0}".format(re)
-                    result[key] = "!!! Couldn't convert {0!r} (repr: {1}) due to {2!r} !!!".format(key, r, e)
-            return result
+                    result[key] = "!!! Couldn't convert {0!r} (repr: {1}) due to {2!r} !!!".format(
+                        key, r, e)
+        return result
+
+
+class RaygunLoggerFallbackErrorMessage(object):
+
+    def __init__(self, name, message, filename, funcName, lineno):
+        self.className = "Logger (" + name + ")"
+        self.message = message
+        # Create a single stackTrace entry using logger data
+        self.stackTrace = [{
+            'lineNumber': lineno,
+            'className': self.className,
+            'fileName': filename,
+            'methodName': funcName or 'UnknownMethod',
+            'localVariables': None  # We don't have access to local variables
+        }]
+        self.globalVariables = None  # We don't have access to global variables
+        self.data = ""
+
+        try:
+            jsonpickle.encode(self, unpicklable=False)
+        except Exception:
+            for frame in self.stackTrace:
+                if 'localVariables' in frame:
+                    frame['localVariables'] = None
+
+    def get_classname(self):
+        return self.className

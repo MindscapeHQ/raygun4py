@@ -1,19 +1,21 @@
 import django
 from django.conf import settings
+
 from raygun4py import raygunprovider
-from django.utils.functional import cached_property
 
 try:
     from django.utils.deprecation import MiddlewareMixin
 except ImportError:
     MiddlewareMixin = object
 
+
 class Provider(MiddlewareMixin):
 
     def __init__(self, get_response=None):
         self.get_response = get_response
         config = getattr(settings, 'RAYGUN4PY_CONFIG', {})
-        apiKey = getattr(settings, 'RAYGUN4PY_API_KEY', config.get('api_key', None))
+        apiKey = getattr(settings, 'RAYGUN4PY_API_KEY',
+                         config.get('api_key', None))
 
         self.sender = raygunprovider.RaygunSender(apiKey, config=config)
 
@@ -21,7 +23,8 @@ class Provider(MiddlewareMixin):
         raygun_request = self._mapRequest(request)
         env = self._get_django_environment()
 
-        self.sender.send_exception(exception=exception, request=raygun_request, extra_environment_data=env)
+        self.sender.send_exception(
+            exception=exception, request=raygun_request, extra_environment_data=env)
 
     def _mapRequest(self, request):
         headers = request.META.items()

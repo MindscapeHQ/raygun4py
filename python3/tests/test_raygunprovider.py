@@ -106,7 +106,7 @@ class TestGroupingKey(unittest.TestCase):
         self.key = 'foo'
         self.sender._transform_message(msg)
 
-        self.assertEquals(msg.get_details()['groupingKey'], 'foo')
+        self.assertEqual(msg.get_details()['groupingKey'], 'foo')
 
     def test_groupingkey_is_string_with_callback(self):
         msg = self.create_dummy_message()

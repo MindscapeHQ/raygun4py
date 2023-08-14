@@ -1,4 +1,5 @@
 import sys
+
 from setuptools import setup
 
 packages = ['raygun4py', 'raygun4py.middleware']
@@ -18,7 +19,7 @@ dev_requirements = [
     'unittest2 >= 1.1.0',
     'coveralls >= 1.5.1',
     'mock >= 2.0.0',
-    'django == 1.8.8',
+    'django >= 1.8.8',
     'flask >= 0.10',
     'WebTest >= 2.0.32'
 ]
@@ -27,7 +28,7 @@ setup(
     name='raygun4py',
     version=__version__,
     packages=packages,
-    package_dir= {
+    package_dir={
         "raygun4py": base_dir + "/raygun4py"
     },
     license='LICENSE',
@@ -51,14 +52,12 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.1',
-        'Programming Language :: Python :: 3.2',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
         'Topic :: Communications',
     ],
 )

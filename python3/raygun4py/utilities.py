@@ -1,9 +1,11 @@
 import re
+
 from raygun4py import raygunmsgs
 
 
 def ignore_exceptions(ignored_exceptions, message):
-    if message.get_error().get_classname() in ignored_exceptions:
+    classname = message.get_error().get_classname()
+    if classname and classname in ignored_exceptions:
         return None
 
     return message
@@ -17,7 +19,8 @@ def filter_keys(filtered_keys, object):
 
     for key in iter(iteration_target.keys()):
         if isinstance(iteration_target[key], dict):
-            iteration_target[key] = filter_keys(filtered_keys, iteration_target[key])
+            iteration_target[key] = filter_keys(
+                filtered_keys, iteration_target[key])
         else:
             for filter_key in filtered_keys:
                 if key in filtered_keys:
@@ -27,7 +30,6 @@ def filter_keys(filtered_keys, object):
 
                     if sanitised_key in key:
                         iteration_target[key] = '<filtered>'
-
 
     return iteration_target
 
