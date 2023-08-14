@@ -53,14 +53,12 @@ class RaygunMessageBuilder(object):
             pass
 
         try:
-            self.raygunMessage.details['environment']["architecture"] = platform.architecture()[
-                0]
+            self.raygunMessage.details['environment']["architecture"] = platform.architecture()[0]
         except Exception:  # pragma: no cover
             pass
 
         try:
-            self.raygunMessage.details['environment']["cpu"] = platform.processor(
-            )
+            self.raygunMessage.details['environment']["cpu"] = platform.processor()
         except Exception:  # pragma: no cover
             pass
 
@@ -105,8 +103,7 @@ class RaygunMessageBuilder(object):
         if not request:
             return self
 
-        rg_request_details = http_utilities.build_wsgi_compliant_request(
-            request)
+        rg_request_details = http_utilities.build_wsgi_compliant_request(request)
         self.raygunMessage.details['request'] = rg_request_details
 
         return self
