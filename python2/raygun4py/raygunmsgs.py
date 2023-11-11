@@ -86,7 +86,9 @@ class RaygunMessageBuilder(object):
 
     def set_customdata(self, user_custom_data):
         if type(user_custom_data) is dict:
-            self.raygunMessage.details['userCustomData'] = user_custom_data
+            if not self.raygunMessage.details.get('userCustomData'):
+                self.raygunMessage.details['userCustomData'] = dict()                
+            self.raygunMessage.details['userCustomData'].update(user_custom_data)
         return self
 
     def set_tags(self, tags):
