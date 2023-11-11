@@ -27,8 +27,7 @@ def filter_keys(filtered_keys, object):
                     iteration_target[key] = '<filtered>'
                 elif '*' in filter_key:
                     sanitised_key = filter_key.replace('*', '')
-
-                    if sanitised_key in key:
+                    if key.startswith(sanitised_key):
                         iteration_target[key] = '<filtered>'
 
     return iteration_target
