@@ -1,4 +1,4 @@
-## 4.4.1 (13/02/24):
+## 5.0.0 (13/02/24):
 Breaking changes:
   - Support for Python 2.7 has been dropped
 
