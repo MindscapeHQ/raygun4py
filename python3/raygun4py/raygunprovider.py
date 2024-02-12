@@ -16,6 +16,8 @@ DEFAULT_CONFIG = {
     'proxy': None,
     'transmit_global_variables': True,
     'transmit_local_variables': True,
+    'enforce_payload_size_limit': True, 
+    'log_payload_size_limits': True,
     'transmit_environment_variables': True,
     'userversion': "Not defined",
     'user': None,
@@ -169,7 +171,9 @@ class RaygunSender:
         """
         options = {
             'transmitLocalVariables': self.transmit_local_variables,
-            'transmitGlobalVariables': self.transmit_global_variables
+            'transmitGlobalVariables': self.transmit_global_variables,
+            'enforce_payload_size_limit': self.enforce_payload_size_limit, 
+            'log_payload_size_limits': self.log_payload_size_limits,
         }
         tags, custom_data, http_request, extra_environment_data, custom_message, fallback_error = self._parse_args(
             kwargs)

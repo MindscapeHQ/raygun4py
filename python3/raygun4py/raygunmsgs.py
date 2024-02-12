@@ -1,5 +1,6 @@
 import inspect
 import os
+import logging
 import sys
 
 import jsonpickle
@@ -132,6 +133,7 @@ class RaygunMessage(object):
 
 
 class RaygunErrorMessage(object):
+    log = logging.getLogger(__name__)
 
     def __init__(self, exc_type=None, exc_value=None, exc_traceback=None, options=None, custom_message=None):
         self.className = exc_type.__name__ if exc_type is not None else None
@@ -190,6 +192,63 @@ class RaygunErrorMessage(object):
                     for frame in self.stackTrace:
                         if 'localVariables' in frame:
                             frame['localVariables'] = None
+
+        if (options is not None and 'enforce_payload_size_limit' in options and options['enforce_payload_size_limit'] is True):
+            self._check_and_modify_payload_size(options)
+
+    def _check_and_modify_payload_size(self, options, max_size_kb=128):
+        payload = jsonpickle.encode(self, unpicklable=False)
+
+        while len(payload.encode('utf-8')) > max_size_kb * 1024:
+            if(not self._remove_largest_variable(options)): # Failed to remove either local or global variable
+                self.log.warning(f"Raygun4Py: Unable to reduce size of payload below 128kb, error will be discarded by Raygun ingestion API")
+                break
+
+            payload = jsonpickle.encode(self, unpicklable=False)
+
+    def _remove_largest_variable(self, options) -> bool:
+        largest_global_var = None
+        largest_global_size = 0
+
+        largest_local_var = None
+        largest_local_size = 0
+        largest_local_frame = None
+
+        # Find the largest global variable
+        if self.globalVariables:
+            for var, value in self.globalVariables.items():
+                size = sys.getsizeof(value)
+                if size > largest_global_size:
+                    largest_global_size = size
+                    largest_global_var = var
+
+        # Find the largest local variable across all frames
+        for frame in self.stackTrace:
+            if 'localVariables' in frame and frame['localVariables']:
+                for var, value in frame['localVariables'].items():
+                    size = sys.getsizeof(value)
+                    if size > largest_local_size:
+                        largest_local_size = size
+                        largest_local_var = var
+                        largest_local_frame = frame
+
+        if largest_global_size == 0 and largest_local_size == 0:
+            return False
+
+        # Decide which one to remove: the largest global or the largest local variable
+        if largest_global_size >= largest_local_size and largest_global_var is not None:
+            if (options is not None and 'log_payload_size_limits' in options and options['log_payload_size_limits'] is True):
+                self.log.warning(f"Raygun4Py: Removing global variable {largest_global_var} due to payload size limit")
+
+            self.globalVariables[largest_global_var] = "Removed"
+        elif largest_local_var is not None and largest_local_frame is not None:
+            if (options is not None and 'log_payload_size_limits' in options and options['log_payload_size_limits'] is True):
+                self.log.warning(f"Raygun4Py: Removing local variable {largest_local_var} due to payload size limit")
+
+            largest_local_frame['localVariables'][largest_local_var] = "Removed"
+        
+        return True
+
 
     def get_classname(self):
         return self.className
