@@ -3,21 +3,20 @@ language: python
 cache: pip
 
 python:
-  - "2.7"
   - "3.6"
   - "3.7"
   - "3.8"
   - "3.9"
   - "3.10"
   - "3.11"
-  - "pypy"
+  - "3.12"
   - "pypy3"
 
 install:
   - python -m pip install coverage .[dev]
 
 script:
-  - if [[ $TRAVIS_PYTHON_VERSION == 2* || $TRAVIS_PYTHON_VERSION == 'pypy' ]]; then coverage run --source=python2 -m unittest discover python2/tests; fi
+  # - if [[ $TRAVIS_PYTHON_VERSION == 2* || $TRAVIS_PYTHON_VERSION == 'pypy' ]]; then coverage run --source=python2 -m unittest discover python2/tests; fi
   - if [[ $TRAVIS_PYTHON_VERSION == 3* || $TRAVIS_PYTHON_VERSION == 'pypy3' ]]; then coverage run --source=python3 -m unittest discover python3/tests; fi
 
 after_success:
