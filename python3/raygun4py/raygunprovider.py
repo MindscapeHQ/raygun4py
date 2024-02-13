@@ -249,6 +249,22 @@ class RaygunSender:
         return message
 
     def _post(self, raygunMessage):
+        options = {
+            'enforce_payload_size_limit': self.enforce_payload_size_limit, 
+            'log_payload_size_limits': self.log_payload_size_limits,
+        }
+
+        if(
+            isinstance(raygunMessage['details']['error'], raygunmsgs.RaygunErrorMessage) \
+            and 'enforce_payload_size_limit' in options \
+            and options['enforce_payload_size_limit'] is True
+        ):
+            error = jsonpickle.loads(jsonpickle.dumps())
+
+            error._check_and_modify_payload_size(options)
+
+            raygunMessage['details']['error'] = error
+
         json = jsonpickle.encode(raygunMessage, unpicklable=False)
 
         try:

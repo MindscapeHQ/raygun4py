@@ -193,9 +193,6 @@ class RaygunErrorMessage(object):
                         if 'localVariables' in frame:
                             frame['localVariables'] = None
 
-        if (options is not None and 'enforce_payload_size_limit' in options and options['enforce_payload_size_limit'] is True):
-            self._check_and_modify_payload_size(options)
-
     def _check_and_modify_payload_size(self, options, max_size_kb=128):
         payload = jsonpickle.encode(self, unpicklable=False)
 
