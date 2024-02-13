@@ -261,7 +261,7 @@ class RaygunSender:
         ):
             error = jsonpickle.loads(jsonpickle.dumps(raygunMessage['details']['error']))
 
-            error._check_and_modify_payload_size(options)
+            error.check_and_modify_payload_size(options)
 
             raygunMessage['details']['error'] = error
 

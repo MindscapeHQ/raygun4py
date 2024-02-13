@@ -175,7 +175,7 @@ class TestRaygunErrorMessage(unittest.TestCase):
             msg = raygunmsgs.RaygunErrorMessage(exc_info[0], exc_info[1], exc_info[2], { 'transmitGlobalVariables': True })
 
             msg_clone = jsonpickle.loads(jsonpickle.dumps(msg))
-            msg_clone._check_and_modify_payload_size({'enforce_payload_size_limit' : True})
+            msg_clone.check_and_modify_payload_size({'enforce_payload_size_limit' : True})
 
             self.assertEqual(msg_clone.globalVariables['globalReference'], "Removed")
 
@@ -192,7 +192,7 @@ class TestRaygunErrorMessage(unittest.TestCase):
             msg = raygunmsgs.RaygunErrorMessage(exc_info[0], exc_info[1], exc_info[2], { 'transmitLocalVariables' : True })
 
             msg_clone = jsonpickle.loads(jsonpickle.dumps(msg))
-            msg_clone._check_and_modify_payload_size({'enforce_payload_size_limit' : True})
+            msg_clone.check_and_modify_payload_size({'enforce_payload_size_limit' : True})
 
             self.assertEqual(self.find_local_variable(msg.stackTrace, "localReference"), "Removed")
 
@@ -210,7 +210,7 @@ class TestRaygunErrorMessage(unittest.TestCase):
             msg = raygunmsgs.RaygunErrorMessage(exc_info[0], exc_info[1], exc_info[2], { 'transmitGlobalVariables': True, 'transmitLocalVariables' : True })
 
             msg_clone = jsonpickle.loads(jsonpickle.dumps(msg))
-            msg_clone._check_and_modify_payload_size({'enforce_payload_size_limit' : True})
+            msg_clone.check_and_modify_payload_size({'enforce_payload_size_limit' : True})
 
             self.assertEqual(msg_clone.globalVariables['globalReference'], "Removed")
             self.assertEqual(self.find_local_variable(msg.stackTrace, "localReference"), localReference)

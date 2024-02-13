@@ -193,7 +193,7 @@ class RaygunErrorMessage(object):
                         if 'localVariables' in frame:
                             frame['localVariables'] = None
 
-    def _check_and_modify_payload_size(self, options, max_size_kb=128):
+    def check_and_modify_payload_size(self, options, max_size_kb=128):
         payload = jsonpickle.encode(self, unpicklable=False)
 
         while len(payload.encode('utf-8')) > max_size_kb * 1024:
