@@ -234,12 +234,12 @@ class RaygunErrorMessage(object):
 
         # Decide which one to remove: the largest global or the largest local variable
         if largest_global_size >= largest_local_size and largest_global_var is not None:
-            if (options is not None and 'log_payload_size_limits' in options and options['log_payload_size_limits'] is True):
+            if (options is not None and 'log_payload_size_limit_breaches' in options and options['log_payload_size_limit_breaches'] is True):
                 self.log.warning(f"Raygun4Py: Removing global variable {largest_global_var} due to payload size limit")
 
             self.globalVariables[largest_global_var] = "Removed"
         elif largest_local_var is not None and largest_local_frame is not None:
-            if (options is not None and 'log_payload_size_limits' in options and options['log_payload_size_limits'] is True):
+            if (options is not None and 'log_payload_size_limit_breaches' in options and options['log_payload_size_limit_breaches'] is True):
                 self.log.warning(f"Raygun4Py: Removing local variable {largest_local_var} due to payload size limit")
 
             largest_local_frame['localVariables'][largest_local_var] = "Removed"

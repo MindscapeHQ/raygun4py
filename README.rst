@@ -135,11 +135,14 @@ The above configuration is the minimal required setup. The full set of options s
       'transmit_global_variables': True,
       'transmit_local_variables': True,
       'enforce_payload_size_limit': True, 
-      'log_payload_size_limits': True,
+      'log_payload_size_limit_breaches': True,
       'transmit_environment_variables:': True,
       'userversion': "Not defined",
       'user': None
   }
+
+'enforce_payload_size_limit' when enabled (default behaviour) will iteratively remove the largest global or local variable from the error message until the payload is below 128kb
+'log_payload_size_limit_breaches' when enabled (default behaviour) will log breaches and specify which variables are being removed
 
 Flask
 +++++

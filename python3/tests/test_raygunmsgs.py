@@ -1,6 +1,8 @@
 import sys, unittest, socket
 import inspect
-from raygun4py import raygunmsgs
+import jsonpickle
+from raygun4py import raygunmsgs, raygunprovider
+
 
 class TestRaygunMessageBuilder(unittest.TestCase):
 
@@ -127,6 +129,93 @@ class TestRaygunMessageBuilder(unittest.TestCase):
 
         self.assertIsNone(self.builder.raygunMessage.details['environment']['environmentVariables'])
 
+
+class TestRaygunErrorMessage(unittest.TestCase):
+    ONEHUNDRED_AND_FIFTEY_KB = 150 * 1024
+
+    def create_string_of_size(self, size_in_bytes):
+        return "a" * size_in_bytes
+    
+    def get_string_size(self, s):
+        return len(s)
+    
+    def find_local_variable(self, stack_trace, variable_name):
+        for frame in stack_trace:
+            if 'localVariables' in frame and frame['localVariables']:
+                if variable_name in frame['localVariables']:
+                    return frame['localVariables'][variable_name]
+                
+        return None
+
+    def setUp(self):
+        self.client = raygunprovider.RaygunSender("Dummy API key")
+
+    def test_global_reference_kept(self):
+        global globalReference 
+        globalReference = self.create_string_of_size(self.ONEHUNDRED_AND_FIFTEY_KB)
+
+        try:
+            raise Exception()
+        except Exception as e:
+            self.client.send_exception()
+
+        self.assertEqual(self.get_string_size(globalReference), self.ONEHUNDRED_AND_FIFTEY_KB)
+
+        del globalReference
+
+    def test_remove_global_too_large(self):
+        global globalReference
+        globalReference = self.create_string_of_size(self.ONEHUNDRED_AND_FIFTEY_KB)
+
+        try:
+            raise Exception()
+        except Exception as e:
+            exc_info = sys.exc_info()
+
+            msg = raygunmsgs.RaygunErrorMessage(exc_info[0], exc_info[1], exc_info[2], { 'transmitGlobalVariables': True })
+
+            msg_clone = jsonpickle.loads(jsonpickle.dumps(msg))
+            msg_clone._check_and_modify_payload_size({'enforce_payload_size_limit' : True})
+
+            self.assertEqual(msg_clone.globalVariables['globalReference'], "Removed")
+
+        del globalReference
+
+    def test_remove_local_too_large(self):
+        localReference = self.create_string_of_size(self.ONEHUNDRED_AND_FIFTEY_KB)
+
+        try:
+            raise Exception()
+        except Exception as e:
+            exc_info = sys.exc_info()
+
+            msg = raygunmsgs.RaygunErrorMessage(exc_info[0], exc_info[1], exc_info[2], { 'transmitLocalVariables' : True })
+
+            msg_clone = jsonpickle.loads(jsonpickle.dumps(msg))
+            msg_clone._check_and_modify_payload_size({'enforce_payload_size_limit' : True})
+
+            self.assertEqual(self.find_local_variable(msg.stackTrace, "localReference"), "Removed")
+
+    def test_remove_larger_varaible(self):
+        global globalReference
+
+        globalReference = self.create_string_of_size(80 * 1024)
+        localReference = self.create_string_of_size(64 * 1024)
+
+        try:
+            raise Exception()
+        except Exception as e:
+            exc_info = sys.exc_info()
+
+            msg = raygunmsgs.RaygunErrorMessage(exc_info[0], exc_info[1], exc_info[2], { 'transmitGlobalVariables': True, 'transmitLocalVariables' : True })
+
+            msg_clone = jsonpickle.loads(jsonpickle.dumps(msg))
+            msg_clone._check_and_modify_payload_size({'enforce_payload_size_limit' : True})
+
+            self.assertEqual(msg_clone.globalVariables['globalReference'], "Removed")
+            self.assertEqual(self.find_local_variable(msg.stackTrace, "localReference"), localReference)
+        
+        del globalReference
 
 class TestRaygunErrorMessage(unittest.TestCase):
     class GrandchildError(Exception):
