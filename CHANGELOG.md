@@ -4,7 +4,7 @@ Breaking changes:
 
 Bug Fixes:
   - Removes largest local/global variables in crash payload to ensure payload size limit is not breached (optional)
-    - We now provide `enforce_payload_size_limit` and `log_payload_size_limit_breaches` as configuration options
+    - We now provide `enforce_payload_size_limit` and `log_payload_size_limit_breaches` as configuration options, these default both being enabled
     - These control whether the provider will attempt to remove variables if there is an oversized payload and log what varaible were removed
 
 ## 4.4.0 (11/08/2023):
