@@ -131,7 +131,7 @@ class TestRaygunMessageBuilder(unittest.TestCase):
 
 
 class TestRaygunErrorMessage(unittest.TestCase):
-    ONEHUNDRED_AND_FIFTEY_KB = 150 * 1024
+    ONEHUNDRED_AND_FIFTY_KB = 150 * 1024
 
     def create_string_of_size(self, size_in_bytes):
         return "a" * size_in_bytes
