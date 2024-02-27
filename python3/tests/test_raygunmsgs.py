@@ -152,20 +152,20 @@ class TestRaygunErrorMessage(unittest.TestCase):
 
     def test_global_reference_kept(self):
         global globalReference 
-        globalReference = self.create_string_of_size(self.ONEHUNDRED_AND_FIFTEY_KB)
+        globalReference = self.create_string_of_size(self.ONEHUNDRED_AND_FIFTY_KB)
 
         try:
             raise Exception()
         except Exception as e:
             self.client.send_exception()
 
-        self.assertEqual(self.get_string_size(globalReference), self.ONEHUNDRED_AND_FIFTEY_KB)
+        self.assertEqual(self.get_string_size(globalReference), self.ONEHUNDRED_AND_FIFTY_KB)
 
         del globalReference
 
     def test_remove_global_too_large(self):
         global globalReference
-        globalReference = self.create_string_of_size(self.ONEHUNDRED_AND_FIFTEY_KB)
+        globalReference = self.create_string_of_size(self.ONEHUNDRED_AND_FIFTY_KB)
 
         try:
             raise Exception()
@@ -182,7 +182,7 @@ class TestRaygunErrorMessage(unittest.TestCase):
         del globalReference
 
     def test_remove_local_too_large(self):
-        localReference = self.create_string_of_size(self.ONEHUNDRED_AND_FIFTEY_KB)
+        localReference = self.create_string_of_size(self.ONEHUNDRED_AND_FIFTY_KB)
 
         try:
             raise Exception()
