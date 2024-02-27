@@ -141,8 +141,8 @@ The above configuration is the minimal required setup. The full set of options s
       'user': None
   }
 
-'enforce_payload_size_limit' when enabled (default behaviour) will iteratively remove the largest global or local variable from the error message until the payload is below 128kb as payloads over 128kb will not be accepted by Raygun
-'log_payload_size_limit_breaches' when enabled (default behaviour) will log breaches and specify which variables are being removed
+'enforce_payload_size_limit' when enabled (default behavior) will iteratively remove the largest global or local variable from the error message until the payload is below 128kb as payloads over 128kb will not be accepted by Raygun
+'log_payload_size_limit_breaches' when enabled (default behavior) will log breaches and specify which variables are being removed
 
 Flask
 +++++
