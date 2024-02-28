@@ -16,6 +16,8 @@ DEFAULT_CONFIG = {
     'proxy': None,
     'transmit_global_variables': True,
     'transmit_local_variables': True,
+    'enforce_payload_size_limit': True, 
+    'log_payload_size_limit_breaches': True,
     'transmit_environment_variables': True,
     'userversion': "Not defined",
     'user': None,
@@ -169,7 +171,9 @@ class RaygunSender:
         """
         options = {
             'transmitLocalVariables': self.transmit_local_variables,
-            'transmitGlobalVariables': self.transmit_global_variables
+            'transmitGlobalVariables': self.transmit_global_variables,
+            'enforce_payload_size_limit': self.enforce_payload_size_limit, 
+            'log_payload_size_limit_breaches': self.log_payload_size_limit_breaches,
         }
         tags, custom_data, http_request, extra_environment_data, custom_message, fallback_error = self._parse_args(
             kwargs)
@@ -245,6 +249,22 @@ class RaygunSender:
         return message
 
     def _post(self, raygunMessage):
+        options = {
+            'enforce_payload_size_limit': self.enforce_payload_size_limit, 
+            'log_payload_size_limit_breaches': self.log_payload_size_limit_breaches,
+        }
+
+        if(
+            isinstance(raygunMessage['details']['error'], raygunmsgs.RaygunErrorMessage) \
+            and 'enforce_payload_size_limit' in options \
+            and options['enforce_payload_size_limit'] is True
+        ):
+            error = jsonpickle.loads(jsonpickle.dumps(raygunMessage['details']['error']))
+
+            error.check_and_modify_payload_size(options)
+
+            raygunMessage['details']['error'] = error
+
         json = jsonpickle.encode(raygunMessage, unpicklable=False)
 
         try:

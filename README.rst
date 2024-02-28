@@ -10,6 +10,8 @@ raygun4py
 
 Official Raygun provider for **Python 2.7**, **Python 3.1+** and **PyPy**
 
+**Python 2.7** is supported in versions <= 4.4.0
+
 Please also refer to our `documentation site <https://raygun.com/documentation/language-guides/python/crash-reporting/installation/>`_, as this is maintained with higher priority.
 
 
@@ -132,10 +134,15 @@ The above configuration is the minimal required setup. The full set of options s
       'ignored_exceptions': [],
       'transmit_global_variables': True,
       'transmit_local_variables': True,
+      'enforce_payload_size_limit': True, 
+      'log_payload_size_limit_breaches': True,
       'transmit_environment_variables:': True,
       'userversion': "Not defined",
       'user': None
   }
+
+'enforce_payload_size_limit' when enabled (default behavior) will iteratively remove the largest global or local variable from the error message until the payload is below 128kb as payloads over 128kb will not be accepted by Raygun
+'log_payload_size_limit_breaches' when enabled (default behavior) will log breaches and specify which variables are being removed
 
 Flask
 +++++

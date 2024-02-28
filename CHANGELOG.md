@@ -1,3 +1,12 @@
+## 5.0.0 (13/02/24):
+Breaking changes:
+  - Support for Python 2.7 has been dropped
+
+Bug Fixes:
+  - Removes largest local/global variables in crash payload to ensure payload size limit is not breached (optional)
+    - We now provide `enforce_payload_size_limit` and `log_payload_size_limit_breaches` as configuration options, both enabled by default
+    - These control whether the provider will attempt to remove variables if there is an oversized payload and log which variables were removed
+
 ## 4.4.0 (11/08/2023):
 Features:
   - Added `RaygunHandler.from_sender()` factory to construct a `RaygunHandler` instance using an existing `RaygunSender`. This allows for additional configuration of the sender.
