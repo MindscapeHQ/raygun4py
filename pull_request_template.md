@@ -4,7 +4,7 @@
 
 <!-- What issue does this PR address or what feature does it implement? -->
 
-- **Approach**: 
+**Approach**: 
 
 <!-- How does this PR tackle the problem? -->
 
