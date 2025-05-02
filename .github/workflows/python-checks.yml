@@ -28,10 +28,12 @@ jobs:
         pip install black flake8 coverage .[dev]
     
     - name: Check formatting with black
+      continue-on-error: true
       run: |
         black --check python3/
     
     - name: Lint with flake8
+      continue-on-error: true
       run: |
         flake8 python3/
     

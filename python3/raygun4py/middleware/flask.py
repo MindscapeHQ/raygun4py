@@ -17,14 +17,13 @@ class Provider(object):
 
         got_request_exception.connect(self.send_exception, sender=flaskApp)
 
-        flaskApp.extensions['raygun'] = self
+        flaskApp.extensions["raygun"] = self
 
     def attach(self):
-        if not hasattr(self.flaskApp, 'extensions'):
+        if not hasattr(self.flaskApp, "extensions"):
             self.flaskApp.extensions = {}
 
-        self.sender = raygunprovider.RaygunSender(
-            self.apiKey, config=self.config)
+        self.sender = raygunprovider.RaygunSender(self.apiKey, config=self.config)
         return self.sender
 
     def send_exception(self, exception=None, exc_info=None, user=None, **kwargs):
@@ -48,15 +47,14 @@ class Provider(object):
 
         env = self._get_flask_environment()
         # Ensure extra_environment_data is merged or added
-        if 'extra_environment_data' in kwargs:
-            kwargs['extra_environment_data'].update(env)
+        if "extra_environment_data" in kwargs:
+            kwargs["extra_environment_data"].update(env)
         else:
-            kwargs['extra_environment_data'] = env
+            kwargs["extra_environment_data"] = env
 
         self.sender.send_exception(
-            exception=exception, exc_info=exc_info, user_override=user, **kwargs)
+            exception=exception, exc_info=exc_info, user_override=user, **kwargs
+        )
 
     def _get_flask_environment(self):
-        return {
-            'frameworkVersion': 'Flask ' + getattr(flask, '__version__', '')
-        }
+        return {"frameworkVersion": "Flask " + getattr(flask, "__version__", "")}
