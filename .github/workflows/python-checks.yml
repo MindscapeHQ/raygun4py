@@ -1,0 +1,40 @@
+name: Python Checks
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install black flake8 coverage .[dev]
+    
+    - name: Check formatting with black
+      run: |
+        black --check python3/
+    
+    - name: Lint with flake8
+      run: |
+        flake8 python3/
+    
+    - name: Run tests with coverage
+      run: |
+        coverage run --source=python3 -m unittest discover python3/tests
+        coverage report -m 
