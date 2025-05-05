@@ -8,7 +8,7 @@ from raygun4py import raygunprovider
 class TestRaygun4PyFunctional(unittest.TestCase):
 
     def setUp(self):
-        self.apiKey = os.environ.get('RAYGUN_API_KEY')
+        self.apiKey = os.environ.get("RAYGUN_API_KEY")
         if not self.apiKey:
             raise ValueError("RAYGUN_API_KEY environment variable is not set")
 
