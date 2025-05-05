@@ -178,7 +178,7 @@ class TestRaygun4PyFunctional(unittest.TestCase):
         client = raygunprovider.RaygunSender(self.apiKey)
 
         try:
-            _ = "bar"  # noqa: F841
+            foo = "bar"  # noqa: F841
             raise Exception("Raygun4py3 functional test - local variables")
         except Exception:
             result = client.send_exception(httpRequest={})
@@ -189,7 +189,7 @@ class TestRaygun4PyFunctional(unittest.TestCase):
         client = raygunprovider.RaygunSender(self.apiKey)
 
         try:
-            _ = "parent"  # noqa: F841
+            scope = "parent"  # noqa: F841
             child()
         except Exception:
             result = client.send_exception(httpRequest={})
@@ -202,8 +202,8 @@ class TestRaygun4PyFunctional(unittest.TestCase):
 
         try:
             raise Exception("Raygun4py3 functional test - on_before_send")
-        except Exception:
-            httpResult = client.send_exception(exc_info=sys.exc_info())
+        except Exception as e:
+            httpResult = client.send_exception(e, exc_info=sys.exc_info())
 
         self.assertEqual(httpResult[0], 202)
 
@@ -213,8 +213,8 @@ class TestRaygun4PyFunctional(unittest.TestCase):
 
         try:
             raise Exception("Raygun4py3 functional test - on_before_send")
-        except Exception:
-            result = client.send_exception(exc_info=sys.exc_info())
+        except Exception as e:
+            result = client.send_exception(e, exc_info=sys.exc_info())
 
         self.assertIsNone(result)
 
@@ -251,7 +251,7 @@ class TestRaygun4PyFunctional(unittest.TestCase):
     def test_utf8_localvariable(self):
         client = raygunprovider.RaygunSender(self.apiKey)
 
-        _ = "ᵫ"  # noqa: F841
+        the_variable = "ᵫ"  # noqa: F841
 
         try:
             raise Exception("Raygun4py3: utf8 local variable")
@@ -263,7 +263,7 @@ class TestRaygun4PyFunctional(unittest.TestCase):
     def test_bytestring_localvariable(self):
         client = raygunprovider.RaygunSender(self.apiKey)
 
-        _ = b"\x8d\x80\x92uK!M\xed"  # noqa: F841
+        byte_string = b"\x8d\x80\x92uK!M\xed"  # noqa: F841
 
         try:
             raise Exception("Raygun4py3: bytestring local variable")
@@ -276,7 +276,7 @@ class TestRaygun4PyFunctional(unittest.TestCase):
         client = raygunprovider.RaygunSender(self.apiKey)
 
         try:
-            _ = "\u2211"  # noqa: F841
+            sigma = "\u2211"  # noqa: F841
             raise Exception("Raygun4py3 functional test - local variable - unicode")
         except Exception:
             result = client.send_exception(httpRequest={})
@@ -290,14 +290,16 @@ class TestRaygun4PyFunctional(unittest.TestCase):
             def __str__(self):
                 raise Exception("I failed to stringify myself")
 
-        _ = StrFailingClass()  # noqa: F841
+        instance = StrFailingClass()  # noqa: F841
 
         try:
             raise Exception(
                 "Raygun4py3 functional test - local variable - cause an str exception"
             )
         except Exception:
-            _ = client.send_exception(httpRequest={})  # noqa: F841
+            result = client.send_exception(httpRequest={})
+
+            self.assertEqual(result[0], 202)
 
 
 def before_send_mutate_payload(message):

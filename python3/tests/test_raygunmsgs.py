@@ -218,8 +218,9 @@ class TestRaygunErrorMessage(unittest.TestCase):
         del globalReference
 
     def test_remove_local_too_large(self):
-        # Create a local variable that will be captured in the stack trace
-        localReference = self.create_string_of_size(self.ONEHUNDRED_AND_FIFTY_KB)  # noqa: F841
+        localReference = self.create_string_of_size(
+            self.ONEHUNDRED_AND_FIFTY_KB
+        )  # noqa: F841
 
         try:
             raise Exception()
@@ -236,7 +237,8 @@ class TestRaygunErrorMessage(unittest.TestCase):
             )
 
             self.assertEqual(
-                self.find_local_variable(msg_clone.stackTrace, "localReference"), "Removed"
+                self.find_local_variable(msg_clone.stackTrace, "localReference"),
+                "Removed",
             )
 
     def test_remove_larger_varaible(self):
@@ -301,8 +303,8 @@ class TestRaygunErrorMessageChained(unittest.TestCase):
     def child(self):
         try:
             raise TestRaygunErrorMessageChained.GrandchildError("Grandchild message")
-        except Exception as ex:
-            raise TestRaygunErrorMessageChained.ChildError("Child message") from ex
+        except Exception:
+            raise TestRaygunErrorMessageChained.ChildError("Child message")
 
     def test_exc_traceback_none_generates_empty_array(self):
         error_message = raygunmsgs.RaygunErrorMessage(Exception, None, None, {})
