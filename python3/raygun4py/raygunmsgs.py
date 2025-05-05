@@ -186,7 +186,7 @@ class RaygunErrorMessage(object):
                     and len(frames) > 0
                 ):
                     self.globalVariables = frames[-1][0].f_globals
-        except Exception as e:
+        except Exception:
             pass
         finally:
             if "frames" in locals():
@@ -212,13 +212,13 @@ class RaygunErrorMessage(object):
 
         try:
             jsonpickle.encode(self, unpicklable=False)
-        except Exception as e:
+        except Exception:
             if self.globalVariables:
                 self.globalVariables = None
 
                 try:
                     jsonpickle.encode(self, unpicklable=False)
-                except Exception as e:
+                except Exception:
                     for frame in self.stackTrace:
                         if "localVariables" in frame:
                             frame["localVariables"] = None
