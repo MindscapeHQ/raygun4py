@@ -312,5 +312,5 @@ def before_send_cancel_send(message):
 
 
 def child():
-    _ = "child"  # noqa: F841
+    throwerScope = "child"  # noqa: F841
     raise Exception("Raygun4py3 functional test - local variables multi levels")
