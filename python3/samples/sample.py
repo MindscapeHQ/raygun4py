@@ -40,7 +40,7 @@ def handle_exception(exc_type, exc_value, exc_traceback):
 def very_buggy_request():
     try:
         raise Exception("Test caught exception sent from raygun4py")
-    except:
+    except Exception:
         sender.send_exception()
 
     methodtwo()

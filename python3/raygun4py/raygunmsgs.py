@@ -231,7 +231,7 @@ class RaygunErrorMessage(object):
                 options
             ):  # Failed to remove either local or global variable
                 self.log.warning(
-                    f"Raygun4Py: Unable to reduce size of payload below 128kb, error will be discarded by Raygun ingestion API"
+                    "Raygun4Py: Unable to reduce size of payload below 128kb, error will be discarded by Raygun ingestion API"
                 )
                 break
 

@@ -1,7 +1,7 @@
 # coding=utf-8
 
 import unittest
-import sys, logging, socket, os
+import sys, logging, os
 from raygun4py import raygunprovider
 
 
