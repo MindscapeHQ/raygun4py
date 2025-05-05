@@ -218,9 +218,9 @@ class TestRaygunErrorMessage(unittest.TestCase):
         del globalReference
 
     def test_remove_local_too_large(self):
-        localReference = self.create_string_of_size(
+        localReference = self.create_string_of_size(  # noqa: F841
             self.ONEHUNDRED_AND_FIFTY_KB
-        )  # noqa: F841
+        )
 
         try:
             raise Exception()
