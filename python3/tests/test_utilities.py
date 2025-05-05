@@ -1,6 +1,4 @@
-import unittest, sys
-import socket
-import inspect
+import unittest
 
 from raygun4py import utilities
 
