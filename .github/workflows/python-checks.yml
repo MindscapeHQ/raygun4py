@@ -32,10 +32,9 @@ jobs:
       run: |
         black --check python3/
     
-    # TODO: Re-enable linting
-    # - name: Lint with flake8
-    #   run: |
-    #     flake8 python3/
+    - name: Lint with flake8
+      run: |
+        flake8 python3/
     
     - name: Run tests with coverage
       env:
