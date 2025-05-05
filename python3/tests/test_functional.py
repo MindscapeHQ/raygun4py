@@ -88,9 +88,7 @@ class TestRaygun4PyFunctional(unittest.TestCase):
             raise Exception("Raygun4py manual sending test - tags")
         except Exception:
             exc_info = sys.exc_info()
-            httpResult = client.send_exception(
-                exc_info=exc_info, tags=["I am a tag"]
-            )
+            httpResult = client.send_exception(exc_info=exc_info, tags=["I am a tag"])
 
             self.assertEqual(httpResult[0], 202)
 
