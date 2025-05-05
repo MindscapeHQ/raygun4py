@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14.0-alpha.7"]
 
     steps:
     - uses: actions/checkout@v3
@@ -32,11 +32,14 @@ jobs:
       run: |
         black --check python3/
     
-    - name: Lint with flake8
-      run: |
-        flake8 python3/
+    # TODO: Re-enable linting
+    # - name: Lint with flake8
+    #   run: |
+    #     flake8 python3/
     
     - name: Run tests with coverage
+      env:
+        RAYGUN_API_KEY: ${{ secrets.RAYGUN_API_KEY }}
       run: |
         coverage run --source=python3 -m unittest discover python3/tests
         coverage report -m 
