@@ -236,6 +236,14 @@ class TestRaygunErrorMessage(unittest.TestCase):
                 {"enforce_payload_size_limit": True}
             )
 
+            # Local variable is present in the original message
+            self.assertEqual(
+                self.find_local_variable(msg.stackTrace, "localReference"),
+                localReference,
+            )
+
+            # Local variable is removed in the cloned message
+            # due to the payload size limit
             self.assertEqual(
                 self.find_local_variable(msg_clone.stackTrace, "localReference"),
                 "Removed",
