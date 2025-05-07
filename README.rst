@@ -111,7 +111,7 @@ To configure Django to automatically send all exceptions that are raised in view
 
 .. code:: python
 
-  MIDDLEWARE_CLASSES = (
+  MIDDLEWARE = (
       'raygun4py.middleware.django.Provider'
   )
 
