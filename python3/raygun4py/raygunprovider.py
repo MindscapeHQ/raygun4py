@@ -40,6 +40,7 @@ class RaygunSender:
     endpointhost = "api.raygun.io"
     endpointpath = "/entries"
     process_tags = []
+    process_custom_data = dict()
 
     def __init__(self, api_key, config={}):
         """
@@ -104,6 +105,10 @@ class RaygunSender:
         """
         if type(tags) is list:
             self.process_tags = tags
+
+    def set_customdata(self, custom_data):
+        if type(custom_data) is dict:
+            self.process_custom_data = custom_data
 
     def ignore_exceptions(self, exceptions):
         """
@@ -282,6 +287,7 @@ class RaygunSender:
             .set_environment_details(extra_environment_data)
             .set_tags(self.process_tags)
             .set_tags(tags)
+            .set_customdata(self.process_custom_data)
             .set_customdata(user_custom_data)
             .set_request_details(http_request)
             .set_user(user_override if user_override else self.user)

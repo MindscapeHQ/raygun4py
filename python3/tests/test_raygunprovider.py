@@ -90,6 +90,37 @@ class TestRaygunSender(unittest.TestCase):
         self.assertEqual(__version__, version_file.__version__)
 
 
+class TestCreateMessage(unittest.TestCase):
+    def test_merge_tags(self):
+        sender = raygunprovider.RaygunSender("apikey")
+        sender.set_tags(["Tag1"])
+        message = sender._create_message(
+            raygunExceptionMessage=None,
+            user_custom_data=None,
+            http_request=None,
+            extra_environment_data=None,
+            user_override=None,
+            tags=["Tag2"],
+        )
+        self.assertEqual(message.get_details()["tags"], ["Tag1", "Tag2"])
+
+    def test_merge_custom_data(self):
+        sender = raygunprovider.RaygunSender("apikey")
+        sender.set_customdata({"CustomData1": "Value1"})
+        message = sender._create_message(
+            raygunExceptionMessage=None,
+            user_custom_data={"CustomData2": "Value2"},
+            http_request=None,
+            extra_environment_data=None,
+            user_override=None,
+            tags=None,
+        )
+        self.assertEqual(
+            message.get_details()["userCustomData"],
+            {"CustomData1": "Value1", "CustomData2": "Value2"},
+        )
+
+
 class TestGroupingKey(unittest.TestCase):
 
     def the_callback(self, raygun_message):
