@@ -1,7 +1,9 @@
 # coding=utf-8
 
 import unittest
-import sys, logging, socket, os
+import sys
+import logging
+import os
 from raygun4py import raygunprovider
 
 
@@ -27,7 +29,7 @@ class TestRaygun4PyFunctional(unittest.TestCase):
 
         try:
             raise Exception("Raygun4py3 manual sending test")
-        except:
+        except Exception:
             exc_info = sys.exc_info()
             httpResult = client.send_exception(exc_info=exc_info)
 
@@ -48,7 +50,7 @@ class TestRaygun4PyFunctional(unittest.TestCase):
 
         try:
             raise Exception("Raygun4py3 exception (auto)")
-        except Exception as e:
+        except Exception:
             httpResult = client.send_exception()
 
             self.assertEqual(httpResult[0], 202)
@@ -59,9 +61,9 @@ class TestRaygun4PyFunctional(unittest.TestCase):
         try:
             try:
                 raise Exception("Nested child test_python3_new_sending")
-            except:
+            except Exception:
                 raise Exception("Nested parent py3")
-        except:
+        except Exception:
             exc_info = sys.exc_info()
             httpResult = client.send_exception(exc_info=exc_info)
 
@@ -73,8 +75,9 @@ class TestRaygun4PyFunctional(unittest.TestCase):
 
         try:
             raise Exception("Raygun4py3 manual sending test - version")
-        except:
-            httpResult = client.send_exception(exc_info=sys.exc_info())
+        except Exception:
+            exc_info = sys.exc_info()
+            httpResult = client.send_exception(exc_info=exc_info)
 
             self.assertEqual(httpResult[0], 202)
 
@@ -83,10 +86,9 @@ class TestRaygun4PyFunctional(unittest.TestCase):
 
         try:
             raise Exception("Raygun4py manual sending test - tags")
-        except:
-            httpResult = client.send_exception(
-                exc_info=sys.exc_info(), tags=["I am a tag"]
-            )
+        except Exception:
+            exc_info = sys.exc_info()
+            httpResult = client.send_exception(exc_info=exc_info, tags=["I am a tag"])
 
             self.assertEqual(httpResult[0], 202)
 
@@ -104,7 +106,7 @@ class TestRaygun4PyFunctional(unittest.TestCase):
 
         try:
             raise Exception("Raygun4py3 manual sending test - user")
-        except:
+        except Exception:
             exc_info = sys.exc_info()
             httpResult = client.send_exception(exc_info=exc_info)
 
@@ -124,7 +126,7 @@ class TestRaygun4PyFunctional(unittest.TestCase):
 
         try:
             raise Exception("Raygun4py3 manual sending test - user override")
-        except:
+        except Exception:
             exc_info = sys.exc_info()
             httpResult = client.send_exception(
                 exc_info=exc_info,
@@ -142,7 +144,7 @@ class TestRaygun4PyFunctional(unittest.TestCase):
     def log_send(self, logger):
         try:
             raise Exception("Raygun4py3 Logging Test")
-        except:
+        except Exception:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             logger.error("Logging with sending", exc_info=sys.exc_info())
             return 0
@@ -152,7 +154,7 @@ class TestRaygun4PyFunctional(unittest.TestCase):
     def log_nosend(self, logger):
         try:
             raise Exception("Raygun4py3 Logging Test")
-        except:
+        except Exception:
             logger.error("Logging without sending")
             return 0
 
@@ -176,9 +178,9 @@ class TestRaygun4PyFunctional(unittest.TestCase):
         client = raygunprovider.RaygunSender(self.apiKey)
 
         try:
-            foo = "bar"
+            foo = "bar"  # noqa: F841
             raise Exception("Raygun4py3 functional test - local variables")
-        except Exception as e:
+        except Exception:
             result = client.send_exception(httpRequest={})
 
             self.assertEqual(result[0], 202)
@@ -187,9 +189,9 @@ class TestRaygun4PyFunctional(unittest.TestCase):
         client = raygunprovider.RaygunSender(self.apiKey)
 
         try:
-            scope = "parent"
+            scope = "parent"  # noqa: F841
             child()
-        except Exception as e:
+        except Exception:
             result = client.send_exception(httpRequest={})
 
             self.assertEqual(result[0], 202)
@@ -221,7 +223,7 @@ class TestRaygun4PyFunctional(unittest.TestCase):
 
         try:
             raise Exception("Raygun4py functional test - on_before_send")
-        except Exception as e:
+        except Exception:
             result = client.send_exception(request={})
 
             self.assertEqual(result[0], 202)
@@ -231,7 +233,7 @@ class TestRaygun4PyFunctional(unittest.TestCase):
 
         try:
             raise Exception("Raygun4py functional test - on_before_send")
-        except Exception as e:
+        except Exception:
             result = client.send_exception(httpRequest={})
 
             self.assertEqual(result[0], 202)
@@ -241,7 +243,7 @@ class TestRaygun4PyFunctional(unittest.TestCase):
 
         try:
             raise Exception("ΔΔΔΔ")
-        except Exception as e:
+        except Exception:
             result = client.send_exception(httpRequest={})
 
             self.assertEqual(result[0], 202)
@@ -249,11 +251,11 @@ class TestRaygun4PyFunctional(unittest.TestCase):
     def test_utf8_localvariable(self):
         client = raygunprovider.RaygunSender(self.apiKey)
 
-        the_variable = "ᵫ"
+        the_variable = "ᵫ"  # noqa: F841
 
         try:
             raise Exception("Raygun4py3: utf8 local variable")
-        except Exception as e:
+        except Exception:
             result = client.send_exception(httpRequest={})
 
             self.assertEqual(result[0], 202)
@@ -261,11 +263,11 @@ class TestRaygun4PyFunctional(unittest.TestCase):
     def test_bytestring_localvariable(self):
         client = raygunprovider.RaygunSender(self.apiKey)
 
-        byte_string = b"\x8d\x80\x92uK!M\xed"
+        byte_string = b"\x8d\x80\x92uK!M\xed"  # noqa: F841
 
         try:
             raise Exception("Raygun4py3: bytestring local variable")
-        except Exception as e:
+        except Exception:
             result = client.send_exception(httpRequest={})
 
             self.assertEqual(result[0], 202)
@@ -274,9 +276,9 @@ class TestRaygun4PyFunctional(unittest.TestCase):
         client = raygunprovider.RaygunSender(self.apiKey)
 
         try:
-            sigma = "\u2211"
+            sigma = "\u2211"  # noqa: F841
             raise Exception("Raygun4py3 functional test - local variable - unicode")
-        except Exception as e:
+        except Exception:
             result = client.send_exception(httpRequest={})
 
             self.assertEqual(result[0], 202)
@@ -288,14 +290,16 @@ class TestRaygun4PyFunctional(unittest.TestCase):
             def __str__(self):
                 raise Exception("I failed to stringify myself")
 
-        instance = StrFailingClass()
+        instance = StrFailingClass()  # noqa: F841
 
         try:
             raise Exception(
                 "Raygun4py3 functional test - local variable - cause an str exception"
             )
-        except Exception as e:
+        except Exception:
             result = client.send_exception(httpRequest={})
+
+            self.assertEqual(result[0], 202)
 
 
 def before_send_mutate_payload(message):
@@ -308,5 +312,5 @@ def before_send_cancel_send(message):
 
 
 def child():
-    throwerScope = "child"
+    throwerScope = "child"  # noqa: F841
     raise Exception("Raygun4py3 functional test - local variables multi levels")

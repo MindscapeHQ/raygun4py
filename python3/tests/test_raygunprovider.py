@@ -1,4 +1,5 @@
-import unittest, sys
+import unittest
+import sys
 from raygun4py import raygunprovider
 from raygun4py import raygunmsgs
 from raygun4py import utilities
@@ -24,7 +25,7 @@ class TestRaygunSender(unittest.TestCase):
     def test_sending_403_with_invalid_key(self):
         try:
             raise Exception("test")
-        except Exception as e:
+        except Exception:
             info = sys.exc_info()
             http_result = self.sender.send_exception(exc_info=info)
             self.assertEqual(http_result[0], 403)

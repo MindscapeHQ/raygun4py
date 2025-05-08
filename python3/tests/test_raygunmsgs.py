@@ -1,4 +1,6 @@
-import sys, unittest, socket
+import sys
+import unittest
+import socket
 import inspect
 import jsonpickle
 from raygun4py import raygunmsgs, raygunprovider
@@ -184,7 +186,7 @@ class TestRaygunErrorMessage(unittest.TestCase):
 
         try:
             raise Exception()
-        except Exception as e:
+        except Exception:
             self.client.send_exception()
 
         self.assertEqual(
@@ -199,7 +201,7 @@ class TestRaygunErrorMessage(unittest.TestCase):
 
         try:
             raise Exception()
-        except Exception as e:
+        except Exception:
             exc_info = sys.exc_info()
 
             msg = raygunmsgs.RaygunErrorMessage(
@@ -216,11 +218,13 @@ class TestRaygunErrorMessage(unittest.TestCase):
         del globalReference
 
     def test_remove_local_too_large(self):
-        localReference = self.create_string_of_size(self.ONEHUNDRED_AND_FIFTY_KB)
+        localReference = self.create_string_of_size(  # noqa: F841
+            self.ONEHUNDRED_AND_FIFTY_KB
+        )
 
         try:
             raise Exception()
-        except Exception as e:
+        except Exception:
             exc_info = sys.exc_info()
 
             msg = raygunmsgs.RaygunErrorMessage(
@@ -232,8 +236,17 @@ class TestRaygunErrorMessage(unittest.TestCase):
                 {"enforce_payload_size_limit": True}
             )
 
+            # Local variable is present in the original message
             self.assertEqual(
-                self.find_local_variable(msg.stackTrace, "localReference"), "Removed"
+                self.find_local_variable(msg.stackTrace, "localReference"),
+                localReference,
+            )
+
+            # Local variable is removed in the cloned message
+            # due to the payload size limit
+            self.assertEqual(
+                self.find_local_variable(msg_clone.stackTrace, "localReference"),
+                "Removed",
             )
 
     def test_remove_larger_varaible(self):
@@ -244,7 +257,7 @@ class TestRaygunErrorMessage(unittest.TestCase):
 
         try:
             raise Exception()
-        except Exception as e:
+        except Exception:
             exc_info = sys.exc_info()
 
             msg = raygunmsgs.RaygunErrorMessage(
@@ -268,7 +281,7 @@ class TestRaygunErrorMessage(unittest.TestCase):
         del globalReference
 
 
-class TestRaygunErrorMessage(unittest.TestCase):
+class TestRaygunErrorMessageChained(unittest.TestCase):
     class GrandchildError(Exception):
         pass
 
@@ -292,14 +305,14 @@ class TestRaygunErrorMessage(unittest.TestCase):
     def parent(self):
         try:
             self.child()
-        except TestRaygunErrorMessage.ChildError as exc:
-            raise TestRaygunErrorMessage.ParentError("Parent message") from exc
+        except TestRaygunErrorMessageChained.ChildError as exc:
+            raise TestRaygunErrorMessageChained.ParentError("Parent message") from exc
 
     def child(self):
         try:
-            raise TestRaygunErrorMessage.GrandchildError("Grandchild message")
-        except Exception as ex:
-            raise TestRaygunErrorMessage.ChildError("Child message")
+            raise TestRaygunErrorMessageChained.GrandchildError("Grandchild message")
+        except Exception:
+            raise TestRaygunErrorMessageChained.ChildError("Child message")
 
     def test_exc_traceback_none_generates_empty_array(self):
         error_message = raygunmsgs.RaygunErrorMessage(Exception, None, None, {})
@@ -329,18 +342,18 @@ class TestRaygunErrorMessage(unittest.TestCase):
 
     def test_chained_exception_last_exception_caught_is_parent(self):
         self.assertIsInstance(
-            self.theException.__context__, TestRaygunErrorMessage.ChildError
+            self.theException.__context__, TestRaygunErrorMessageChained.ChildError
         )
 
     def test_chained_exception_cause_is_child(self):
         self.assertIsInstance(
-            self.theException.__cause__, TestRaygunErrorMessage.ChildError
+            self.theException.__cause__, TestRaygunErrorMessageChained.ChildError
         )
 
     def test_chained_exception_childs_cause_is_grandchild(self):
         self.assertIsInstance(
             self.theException.__cause__.__context__,
-            TestRaygunErrorMessage.GrandchildError,
+            TestRaygunErrorMessageChained.GrandchildError,
         )
 
     def test_methodname_none(self):

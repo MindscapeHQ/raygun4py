@@ -63,7 +63,7 @@ class RaygunSender:
             )
 
         try:
-            import ssl
+            import ssl  # noqa: F401
         except ImportError:
             self.log.warning(
                 "RaygunProvider error: No SSL support available, cannot send. Please"
