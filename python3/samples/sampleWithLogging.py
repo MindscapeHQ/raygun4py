@@ -1,21 +1,54 @@
-import sys, logging, os
+import logging
+
 from raygun4py import raygunprovider
 
-# Hook the Raygun logging handler up:
+API_KEY = "paste_your_api_key_here"
 
-logger = logging.getLogger("mylogger")
-rgHandler = raygunprovider.RaygunHandler("paste_your_api_key_here")
-logger.addHandler(rgHandler)
+# Initialize a RaygunHandler from an existing RaygunSender
+sender = raygunprovider.RaygunSender(API_KEY)
+sender.set_version("1.3")
+sender.set_user(
+    {
+        "identifier": "example@email_or_user_id.com",
+        "firstName": "John",
+        "fullName": "John Smith",
+        "email": "example@email_or_user_id.com",
+    }
+)
+logging_handler_from_sender = raygunprovider.RaygunHandler.from_sender(
+    sender, level=logging.INFO
+)
 
-def log_exception(exc_type, exc_value, exc_traceback):
-    logger.error("A python error occurred", exc_info=(exc_type, exc_value, exc_traceback))
-    print("Logging: %s" % exc_value)
+# Initialize a RaygunHandler using an api_key
+logging_handler_from_key = raygunprovider.RaygunHandler(API_KEY, level=logging.INFO)
 
-sys.excepthook = log_exception
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+logger.addHandler(logging_handler_from_sender)
+logger.addHandler(logging_handler_from_key)
 
-## Example exception:
 
-def buggyMethod():
-    raise Exception("Test exception sent via built-in handler")
+def demonstrate_logging():
+    # Sending an INFO log (not recommended)
+    logger.info("Test INFO log sent from raygun4py")
 
-buggyMethod()
+    # Sending an ERROR log with exc_info=True
+    try:
+        raise ValueError("This is a test ValueError")
+    except ValueError:
+        logger.error(
+            "Test ERROR log with exc_info=True sent from raygun4py", exc_info=True
+        )
+
+    # Sending an ERROR log without exc_info
+    logger.error("Test ERROR log sent from raygun4py")
+
+    # Using logger.exception which automatically includes exc_info
+    try:
+        raise RuntimeError("This is a test RuntimeError")
+    except RuntimeError:
+        logger.exception("Test logger.exception log sent from raygun4py")
+
+
+if __name__ == "__main__":
+    demonstrate_logging()

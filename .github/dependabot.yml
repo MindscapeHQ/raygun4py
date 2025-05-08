@@ -1,0 +1,19 @@
+version: 2
+updates:
+  # Python dependencies updates config
+  - package-ecosystem: "setuptools"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+
+  # Github Actions dependencies updates config
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    commit-message:
+      prefix: "chore"
+      include: "scope"

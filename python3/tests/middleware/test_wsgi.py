@@ -5,6 +5,7 @@ from webtest import TestApp
 from webtest.debugapp import debug_app
 from raygun4py.middleware.wsgi import Provider
 
+
 class TestWSGIMiddleware(unittest.TestCase):
 
     def setUp(self):
@@ -16,7 +17,7 @@ class TestWSGIMiddleware(unittest.TestCase):
 
     def test_basic_exception(self):
         with self.assertRaises(Exception):
-            self.app.get('/?error=t')
+            self.app.get("/?error=t")
 
         self.raygun_middleware.sender.send_exception.assert_called_once()
 
@@ -24,9 +25,7 @@ class TestWSGIMiddleware(unittest.TestCase):
         self.test_middleware.raise_on_request = True
 
         with self.assertRaises(Exception):
-            self.app.post_json('/foo/bar', params={
-                'foo': 'bar'
-            })
+            self.app.post_json("/foo/bar", params={"foo": "bar"})
 
         self.raygun_middleware.sender.send_exception.assert_called_once()
 
@@ -51,5 +50,5 @@ class ExceptionMiddleware(object):
         except Exception:
             raise
         finally:
-            if hasattr(appiter, 'close'):
+            if hasattr(appiter, "close"):
                 appiter.close()
