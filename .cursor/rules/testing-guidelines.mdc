@@ -1,0 +1,19 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Testing Guidelines
+
+## Test Structure
+- Unit tests in `python3/tests/`
+- Sample applications in `python3/samples/`
+
+## Running Tests
+```bash
+# Run all tests
+python -m unittest python3/tests/
+
+# Run with coverage
+coverage run --source=python3 -m unittest discover python3/tests
+```

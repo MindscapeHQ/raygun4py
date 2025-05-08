@@ -1,0 +1,21 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Development Workflow
+
+## Development Setup
+- Create a Python virtual environment (`.venv/`)
+- Install `pip`: `python -m pip install --upgrade pip`
+- Install dependencies: `pip install black flake8 coverage .[dev]`
+
+## Code Style
+- Use `.flake8` configuration for linting
+- Use `black` for formatting
+
+## Testing
+- Write unit tests in `python3/tests/`
+
+## Pull Requests
+- Use the [pull request template](mdc:pull_request_template.md)

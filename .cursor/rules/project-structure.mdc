@@ -1,0 +1,16 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Raygun4py Project Structure
+
+## Main Components
+- Main package code: [python3/raygun4py/](mdc:python3/raygun4py)
+- Tests: [python3/tests/](mdc:python3/tests)
+- Sample applications: [python3/samples/](mdc:python3/samples)
+
+## Key Files
+- Package configuration: [setup.py](mdc:setup.py)
+- Project documentation: [README.rst](mdc:README.rst)
+
