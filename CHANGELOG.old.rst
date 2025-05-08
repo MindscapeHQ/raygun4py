@@ -99,7 +99,7 @@
 
 1.1.0
 
-- Added set_user function for unique user tracking; internal refactor to make module more pythonic
+- Added set_user function for user tracking/Customers; internal refactor to make module more pythonic
 
 1.0.0
 
