@@ -1,0 +1,45 @@
+name: Python Checks
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    name: Format, lint & tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14.0-alpha.7"]
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        check-latest: true
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install black flake8 coverage .[dev]
+    
+    - name: Check formatting with black
+      run: |
+        black --check python3/
+    
+    # TODO: Re-enable linting
+    # - name: Lint with flake8
+    #   run: |
+    #     flake8 python3/
+    
+    - name: Run tests with coverage
+      env:
+        RAYGUN_API_KEY: ${{ secrets.RAYGUN_API_KEY }}
+      run: |
+        coverage run --source=python3 -m unittest discover python3/tests
+        coverage report -m 
