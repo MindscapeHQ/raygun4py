@@ -144,6 +144,7 @@ class RaygunMessage(object):
     def set_error(self, error):
         self.details["error"] = error
 
+
 class RaygunErrorMessage(object):
     log = logging.getLogger(__name__)
 
