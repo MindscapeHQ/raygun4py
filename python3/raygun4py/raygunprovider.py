@@ -299,15 +299,15 @@ class RaygunSender:
 
         if message is not None:
             message = utilities.filter_keys(self.filtered_keys, message)
-            message["details"]["groupingKey"] = utilities.execute_grouping_key(
+            message.get_details()["groupingKey"] = utilities.execute_grouping_key(
                 self.grouping_key_callback, message
             )
 
         if self.before_send_callback is not None:
-            mutated_payload = self.before_send_callback(message["details"])
+            mutated_payload = self.before_send_callback(message.get_details())
 
             if mutated_payload is not None:
-                message["details"] = mutated_payload
+                message.set_details(mutated_payload)
             else:
                 return None
 
@@ -320,17 +320,17 @@ class RaygunSender:
         }
 
         if (
-            isinstance(raygunMessage["details"]["error"], raygunmsgs.RaygunErrorMessage)
+            isinstance(raygunMessage.get_error(), raygunmsgs.RaygunErrorMessage)
             and "enforce_payload_size_limit" in options
             and options["enforce_payload_size_limit"] is True
         ):
             error = jsonpickle.loads(
-                jsonpickle.dumps(raygunMessage["details"]["error"])
+                jsonpickle.dumps(raygunMessage.get_error())
             )
 
             error.check_and_modify_payload_size(options)
 
-            raygunMessage["details"]["error"] = error
+            raygunMessage.set_error(error)
 
         json = jsonpickle.encode(raygunMessage, unpicklable=False)
 

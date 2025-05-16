@@ -159,6 +159,13 @@ class TestRaygunMessageBuilder(unittest.TestCase):
             self.builder.raygunMessage.details["environment"]["environmentVariables"]
         )
 
+    def test_get_error(self):
+        self.builder.set_exception_details(raygunmsgs.RaygunErrorMessage(Exception, None, None, {}))
+        self.assertIsNotNone(self.builder.raygunMessage.get_error())
+
+    def test_get_details(self):
+        self.builder.set_exception_details(raygunmsgs.RaygunErrorMessage(Exception, None, None, {}))
+        self.assertIsNotNone(self.builder.raygunMessage.get_details())
 
 class TestRaygunErrorMessage(unittest.TestCase):
     ONEHUNDRED_AND_FIFTY_KB = 150 * 1024

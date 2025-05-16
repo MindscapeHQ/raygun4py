@@ -138,6 +138,11 @@ class RaygunMessage(object):
     def get_details(self):
         return self.details
 
+    def set_details(self, details):
+        self.details = details
+
+    def set_error(self, error):
+        self.details["error"] = error
 
 class RaygunErrorMessage(object):
     log = logging.getLogger(__name__)

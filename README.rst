@@ -353,9 +353,9 @@ Customer data can be passed in which will be displayed in the Raygun web app. Th
 Custom grouping logic
 ---------------------
 
-You can create custom exception grouping logic that overrides the automatic Raygun grouping by passing in a function that accepts one parameter using this function. The callback's one parameter is an instance of RaygunMessage (python[2/3]/raygunmsgs.py), and the callback should return a string.
+You can create custom exception grouping logic that overrides the automatic Raygun grouping by passing in a function that accepts one parameter using this function. The callback's one parameter is an instance of `RaygunMessage` (`python3/raygunmsgs.py`), and the callback should return a string.
 
-The RaygunMessage instance contains all the error and state data that is about to be sent to the Raygun API. In your callback you can inspect this RaygunMessage, hash together the fields you want to group by, then return a string which is the grouping key.
+The `RaygunMessage` instance contains all the error and state data that is about to be sent to the Raygun API. In your callback you can inspect this `RaygunMessage`, hash together the fields you want to group by, then return a string which is the grouping key.
 
 This string needs to be between 1 and 100 characters long. If the callback is not set or the string isn't valid, the default automatic grouping will be used.
 
@@ -366,7 +366,7 @@ By example:
     class MyClass(object):
 
         def my_callback(self, raygun_message):
-            return raygun_message.get_error().message[:100] # Use naive message-based grouping only
+            return raygun_message['details']['error'].message[:100] # Use naive message-based grouping only
 
         def create_raygun_and_bind_callback(self):
             sender = raygunprovider.RaygunSender('api_key')

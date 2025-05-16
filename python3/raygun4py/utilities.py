@@ -15,7 +15,7 @@ def filter_keys(filtered_keys, object):
     iteration_target = object
 
     if isinstance(object, raygunmsgs.RaygunMessage):
-        iteration_target = object.__dict__
+        iteration_target = dict(object.__dict__)
 
     for key in iter(iteration_target.keys()):
         if isinstance(iteration_target[key], dict):
@@ -29,6 +29,10 @@ def filter_keys(filtered_keys, object):
 
                     if sanitised_key in key:
                         iteration_target[key] = "<filtered>"
+
+    if isinstance(object, raygunmsgs.RaygunMessage):
+        object.__dict__.update(iteration_target)
+        return object
 
     return iteration_target
 
