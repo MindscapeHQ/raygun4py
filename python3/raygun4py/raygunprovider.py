@@ -299,10 +299,12 @@ class RaygunSender:
         message = utilities.ignore_exceptions(self.ignored_exceptions, message)
 
         if message is not None:
-            message = utilities.filter_keys(self.filtered_keys, message)
-            message.get_details()["groupingKey"] = utilities.execute_grouping_key(
+            details = message.get_details()
+            details = utilities.filter_keys(self.filtered_keys, details)
+            details["groupingKey"] = utilities.execute_grouping_key(
                 self.grouping_key_callback, message
             )
+            message.set_details(details)
 
         if self.before_send_callback is not None:
             mutated_payload = self.before_send_callback(message.get_details())

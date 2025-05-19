@@ -12,10 +12,17 @@ def ignore_exceptions(ignored_exceptions, message):
 
 
 def filter_keys(filtered_keys, obj):
-    if isinstance(obj, raygunmsgs.RaygunMessage):
-        iteration_target = dict(obj.__dict__)
-    else:
-        iteration_target = dict(obj)
+    """
+    Filter keys from a dictionary.
+
+    Parameters:
+        filtered_keys (list): A list of keys to filter.
+        obj (dict): The dictionary to filter.
+
+    Returns:
+        dict: The filtered dictionary.
+    """
+    iteration_target = dict(obj)
 
     for key in iter(iteration_target.keys()):
         if isinstance(iteration_target[key], dict):
@@ -29,11 +36,6 @@ def filter_keys(filtered_keys, obj):
 
                     if sanitised_key in key:
                         iteration_target[key] = "<filtered>"
-
-    if isinstance(obj, raygunmsgs.RaygunMessage):
-        updated_object = obj.copy()
-        updated_object.__dict__.update(iteration_target)
-        return updated_object
 
     return iteration_target
 
