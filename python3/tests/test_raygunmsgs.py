@@ -181,6 +181,7 @@ class TestRaygunMessageBuilder(unittest.TestCase):
         message.set_details({"foo": "bar"})
         self.assertEqual(message.get_details(), {"foo": "bar"})
 
+
 class TestRaygunErrorMessage(unittest.TestCase):
     ONEHUNDRED_AND_FIFTY_KB = 150 * 1024
 
