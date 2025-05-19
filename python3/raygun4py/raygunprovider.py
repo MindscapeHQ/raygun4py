@@ -295,6 +295,7 @@ class RaygunSender:
         )
 
     def _transform_message(self, message):
+        message = message.copy()
         message = utilities.ignore_exceptions(self.ignored_exceptions, message)
 
         if message is not None:
@@ -314,6 +315,7 @@ class RaygunSender:
         return message
 
     def _post(self, raygunMessage):
+        raygunMessage = raygunMessage.copy()
         options = {
             "enforce_payload_size_limit": self.enforce_payload_size_limit,
             "log_payload_size_limit_breaches": self.log_payload_size_limit_breaches,

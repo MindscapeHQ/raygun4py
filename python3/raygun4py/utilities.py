@@ -12,10 +12,10 @@ def ignore_exceptions(ignored_exceptions, message):
 
 
 def filter_keys(filtered_keys, object):
-    iteration_target = object
-
     if isinstance(object, raygunmsgs.RaygunMessage):
         iteration_target = dict(object.__dict__)
+    else:
+        iteration_target = dict(object)
 
     for key in iter(iteration_target.keys()):
         if isinstance(iteration_target[key], dict):
@@ -31,8 +31,9 @@ def filter_keys(filtered_keys, object):
                         iteration_target[key] = "<filtered>"
 
     if isinstance(object, raygunmsgs.RaygunMessage):
-        object.__dict__.update(iteration_target)
-        return object
+        updated_object = object.copy()
+        updated_object.__dict__.update(iteration_target)
+        return updated_object
 
     return iteration_target
 

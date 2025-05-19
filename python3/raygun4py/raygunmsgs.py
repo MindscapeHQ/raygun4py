@@ -132,6 +132,15 @@ class RaygunMessage(object):
         self.occurredOn = datetime.utcnow()
         self.details = {}
 
+    def __copy__(self):
+        new_instance = RaygunMessage()
+        new_instance.details = self.details.copy()
+        new_instance.occurredOn = self.occurredOn
+        return new_instance
+
+    def copy(self):
+        return self.__copy__()
+
     def get_error(self):
         return self.details.get("error")
 
