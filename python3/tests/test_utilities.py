@@ -1,5 +1,6 @@
 import unittest
 
+from raygun4py import raygunmsgs
 from raygun4py import utilities
 
 
@@ -27,6 +28,16 @@ class TestRaygunUtilities(unittest.TestCase):
         self.assertEqual(test_obj["foobr"], "<filtered>")
         self.assertEqual(test_obj["foobz"], "<filtered>")
         self.assertEqual(test_obj["fooqx"], "<filtered>")
+
+    def test_filter_keys_raygun_message(self):
+        test_obj = {"foo": "bar", "baz": "qux"}
+        message = raygunmsgs.RaygunMessage()
+        message.set_details(test_obj)
+
+        self.assertTrue(isinstance(message, raygunmsgs.RaygunMessage))
+        message = utilities.filter_keys(["foo"], message)
+        self.assertTrue(isinstance(message, raygunmsgs.RaygunMessage))
+        self.assertEqual(message.get_details()["foo"], "<filtered>")
 
 
 def main():
