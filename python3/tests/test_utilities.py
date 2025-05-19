@@ -1,6 +1,5 @@
 import unittest
 
-from raygun4py import raygunmsgs
 from raygun4py import utilities
 
 
