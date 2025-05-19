@@ -1,7 +1,5 @@
 import re
 
-from raygun4py import raygunmsgs
-
 
 def ignore_exceptions(ignored_exceptions, message):
     classname = message.get_error().get_classname()
