@@ -19,14 +19,45 @@ class TestRaygunUtilities(unittest.TestCase):
         self.assertEqual(test_obj["foo"], "<filtered>")
         self.assertEqual(test_obj["boo"]["foo"], "<filtered>")
 
-    def test_filter_keys_with_wildcard(self):
-        test_obj = {"foobr": "bar", "foobz": "baz", "fooqx": "foo", "baz": "qux"}
+    def test_filter_keys_start(self):
+        test_obj = {"foobar": "bar", "barfoobar": "baz", "barfoo": "qux", "foo": "bar"}
 
         test_obj = utilities.filter_keys(["foo*"], test_obj)
 
-        self.assertEqual(test_obj["foobr"], "<filtered>")
-        self.assertEqual(test_obj["foobz"], "<filtered>")
-        self.assertEqual(test_obj["fooqx"], "<filtered>")
+        self.assertEqual(test_obj["foobar"], "<filtered>")
+        self.assertEqual(test_obj["barfoobar"], "baz")
+        self.assertEqual(test_obj["barfoo"], "qux")
+        self.assertEqual(test_obj["foo"], "<filtered>")
+
+    def test_filter_keys_end(self):
+        test_obj = {"foobar": "bar", "barfoobar": "baz", "barfoo": "qux", "foo": "bar"}
+
+        test_obj = utilities.filter_keys(["*foo"], test_obj)
+
+        self.assertEqual(test_obj["foobar"], "bar")
+        self.assertEqual(test_obj["barfoobar"], "baz")
+        self.assertEqual(test_obj["barfoo"], "<filtered>")
+        self.assertEqual(test_obj["foo"], "<filtered>")
+
+    def test_filter_keys_any(self):
+        test_obj = {"foobar": "bar", "barfoobar": "baz", "barfoo": "qux", "foo": "bar"}
+
+        test_obj = utilities.filter_keys(["*foo*"], test_obj)
+
+        self.assertEqual(test_obj["foobar"], "<filtered>")
+        self.assertEqual(test_obj["barfoobar"], "<filtered>")
+        self.assertEqual(test_obj["barfoo"], "<filtered>")
+        self.assertEqual(test_obj["foo"], "<filtered>")
+
+    def test_filter_keys_exact(self):
+        test_obj = {"foobar": "bar", "barfoobar": "baz", "barfoo": "qux", "foo": "bar"}
+
+        test_obj = utilities.filter_keys(["foo"], test_obj)
+
+        self.assertEqual(test_obj["foobar"], "bar")
+        self.assertEqual(test_obj["barfoobar"], "baz")
+        self.assertEqual(test_obj["barfoo"], "qux")
+        self.assertEqual(test_obj["foo"], "<filtered>")
 
 
 def main():

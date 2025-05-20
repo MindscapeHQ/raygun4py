@@ -27,13 +27,26 @@ def filter_keys(filtered_keys, obj):
             iteration_target[key] = filter_keys(filtered_keys, iteration_target[key])
         else:
             for filter_key in filtered_keys:
-                if key in filtered_keys:
-                    iteration_target[key] = "<filtered>"
-                elif "*" in filter_key:
-                    sanitised_key = filter_key.replace("*", "")
-
-                    if sanitised_key in key:
+                # Wildcard matching
+                if "*" in filter_key:
+                    filter_key_sanitised = filter_key.replace("*", "")
+                    # `*foo*` Match any key that contains the filter key
+                    if filter_key.startswith("*") and filter_key.endswith("*"):
+                        if filter_key_sanitised in key:
+                            iteration_target[key] = "<filtered>"
+                    # `*foo` Match any key that ends with the filter key
+                    elif filter_key.startswith("*") and key.endswith(
+                        filter_key_sanitised
+                    ):
                         iteration_target[key] = "<filtered>"
+                    # `foo*` Match any key that starts with the filter key
+                    elif filter_key.endswith("*") and key.startswith(
+                        filter_key_sanitised
+                    ):
+                        iteration_target[key] = "<filtered>"
+                # Exact matching
+                elif filter_key == key:
+                    iteration_target[key] = "<filtered>"
 
     return iteration_target
 
