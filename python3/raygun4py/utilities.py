@@ -1,7 +1,5 @@
 import re
 
-from raygun4py import raygunmsgs
-
 
 def ignore_exceptions(ignored_exceptions, message):
     classname = message.get_error().get_classname()
@@ -11,11 +9,18 @@ def ignore_exceptions(ignored_exceptions, message):
     return message
 
 
-def filter_keys(filtered_keys, object):
-    iteration_target = object
+def filter_keys(filtered_keys, obj):
+    """
+    Filter keys from a dictionary.
 
-    if isinstance(object, raygunmsgs.RaygunMessage):
-        iteration_target = object.__dict__
+    Parameters:
+        filtered_keys (list): A list of keys to filter.
+        obj (dict): The dictionary to filter.
+
+    Returns:
+        dict: The filtered dictionary.
+    """
+    iteration_target = dict(obj)
 
     for key in iter(iteration_target.keys()):
         if isinstance(iteration_target[key], dict):

@@ -15,7 +15,7 @@ except ImportError:
     USE_MULTIPROCESSING = False
 
 import platform
-from datetime import datetime
+from datetime import datetime, timezone
 
 from raygun4py import http_utilities
 
@@ -129,14 +129,29 @@ class RaygunMessageBuilder(object):
 class RaygunMessage(object):
 
     def __init__(self):
-        self.occurredOn = datetime.utcnow()
+        self.occurredOn = datetime.now(timezone.utc)
         self.details = {}
+
+    def __copy__(self):
+        new_instance = RaygunMessage()
+        new_instance.details = self.details.copy()
+        new_instance.occurredOn = self.occurredOn
+        return new_instance
+
+    def copy(self):
+        return self.__copy__()
 
     def get_error(self):
         return self.details.get("error")
 
     def get_details(self):
         return self.details
+
+    def set_details(self, details):
+        self.details = details
+
+    def set_error(self, error):
+        self.details["error"] = error
 
 
 class RaygunErrorMessage(object):

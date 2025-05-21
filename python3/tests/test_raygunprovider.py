@@ -126,6 +126,9 @@ class TestGroupingKey(unittest.TestCase):
     def the_callback(self, raygun_message):
         return self.key
 
+    def the_callback_with_error(self, raygun_message):
+        return raygun_message.get_error().message[:100]
+
     def create_dummy_message(self):
         self.sender = raygunprovider.RaygunSender("apikey")
 
@@ -134,11 +137,17 @@ class TestGroupingKey(unittest.TestCase):
         msg.set_exception_details(errorMessage)
         return msg.build()
 
+    def test_message_with_error(self):
+        msg = self.create_dummy_message()
+        self.sender.on_grouping_key(self.the_callback_with_error)
+        msg = self.sender._transform_message(msg)
+        self.assertEqual(msg.get_details()["groupingKey"], "Exception: None")
+
     def test_groupingkey_is_not_none_with_callback(self):
         msg = self.create_dummy_message()
         self.sender.on_grouping_key(self.the_callback)
         self.key = "foo"
-        self.sender._transform_message(msg)
+        msg = self.sender._transform_message(msg)
 
         self.assertIsNotNone(msg.get_details()["groupingKey"])
 
@@ -146,7 +155,7 @@ class TestGroupingKey(unittest.TestCase):
         msg = self.create_dummy_message()
         self.sender.on_grouping_key(self.the_callback)
         self.key = "foo"
-        self.sender._transform_message(msg)
+        msg = self.sender._transform_message(msg)
 
         self.assertEqual(msg.get_details()["groupingKey"], "foo")
 
@@ -154,7 +163,7 @@ class TestGroupingKey(unittest.TestCase):
         msg = self.create_dummy_message()
         self.sender.on_grouping_key(self.the_callback)
         self.key = "foo"
-        self.sender._transform_message(msg)
+        msg = self.sender._transform_message(msg)
 
         self.assertIsInstance(msg.get_details()["groupingKey"], str)
 
@@ -162,7 +171,7 @@ class TestGroupingKey(unittest.TestCase):
         msg = self.create_dummy_message()
         self.sender.on_grouping_key(self.the_callback)
         self.key = object
-        self.sender._transform_message(msg)
+        msg = self.sender._transform_message(msg)
 
         self.assertIsNone(msg.get_details()["groupingKey"])
 
@@ -170,7 +179,7 @@ class TestGroupingKey(unittest.TestCase):
         msg = self.create_dummy_message()
         self.sender.on_grouping_key(self.the_callback)
         self.key = ""
-        self.sender._transform_message(msg)
+        msg = self.sender._transform_message(msg)
 
         self.assertIsNone(msg.get_details()["groupingKey"])
 
@@ -182,7 +191,7 @@ class TestGroupingKey(unittest.TestCase):
         for i in range(0, 99):
             self.key += "a"
 
-        self.sender._transform_message(msg)
+        msg = self.sender._transform_message(msg)
         self.assertEqual(msg.get_details()["groupingKey"], self.key)
 
     def test_groupingkey_is_none_when_too_long_string_returned_from_callback(self):
@@ -193,7 +202,7 @@ class TestGroupingKey(unittest.TestCase):
         for i in range(0, 100):
             self.key += "a"
 
-        self.sender._transform_message(msg)
+        msg = self.sender._transform_message(msg)
         self.assertIsNone(msg.get_details()["groupingKey"])
 
 

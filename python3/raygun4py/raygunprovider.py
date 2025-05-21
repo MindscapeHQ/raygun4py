@@ -295,42 +295,44 @@ class RaygunSender:
         )
 
     def _transform_message(self, message):
+        message = message.copy()
         message = utilities.ignore_exceptions(self.ignored_exceptions, message)
 
         if message is not None:
-            message = utilities.filter_keys(self.filtered_keys, message)
-            message["details"]["groupingKey"] = utilities.execute_grouping_key(
+            details = message.get_details()
+            details = utilities.filter_keys(self.filtered_keys, details)
+            details["groupingKey"] = utilities.execute_grouping_key(
                 self.grouping_key_callback, message
             )
+            message.set_details(details)
 
         if self.before_send_callback is not None:
-            mutated_payload = self.before_send_callback(message["details"])
+            mutated_payload = self.before_send_callback(message.get_details())
 
             if mutated_payload is not None:
-                message["details"] = mutated_payload
+                message.set_details(mutated_payload)
             else:
                 return None
 
         return message
 
     def _post(self, raygunMessage):
+        raygunMessage = raygunMessage.copy()
         options = {
             "enforce_payload_size_limit": self.enforce_payload_size_limit,
             "log_payload_size_limit_breaches": self.log_payload_size_limit_breaches,
         }
 
         if (
-            isinstance(raygunMessage["details"]["error"], raygunmsgs.RaygunErrorMessage)
+            isinstance(raygunMessage.get_error(), raygunmsgs.RaygunErrorMessage)
             and "enforce_payload_size_limit" in options
             and options["enforce_payload_size_limit"] is True
         ):
-            error = jsonpickle.loads(
-                jsonpickle.dumps(raygunMessage["details"]["error"])
-            )
+            error = jsonpickle.loads(jsonpickle.dumps(raygunMessage.get_error()))
 
             error.check_and_modify_payload_size(options)
 
-            raygunMessage["details"]["error"] = error
+            raygunMessage.set_error(error)
 
         json = jsonpickle.encode(raygunMessage, unpicklable=False)
 
