@@ -6,7 +6,7 @@ from raygun4py import utilities
 from raygun4py import __version__
 from raygun4py import version as version_file
 import logging
-import mock
+from unittest import mock
 
 
 class TestRaygunSender(unittest.TestCase):
@@ -217,15 +217,17 @@ class TestRaygunHandler(unittest.TestCase):
         """Test that RaygunHandler can handle logging outside of an exception context"""
         logger = logging.getLogger("test_logger")
         logger.addHandler(self.handler)
-        
+
         # Log a message without an exception context
         logger.error("Test error message")
-        
+
         # Verify that send_exception was called with a fallback error
         self.handler.sender.send_exception.assert_called_once()
         call_args = self.handler.sender.send_exception.call_args[1]
-        self.assertIsNotNone(call_args.get('fallback_error'))
-        self.assertEqual(call_args.get('tags'), ['Error Log'])
+        self.assertIsNotNone(call_args.get("fallback_error"))
+        self.assertEqual(call_args.get("tags"), ["Error Log"])
+
+        logger.removeHandler(self.handler)
 
 
 def main():
