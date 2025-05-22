@@ -174,6 +174,14 @@ class TestRaygun4PyFunctional(unittest.TestCase):
 
         self.assertEqual(0, self.log_nosend(logger))
 
+    def test_logger_without_exception(self):
+        logger = logging.getLogger("mylogger")
+        rgHandler = raygunprovider.RaygunHandler(self.apiKey)
+        logger.addHandler(rgHandler)
+
+        # should not fail or throw an exception
+        logger.error("Logging without exception")
+
     def test_localvariables(self):
         client = raygunprovider.RaygunSender(self.apiKey)
 
