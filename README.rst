@@ -8,7 +8,7 @@ raygun4py
   :target: https://coveralls.io/r/MindscapeHQ/raygun4py?branch=master
 
 
-Official Raygun provider for **Python 2.7**, **Python 3.1+** and **PyPy**
+Official Raygun provider for **Python** and **PyPy**
 
 **Python 2.7** is supported in versions <= 4.4.0
 
@@ -318,6 +318,20 @@ Provide a list of exception types to ignore here. Any exceptions that are passed
 
 You can mutate the candidate payload by passing in a function that accepts one parameter using this function. This allows you to completely customize what data is sent, immediately before it happens.
 
+.. code:: python
+  def before_send_mutate_payload(message):
+      message["newKey"] = "newValue"
+      return message
+
+  def before_send_cancel_send(message):
+      return None
+
+  # Mutate the payload
+  client.on_before_send(before_send_mutate_payload)
+
+  # Cancel the send
+  client.on_before_send(before_send_cancel_send)
+
 +------------------+---------------+--------------------+
 | Function         | Arguments     | Type               |
 +==================+===============+====================+
@@ -325,6 +339,12 @@ You can mutate the candidate payload by passing in a function that accepts one p
 +------------------+---------------+--------------------+
 
 Pass a callback function to this method to configure custom grouping logic. The callback should take one parameter, an instance of RaygunMessage, and return a string between 1 and 100 characters in length (see 'Custom Grouping Logic' below for more details).
+
+.. code:: python
+  def group_by_message(message):
+      return message.get_error().message[:100]
+
+  client.on_grouping_key(group_by_message)
 
 +----------------+---------------+--------------------+
 | Function       | Arguments     | Type               |
