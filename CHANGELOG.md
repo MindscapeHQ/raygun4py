@@ -1,3 +1,18 @@
+## 6.0.0 (23/05/25):
+
+Breaking changes:
+  - Filter keys support wildcard matching. See README for details.
+
+Features:
+  - Added `set_customdata` to `RaygunSender`.
+
+Bug Fixes:
+  - Ensure `on_grouping_key` always provides a `RaygunMessage` object to the callback.
+
+Internal changes:
+  - Fix static analysis errors and code formatting.
+  - GitHub CI setup. 
+
 ## 5.0.0 (13/02/24):
 Breaking changes:
   - Support for Python 2.7 has been dropped
