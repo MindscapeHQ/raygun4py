@@ -1,4 +1,4 @@
-# Releasing Raygun4Flutter
+# Releasing Raygun4Py
 
 Raygun for Python is published on PyPi as [`raygun4py`](https://pypi.org/project/raygun4py/).
 
