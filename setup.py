@@ -27,6 +27,7 @@ setup(
     author_email="hello@raygun.io",
     description="Official Raygun provider for Python",
     long_description=open("README.rst").read(),
+    long_description_content_type="text/x-rst",
     install_requires=requirements,
     extras_require={"dev": dev_requirements},
     entry_points={"console_scripts": ["raygun4py = raygun4py.cli:main"]},

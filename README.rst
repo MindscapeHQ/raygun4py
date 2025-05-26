@@ -293,14 +293,14 @@ Supports `*` at a position to indicate if you want to filter keys that start, en
 +--------------------+---------------+----------------------+
 | Filter             | Wildcard      | Matches              |
 +====================+===============+======================+
-| Start              | 'foo*'        | foobar, fooqux, foo  |
-+====================+===============+======================+
-| End                | '*foo'        | barfoo, quxfoo, foo  |
-+====================+===============+======================+
-| Contain            | '*foo*'       | foobar, tfooqux, foo |
-+====================+===============+======================+
-| Exact              | 'foo'         | foo                  |
-+====================+===============+======================+
+| Start              | `foo*`        | foobar, fooqux, foo  |
++--------------------+---------------+----------------------+
+| End                | `*foo`        | barfoo, quxfoo, foo  |
++--------------------+---------------+----------------------+
+| Contain            | `*foo*`       | foobar, tfooqux, foo |
++--------------------+---------------+----------------------+
+| Exact              | `foo`         | foo                  |
++--------------------+---------------+----------------------+
 
 +------------------+---------------+--------------------+
 | Function         | Arguments     | Type               |
@@ -319,18 +319,19 @@ Provide a list of exception types to ignore here. Any exceptions that are passed
 You can mutate the candidate payload by passing in a function that accepts one parameter using this function. This allows you to completely customize what data is sent, immediately before it happens.
 
 .. code:: python
-  def before_send_mutate_payload(message):
-      message["newKey"] = "newValue"
-      return message
 
-  def before_send_cancel_send(message):
-      return None
+    def before_send_mutate_payload(message):
+        message["newKey"] = "newValue"
+        return message
 
-  # Mutate the payload
-  client.on_before_send(before_send_mutate_payload)
+    def before_send_cancel_send(message):
+        return None
 
-  # Cancel the send
-  client.on_before_send(before_send_cancel_send)
+    # Mutate the payload
+    client.on_before_send(before_send_mutate_payload)
+
+    # Cancel the send
+    client.on_before_send(before_send_cancel_send)
 
 +------------------+---------------+--------------------+
 | Function         | Arguments     | Type               |
@@ -341,10 +342,11 @@ You can mutate the candidate payload by passing in a function that accepts one p
 Pass a callback function to this method to configure custom grouping logic. The callback should take one parameter, an instance of RaygunMessage, and return a string between 1 and 100 characters in length (see 'Custom Grouping Logic' below for more details).
 
 .. code:: python
-  def group_by_message(message):
-      return message.get_error().message[:100]
 
-  client.on_grouping_key(group_by_message)
+    def group_by_message(message):
+        return message.get_error().message[:100]
+
+    client.on_grouping_key(group_by_message)
 
 +----------------+---------------+--------------------+
 | Function       | Arguments     | Type               |
