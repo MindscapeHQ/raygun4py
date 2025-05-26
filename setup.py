@@ -1,12 +1,8 @@
-import sys
-
 from setuptools import setup
 
 packages = ["raygun4py", "raygun4py.middleware"]
 
-base_dir = "python2"
-if sys.version_info[0] == 3:
-    base_dir = "python3"
+base_dir = "python3"
 
 exec(open("%s/raygun4py/version.py" % base_dir).read())
 requirements = ["jsonpickle >= 4.0.4", "blinker >= 1.3.0", "requests >= 2.9.1"]
@@ -29,8 +25,9 @@ setup(
     url="https://raygun.com",
     author="Raygun",
     author_email="hello@raygun.io",
-    description="Official Raygun provider for Python 2.7 and Python 3+",
+    description="Official Raygun provider for Python",
     long_description=open("README.rst").read(),
+    long_description_content_type="text/x-rst",
     install_requires=requirements,
     extras_require={"dev": dev_requirements},
     entry_points={"console_scripts": ["raygun4py = raygun4py.cli:main"]},
@@ -39,13 +36,11 @@ setup(
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
         "Topic :: Communications",
     ],
 )
