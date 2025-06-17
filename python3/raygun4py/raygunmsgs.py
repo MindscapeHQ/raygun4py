@@ -202,7 +202,7 @@ class RaygunErrorMessage(object):
                     and options["transmitGlobalVariables"] is True
                     and len(frames) > 0
                 ):
-                    self.globalVariables = frames[-1][0].f_globals
+                    self.globalVariables = frames[-1][0].f_globals.copy()
         except Exception:
             pass
         finally:
