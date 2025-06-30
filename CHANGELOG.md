@@ -1,3 +1,8 @@
+## 6.0.1 (30/06/25):
+
+Bug Fixes:
+  - Improved `enforce_payload_size_limit` functionality.
+
 ## 6.0.0 (23/05/25):
 
 Breaking changes:
