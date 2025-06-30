@@ -328,7 +328,7 @@ class RaygunSender:
             and "enforce_payload_size_limit" in options
             and options["enforce_payload_size_limit"] is True
         ):
-            error = jsonpickle.loads(jsonpickle.dumps(raygunMessage.get_error()))
+            error = raygunMessage.get_error()
 
             error.check_and_modify_payload_size(options)
 
