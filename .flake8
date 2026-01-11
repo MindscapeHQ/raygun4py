@@ -1,4 +1,0 @@
-[flake8]
-# E501: Ignore line length warning
-# W503 line break before binary operator
-ignore = E501, W503
