@@ -68,9 +68,6 @@ packages = ["python3/raygun4py"]
 [tool.hatch.build.targets.wheel.sources]
 "python3/raygun4py" = "raygun4py"
 
-[tool.flake8]
-ignore = ["E501", "W503"]
-
 [tool.coverage.report]
 omit = [
     "*/__init__.py",
