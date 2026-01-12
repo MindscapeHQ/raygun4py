@@ -1,3 +1,11 @@
+## 6.0.2 (12/01/26):
+
+Internal changes:
+  - Migrated build system from `setup.py` to `hatchling` backend with `pyproject.toml`.
+  - Removed legacy build files (`setup.py`, `MANIFEST`, `MANIFEST.in`).
+  - Updated CI workflow to use modern build commands.
+  - Updated `RELEASING.md` documentation.
+
 ## 6.0.1 (30/06/25):
 
 Bug Fixes:
