@@ -1,13 +1,13 @@
+import inspect
+import socket
 import sys
 import unittest
-import socket
-import inspect
+
 import jsonpickle
 from raygun4py import raygunmsgs, raygunprovider
 
 
 class TestRaygunMessageBuilder(unittest.TestCase):
-
     def setUp(self):
         self.builder = raygunmsgs.RaygunMessageBuilder({}).new()
         self.request = {

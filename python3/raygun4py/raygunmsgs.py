@@ -1,6 +1,6 @@
 import inspect
-import os
 import logging
+import os
 import sys
 
 import jsonpickle
@@ -21,7 +21,6 @@ from raygun4py import http_utilities
 
 
 class RaygunMessageBuilder(object):
-
     def __init__(self, options):
         self.raygunMessage = RaygunMessage()
         self.options = options
@@ -55,9 +54,9 @@ class RaygunMessageBuilder(object):
             pass
 
         try:
-            self.raygunMessage.details["environment"][
-                "architecture"
-            ] = platform.architecture()[0]
+            self.raygunMessage.details["environment"]["architecture"] = (
+                platform.architecture()[0]
+            )
         except Exception:  # pragma: no cover
             pass
 
@@ -127,7 +126,6 @@ class RaygunMessageBuilder(object):
 
 
 class RaygunMessage(object):
-
     def __init__(self):
         self.occurredOn = datetime.now(timezone.utc)
         self.details = {}
@@ -335,7 +333,6 @@ class RaygunErrorMessage(object):
 
 
 class RaygunLoggerFallbackErrorMessage(object):
-
     def __init__(self, name, message, filename, funcName, lineno):
         self.className = "Logger (" + name + ")"
         self.message = message

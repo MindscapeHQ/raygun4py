@@ -1,8 +1,8 @@
-import mock
 import django
+import mock
 from django.conf import settings
-from django.test.client import RequestFactory
 from django.test import SimpleTestCase
+from django.test.client import RequestFactory
 from raygun4py.middleware.django import Provider
 
 settings.configure(DEBUG=True, RAYGUN4PY_API_KEY="foo", ALLOWED_HOSTS=["testserver"])
@@ -10,7 +10,6 @@ django.setup()
 
 
 class DjangoProviderTests(SimpleTestCase):
-
     def setUp(self):
         request_factory = RequestFactory()
         self.get_request = request_factory.get("/foo")
