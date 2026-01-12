@@ -1,13 +1,6 @@
 raygun4py
 =========
 
-.. image:: https://travis-ci.org/MindscapeHQ/raygun4py.svg?branch=master
-  :target: https://travis-ci.org/MindscapeHQ/raygun4py?branch=master
-
-.. image:: https://coveralls.io/repos/MindscapeHQ/raygun4py/badge.svg?branch=master
-  :target: https://coveralls.io/r/MindscapeHQ/raygun4py?branch=master
-
-
 Official Raygun provider for **Python** and **PyPy**
 
 **Python 2.7** is supported in versions <= 4.4.0
