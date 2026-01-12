@@ -23,7 +23,7 @@ where `x.y.z` is the Major, Minor and Patch release numbers.
 
 ### Update version
 
-Update the `version` in the `python3/raygun4py/version.py` file.
+Update the `__version__` in the `python3/raygun4py/version.py` file.
 
 ### Update CHANGELOG.md
 
@@ -49,14 +49,14 @@ Once the PR has been approved, you can publish the provider.
 
 ### Publish to PyPi 
 
-1. Activate the local environment created in the `CONTRIBUTING.md` guideline.
-2. Install release tools: `python3 -m pip install setuptools twine`.
-3. Run `python setup.py sdist`.
-4. Check that the file `dist/raygun4py-x.y.z.tar.gz` has been created.
-5. Run `twine check dist/raygun4py-x.y.z.tar.gz` and fix any warnings. Repeat the `sdist` command if necessary.
-5. Run `twine upload dist/raygun4py-x.x.x.tar.gz` to upload the package.
-6. Provide the API token when asked.
-7. Now the package is available for customers.
+1. Install build tools: `pip install build`
+2. Build the package: `python -m build`
+3. Check that the files `dist/raygun4py-x.y.z.tar.gz` and `dist/raygun4py-x.y.z-py3-none-any.whl` have been created.
+4. Install twine: `pip install twine`
+5. Check the package: `twine check dist/*`
+6. Upload to PyPi: `twine upload dist/*`
+7. Provide the API token when asked.
+8. Now the package is available for customers.
 
 ### Merge PR to master
 

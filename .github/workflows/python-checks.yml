@@ -25,7 +25,8 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install black flake8 coverage .[dev]
+        pip install build
+        pip install -e .[dev]
     
     - name: Check formatting with black
       run: |
@@ -40,4 +41,8 @@ jobs:
         RAYGUN_API_KEY: ${{ secrets.RAYGUN_API_KEY }}
       run: |
         coverage run --source=python3 -m unittest discover python3/tests
-        coverage report -m 
+        coverage report -m
+    
+    - name: Build package
+      run: |
+        python -m build
