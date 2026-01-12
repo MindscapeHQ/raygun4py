@@ -37,8 +37,7 @@ dev = [
     "django>=1.8.8",
     "flask>=0.10",
     "WebTest>=2.0.32",
-    "black",
-    "flake8",
+    "ruff",
     "coverage",
 ]
 
@@ -82,5 +81,20 @@ exclude_lines = [
     "except Exception:",
 ]
 
-[tool.black]
-target-version = ["py39", "py310", "py311", "py312", "py313"]
+[tool.ruff]
+target-version = "py39"
+
+[tool.ruff.lint]
+select = [
+    "E",      # pycodestyle errors
+    "W",      # pycodestyle warnings
+    "F",      # Pyflakes
+    "I",      # isort
+]
+ignore = [
+    "E501",   # line too long (handled by formatter)
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"

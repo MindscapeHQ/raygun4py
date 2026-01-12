@@ -1,16 +1,13 @@
-import unittest
-import sys
-from raygun4py import raygunprovider
-from raygun4py import raygunmsgs
-from raygun4py import utilities
-from raygun4py import __version__
-from raygun4py import version as version_file
 import logging
+import sys
+import unittest
 from unittest import mock
+
+from raygun4py import __version__, raygunmsgs, raygunprovider, utilities
+from raygun4py import version as version_file
 
 
 class TestRaygunSender(unittest.TestCase):
-
     def setUp(self):
         self.sender = raygunprovider.RaygunSender("invalidapikey")
         self.handler = raygunprovider.RaygunHandler("testkey", "v1.0")
@@ -124,7 +121,6 @@ class TestCreateMessage(unittest.TestCase):
 
 
 class TestGroupingKey(unittest.TestCase):
-
     def the_callback(self, raygun_message):
         return self.key
 

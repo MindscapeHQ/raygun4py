@@ -1,13 +1,12 @@
-import mock
 import unittest
 
+import mock
+from raygun4py.middleware.wsgi import Provider
 from webtest import TestApp
 from webtest.debugapp import debug_app
-from raygun4py.middleware.wsgi import Provider
 
 
 class TestWSGIMiddleware(unittest.TestCase):
-
     def setUp(self):
         self.test_middleware = ExceptionMiddleware(debug_app)
         self.raygun_middleware = Provider(self.test_middleware, "XXXXXXXXXX")
@@ -31,7 +30,6 @@ class TestWSGIMiddleware(unittest.TestCase):
 
 
 class ExceptionMiddleware(object):
-
     def __init__(self, app):
         self.app = app
         self.raise_on_request = False

@@ -6,7 +6,6 @@ log = logging.getLogger(__name__)
 
 
 class Provider(object):
-
     def __init__(self, app, apiKey, config=None):
         self.app = app
         self.config = config if config is not None else {}

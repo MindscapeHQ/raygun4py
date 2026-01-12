@@ -1,14 +1,14 @@
 # coding=utf-8
 
-import unittest
-import sys
 import logging
 import os
+import sys
+import unittest
+
 from raygun4py import raygunprovider
 
 
 class TestRaygun4PyFunctional(unittest.TestCase):
-
     def setUp(self):
         self.apiKey = os.environ.get("RAYGUN_API_KEY")
         if not self.apiKey:
