@@ -13,5 +13,24 @@ Before starting, you'll need to ensure you have the appropriate version of Pytho
 ```bash
 python3 -m unittest discover python3/tests
 ```
+
+### Code Quality
+
+This project uses [Ruff](https://docs.astral.sh/ruff/) for linting and formatting.
+
+```bash
+# Check formatting
+ruff format --check python3/
+
+# Fix formatting
+ruff format python3/
+
+# Run linter
+ruff check python3/
+
+# Fix auto-fixable lint issues
+ruff check --fix python3/
+```
+
 - Remember to deactivate the virtual environment when you're done: `deactivate`
 
