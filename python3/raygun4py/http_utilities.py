@@ -1,8 +1,13 @@
-def build_wsgi_compliant_request(request):
-    if not request:
-        return
+from __future__ import annotations
 
-    rg_request = None
+from typing import Any
+
+
+def build_wsgi_compliant_request(request: dict[str, Any]) -> dict[str, Any] | None:
+    if not request:
+        return None
+
+    rg_request: dict[str, Any] | None = None
     # start with WSGI environ variables, then overlay the specific, expected
     # httpRequest keys for RG API compat
     # https://www.python.org/dev/peps/pep-3333/#environ-variables
@@ -43,6 +48,9 @@ def build_wsgi_compliant_request(request):
     except Exception:
         pass
 
+    if rg_request is None:
+        return None
+
     # Header processing
     _headers = request.get("headers")
     if _headers is None:
@@ -63,7 +71,7 @@ def build_wsgi_compliant_request(request):
     return rg_request
 
 
-def http_environ_var_to_header_key(key):
+def http_environ_var_to_header_key(key: str) -> str:
     "turns HTTP_REFERER like keys into Referer"
     parts = key.split("_")
     if parts[0] == "HTTP":

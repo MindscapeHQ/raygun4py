@@ -1,7 +1,11 @@
+from __future__ import annotations
+
 import inspect
 import logging
 import os
 import sys
+from types import FrameType, TracebackType
+from typing import Any
 
 import jsonpickle
 
@@ -20,22 +24,26 @@ from datetime import datetime, timezone
 from raygun4py import http_utilities
 
 
-class RaygunMessageBuilder(object):
-    def __init__(self, options):
+class RaygunMessageBuilder:
+    """Builder class for constructing RaygunMessage objects."""
+
+    def __init__(self, options: dict[str, Any]) -> None:
         self.raygunMessage = RaygunMessage()
         self.options = options
 
-    def new(self):
+    def new(self) -> RaygunMessageBuilder:
         return RaygunMessageBuilder(self.options)
 
-    def build(self):
+    def build(self) -> RaygunMessage:
         return self.raygunMessage
 
-    def set_machine_name(self, name):
+    def set_machine_name(self, name: str) -> RaygunMessageBuilder:
         self.raygunMessage.details["machineName"] = name
         return self
 
-    def set_environment_details(self, extra_environment_data):
+    def set_environment_details(
+        self, extra_environment_data: dict[str, Any] | None
+    ) -> RaygunMessageBuilder:
         self.raygunMessage.details["environment"] = {
             "environmentVariables": dict(os.environ),
             "runtimeLocation": sys.executable,
@@ -80,11 +88,14 @@ class RaygunMessageBuilder(object):
 
         return self
 
-    def set_exception_details(self, raygunExceptionMessage):
+    def set_exception_details(
+        self,
+        raygunExceptionMessage: RaygunErrorMessage | RaygunLoggerFallbackErrorMessage,
+    ) -> RaygunMessageBuilder:
         self.raygunMessage.details["error"] = raygunExceptionMessage
         return self
 
-    def set_client_details(self):
+    def set_client_details(self) -> RaygunMessageBuilder:
         self.raygunMessage.details["client"] = {
             "name": "raygun4py",
             "version": __version__,
@@ -92,21 +103,25 @@ class RaygunMessageBuilder(object):
         }
         return self
 
-    def set_customdata(self, user_custom_data):
+    def set_customdata(
+        self, user_custom_data: dict[str, Any] | None
+    ) -> RaygunMessageBuilder:
         if type(user_custom_data) is dict:
             if not self.raygunMessage.details.get("userCustomData"):
                 self.raygunMessage.details["userCustomData"] = dict()
             self.raygunMessage.details["userCustomData"].update(user_custom_data)
         return self
 
-    def set_tags(self, tags):
+    def set_tags(self, tags: list[str] | None) -> RaygunMessageBuilder:
         if type(tags) is list:
             if not self.raygunMessage.details.get("tags"):
                 self.raygunMessage.details["tags"] = []
             self.raygunMessage.details["tags"] += tags
         return self
 
-    def set_request_details(self, request):
+    def set_request_details(
+        self, request: dict[str, Any] | None
+    ) -> RaygunMessageBuilder:
         if not request:
             return self
 
@@ -115,54 +130,67 @@ class RaygunMessageBuilder(object):
 
         return self
 
-    def set_version(self, version):
+    def set_version(self, version: str) -> RaygunMessageBuilder:
         self.raygunMessage.details["version"] = version
         return self
 
-    def set_user(self, user):
+    def set_user(self, user: dict[str, Any] | str | None) -> RaygunMessageBuilder:
         if user is not None:
             self.raygunMessage.details["user"] = user
         return self
 
 
-class RaygunMessage(object):
-    def __init__(self):
-        self.occurredOn = datetime.now(timezone.utc)
-        self.details = {}
+class RaygunMessage:
+    """Represents a message to be sent to Raygun."""
 
-    def __copy__(self):
+    def __init__(self) -> None:
+        self.occurredOn: datetime = datetime.now(timezone.utc)
+        self.details: dict[str, Any] = {}
+
+    def __copy__(self) -> RaygunMessage:
         new_instance = RaygunMessage()
         new_instance.details = self.details.copy()
         new_instance.occurredOn = self.occurredOn
         return new_instance
 
-    def copy(self):
+    def copy(self) -> RaygunMessage:
         return self.__copy__()
 
-    def get_error(self):
+    def get_error(self) -> RaygunErrorMessage | RaygunLoggerFallbackErrorMessage | None:
         return self.details.get("error")
 
-    def get_details(self):
+    def get_details(self) -> dict[str, Any]:
         return self.details
 
-    def set_details(self, details):
+    def set_details(self, details: dict[str, Any]) -> None:
         self.details = details
 
-    def set_error(self, error):
+    def set_error(
+        self, error: RaygunErrorMessage | RaygunLoggerFallbackErrorMessage
+    ) -> None:
         self.details["error"] = error
 
 
-class RaygunErrorMessage(object):
-    log = logging.getLogger(__name__)
+class RaygunErrorMessage:
+    """Represents an error message with stack trace information."""
+
+    log: logging.Logger = logging.getLogger(__name__)
+
+    className: str | None
+    message: str
+    stackTrace: list[dict[str, Any]]
+    globalVariables: dict[str, Any] | None
+    data: str
+    innerError: RaygunErrorMessage | None
 
     def __init__(
         self,
-        exc_type=None,
-        exc_value=None,
-        exc_traceback=None,
-        options=None,
-        custom_message=None,
-    ):
+        exc_type: type[BaseException] | None = None,
+        exc_value: BaseException | None = None,
+        exc_traceback: TracebackType | None = None,
+        options: dict[str, Any] | None = None,
+        custom_message: str | None = None,
+    ) -> None:
         self.className = exc_type.__name__ if exc_type is not None else None
         self.message = (
             custom_message or "%s: %s" % (exc_type.__name__, exc_value)
@@ -171,13 +199,14 @@ class RaygunErrorMessage(object):
         )
         self.stackTrace = []
         self.globalVariables = None
+        self.innerError = None
 
         try:
-            frames = inspect.getinnerframes(exc_traceback)
+            frames = inspect.getinnerframes(exc_traceback)  # type: ignore[arg-type]
 
             if frames:
                 for frame in frames:
-                    localVariables = None
+                    localVariables: dict[str, str] | None = None
                     if (
                         options is not None
                         and "transmitLocalVariables" in options
@@ -210,7 +239,7 @@ class RaygunErrorMessage(object):
         self.data = ""
 
         if isinstance(exc_value, Exception):
-            nestedException = None
+            nestedException: BaseException | None = None
 
             if exc_value.__cause__:
                 nestedException = exc_value.__cause__
@@ -234,11 +263,13 @@ class RaygunErrorMessage(object):
                 try:
                     jsonpickle.encode(self, unpicklable=False)
                 except Exception:
-                    for frame in self.stackTrace:
-                        if "localVariables" in frame:
-                            frame["localVariables"] = None
+                    for stack_entry in self.stackTrace:
+                        if "localVariables" in stack_entry:
+                            stack_entry["localVariables"] = None
 
-    def check_and_modify_payload_size(self, options, max_size_kb=128):
+    def check_and_modify_payload_size(
+        self, options: dict[str, Any], max_size_kb: int = 128
+    ) -> None:
         payload = jsonpickle.encode(self, unpicklable=False)
 
         while len(payload.encode("utf-8")) > max_size_kb * 1024:
@@ -252,13 +283,13 @@ class RaygunErrorMessage(object):
 
             payload = jsonpickle.encode(self, unpicklable=False)
 
-    def _remove_largest_variable(self, options) -> bool:
-        largest_global_var = None
-        largest_global_size = 0
+    def _remove_largest_variable(self, options: dict[str, Any]) -> bool:
+        largest_global_var: str | None = None
+        largest_global_size: int = 0
 
-        largest_local_var = None
-        largest_local_size = 0
-        largest_local_frame = None
+        largest_local_var: str | None = None
+        largest_local_size: int = 0
+        largest_local_frame: dict[str, Any] | None = None
 
         # Find the largest global variable
         if self.globalVariables:
@@ -292,7 +323,8 @@ class RaygunErrorMessage(object):
                     f"Raygun4Py: Removing global variable {largest_global_var} due to payload size limit"
                 )
 
-            self.globalVariables[largest_global_var] = "Removed"
+            if self.globalVariables is not None:
+                self.globalVariables[largest_global_var] = "Removed"
         elif largest_local_var is not None and largest_local_frame is not None:
             if (
                 options is not None
@@ -307,11 +339,11 @@ class RaygunErrorMessage(object):
 
         return True
 
-    def get_classname(self):
+    def get_classname(self) -> str | None:
         return self.className
 
-    def _get_locals(self, frame):
-        result = {}
+    def _get_locals(self, frame: FrameType) -> dict[str, str]:
+        result: dict[str, str] = {}
         localVars = getattr(frame, "f_locals", {})
 
         if "__traceback_hide__" not in localVars:
@@ -332,8 +364,23 @@ class RaygunErrorMessage(object):
         return result
 
 
-class RaygunLoggerFallbackErrorMessage(object):
-    def __init__(self, name, message, filename, funcName, lineno):
+class RaygunLoggerFallbackErrorMessage:
+    """Fallback error message for use when logging without an exception context."""
+
+    className: str
+    message: str
+    stackTrace: list[dict[str, Any]]
+    globalVariables: None
+    data: str
+
+    def __init__(
+        self,
+        name: str,
+        message: str,
+        filename: str,
+        funcName: str | None,
+        lineno: int,
+    ) -> None:
         self.className = "Logger (" + name + ")"
         self.message = message
         # Create a single stackTrace entry using logger data
@@ -356,5 +403,5 @@ class RaygunLoggerFallbackErrorMessage(object):
                 if "localVariables" in frame:
                     frame["localVariables"] = None
 
-    def get_classname(self):
+    def get_classname(self) -> str:
         return self.className

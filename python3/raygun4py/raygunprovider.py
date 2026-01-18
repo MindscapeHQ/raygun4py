@@ -1,14 +1,19 @@
+from __future__ import annotations
+
 import copy
 import logging
 import socket
 import sys
+from collections.abc import Callable
+from types import TracebackType
+from typing import Any, Optional, Union
 
 import jsonpickle
 import requests
 
 from raygun4py import raygunmsgs, utilities
 
-DEFAULT_CONFIG = {
+DEFAULT_CONFIG: dict[str, Any] = {
     "before_send_callback": None,
     "grouping_key_callback": None,
     "filtered_keys": [],
@@ -25,6 +30,16 @@ DEFAULT_CONFIG = {
 }
 
 
+# Type aliases for clarity
+UserInfo = Optional[Union[dict[str, Any], str]]
+HttpRequest = Optional[dict[str, Any]]
+Tags = Optional[list[str]]
+CustomData = Optional[dict[str, Any]]
+ExcInfo = tuple[type[BaseException], BaseException, Optional[TracebackType]]
+BeforeSendCallback = Callable[[dict[str, Any]], Optional[dict[str, Any]]]
+GroupingKeyCallback = Callable[[raygunmsgs.RaygunMessage], str]
+
+
 class RaygunSender:
     """
     A sender for reporting errors to Raygun.
@@ -33,16 +48,33 @@ class RaygunSender:
         api_key (str): The API key for Raygun.
     """
 
-    log = logging.getLogger(__name__)
+    log: logging.Logger = logging.getLogger(__name__)
 
-    api_key = None
-    endpointprotocol = "https://"
-    endpointhost = "api.raygun.io"
-    endpointpath = "/entries"
-    process_tags = []
-    process_custom_data = dict()
+    api_key: str | None = None
+    endpointprotocol: str = "https://"
+    endpointhost: str = "api.raygun.io"
+    endpointpath: str = "/entries"
+    process_tags: list[str] = []
+    process_custom_data: dict[str, Any] = dict()
 
-    def __init__(self, api_key, config={}):
+    # Config attributes set dynamically in __init__
+    before_send_callback: BeforeSendCallback | None
+    grouping_key_callback: GroupingKeyCallback | None
+    filtered_keys: list[str]
+    ignored_exceptions: list[type[Exception]]
+    proxy: dict[str, Any] | None
+    transmit_global_variables: bool
+    transmit_local_variables: bool
+    enforce_payload_size_limit: bool
+    log_payload_size_limit_breaches: bool
+    transmit_environment_variables: bool
+    userversion: str
+    user: UserInfo
+    http_timeout: float
+
+    def __init__(
+        self, api_key: str | None, config: dict[str, Any] | None = None
+    ) -> None:
         """
         Initialize a RaygunSender.
 
@@ -77,7 +109,7 @@ class RaygunSender:
         for k, v in default_config.items():
             setattr(self, k, v)
 
-    def set_version(self, version):
+    def set_version(self, version: str) -> None:
         """
         Set the version for the error reports.
 
@@ -87,7 +119,7 @@ class RaygunSender:
         if isinstance(version, str):
             self.userversion = version
 
-    def set_user(self, user):
+    def set_user(self, user: UserInfo) -> None:
         """
         Set user information for the error reports.
 
@@ -96,7 +128,7 @@ class RaygunSender:
         """
         self.user = user
 
-    def set_tags(self, tags):
+    def set_tags(self, tags: list[str]) -> None:
         """
         Set tags for the error reports.
 
@@ -106,11 +138,11 @@ class RaygunSender:
         if type(tags) is list:
             self.process_tags = tags
 
-    def set_customdata(self, custom_data):
+    def set_customdata(self, custom_data: dict[str, Any]) -> None:
         if type(custom_data) is dict:
             self.process_custom_data = custom_data
 
-    def ignore_exceptions(self, exceptions):
+    def ignore_exceptions(self, exceptions: list[type[Exception]]) -> None:
         """
         Set exceptions that should be ignored.
 
@@ -120,7 +152,7 @@ class RaygunSender:
         if isinstance(exceptions, list):
             self.ignored_exceptions = exceptions
 
-    def filter_keys(self, keys):
+    def filter_keys(self, keys: list[str]) -> None:
         """
         Set keys to be filtered out from the error reports.
 
@@ -130,7 +162,7 @@ class RaygunSender:
         if isinstance(keys, list):
             self.filtered_keys = keys
 
-    def set_proxy(self, host, port):
+    def set_proxy(self, host: str, port: int) -> None:
         """
         Set a proxy for the sender.
 
@@ -140,7 +172,7 @@ class RaygunSender:
         """
         self.proxy = {"host": host, "port": port}
 
-    def on_before_send(self, callback):
+    def on_before_send(self, callback: BeforeSendCallback) -> None:
         """
         Set a callback to be executed before sending a report.
 
@@ -150,7 +182,7 @@ class RaygunSender:
         if callable(callback):
             self.before_send_callback = callback
 
-    def on_grouping_key(self, callback):
+    def on_grouping_key(self, callback: GroupingKeyCallback) -> None:
         """
         Set a callback to customize the grouping key for the report.
 
@@ -161,8 +193,12 @@ class RaygunSender:
             self.grouping_key_callback = callback
 
     def send_exception(
-        self, exception=None, exc_info=None, user_override=None, **kwargs
-    ):
+        self,
+        exception: BaseException | None = None,
+        exc_info: ExcInfo | tuple[None, None, None] | None = None,
+        user_override: UserInfo = None,
+        **kwargs: Any,
+    ) -> tuple[int, str] | None:
         """
         Send an exception report to Raygun.
 
@@ -193,6 +229,9 @@ class RaygunSender:
         ) = self._parse_args(kwargs)
 
         exc_type, exc_value, exc_traceback = exc_info or sys.exc_info()
+        errorMessage: (
+            raygunmsgs.RaygunErrorMessage | raygunmsgs.RaygunLoggerFallbackErrorMessage
+        )
         if fallback_error and not (exc_type or exception):
             errorMessage = fallback_error
         else:
@@ -208,20 +247,21 @@ class RaygunSender:
             extra_environment_data,
             user_override,
         )
-        message = self._transform_message(message)
+        transformed = self._transform_message(message)
 
-        if message is not None:
-            return self._post(message)
+        if transformed is not None:
+            return self._post(transformed)
+        return None
 
     def _create_error_message(
         self,
-        exception,
-        exc_type,
-        exc_value,
-        exc_traceback,
-        options,
-        custom_message=None,
-    ):
+        exception: BaseException | None,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        exc_traceback: TracebackType | None,
+        options: dict[str, Any],
+        custom_message: str | None = None,
+    ) -> raygunmsgs.RaygunErrorMessage:
         if exception:
             return raygunmsgs.RaygunErrorMessage(
                 type(exception),
@@ -235,22 +275,27 @@ class RaygunSender:
                 exc_type, exc_value, exc_traceback, options, custom_message
             )
 
-    def _parse_args(self, kwargs):
-        tags = kwargs["tags"] if "tags" in kwargs else None
-        custom_data = kwargs["userCustomData"] if "userCustomData" in kwargs else None
-        extra_environment_data = (
-            kwargs["extra_environment_data"]
-            if "extra_environment_data" in kwargs
-            else None
+    def _parse_args(
+        self, kwargs: dict[str, Any]
+    ) -> tuple[
+        Tags,
+        CustomData,
+        HttpRequest,
+        dict[str, Any] | None,
+        str | None,
+        raygunmsgs.RaygunLoggerFallbackErrorMessage | None,
+    ]:
+        tags: Tags = kwargs.get("tags")
+        custom_data: CustomData = kwargs.get("userCustomData")
+        extra_environment_data: dict[str, Any] | None = kwargs.get(
+            "extra_environment_data"
         )
-        custom_message = (
-            kwargs["custom_message"] if "custom_message" in kwargs else None
-        )
-        fallback_error = (
-            kwargs["fallback_error"] if "fallback_error" in kwargs else None
+        custom_message: str | None = kwargs.get("custom_message")
+        fallback_error: raygunmsgs.RaygunLoggerFallbackErrorMessage | None = kwargs.get(
+            "fallback_error"
         )
 
-        http_request = None
+        http_request: HttpRequest = None
         if "httpRequest" in kwargs:
             http_request = kwargs["httpRequest"]
         elif "request" in kwargs:
@@ -267,13 +312,14 @@ class RaygunSender:
 
     def _create_message(
         self,
-        raygunExceptionMessage,
-        tags,
-        user_custom_data,
-        http_request,
-        extra_environment_data,
-        user_override=None,
-    ):
+        raygunExceptionMessage: raygunmsgs.RaygunErrorMessage
+        | raygunmsgs.RaygunLoggerFallbackErrorMessage,
+        tags: Tags,
+        user_custom_data: CustomData,
+        http_request: HttpRequest,
+        extra_environment_data: dict[str, Any] | None,
+        user_override: UserInfo = None,
+    ) -> raygunmsgs.RaygunMessage:
         options = {
             "transmit_environment_variables": self.transmit_environment_variables
         }
@@ -294,44 +340,44 @@ class RaygunSender:
             .build()
         )
 
-    def _transform_message(self, message):
+    def _transform_message(
+        self, message: raygunmsgs.RaygunMessage
+    ) -> raygunmsgs.RaygunMessage | None:
         message = message.copy()
-        message = utilities.ignore_exceptions(self.ignored_exceptions, message)
+        result = utilities.ignore_exceptions(self.ignored_exceptions, message)
 
-        if message is not None:
-            details = message.get_details()
+        if result is not None:
+            details = result.get_details()
             details = utilities.filter_keys(self.filtered_keys, details)
             details["groupingKey"] = utilities.execute_grouping_key(
-                self.grouping_key_callback, message
+                self.grouping_key_callback, result
             )
-            message.set_details(details)
+            result.set_details(details)
 
-        if self.before_send_callback is not None:
-            mutated_payload = self.before_send_callback(message.get_details())
+        if self.before_send_callback is not None and result is not None:
+            mutated_payload = self.before_send_callback(result.get_details())
 
             if mutated_payload is not None:
-                message.set_details(mutated_payload)
+                result.set_details(mutated_payload)
             else:
                 return None
 
-        return message
+        return result
 
-    def _post(self, raygunMessage):
+    def _post(self, raygunMessage: raygunmsgs.RaygunMessage) -> tuple[int, str]:
         raygunMessage = raygunMessage.copy()
         options = {
             "enforce_payload_size_limit": self.enforce_payload_size_limit,
             "log_payload_size_limit_breaches": self.log_payload_size_limit_breaches,
         }
 
+        error = raygunMessage.get_error()
         if (
-            isinstance(raygunMessage.get_error(), raygunmsgs.RaygunErrorMessage)
+            isinstance(error, raygunmsgs.RaygunErrorMessage)
             and "enforce_payload_size_limit" in options
             and options["enforce_payload_size_limit"] is True
         ):
-            error = raygunMessage.get_error()
-
             error.check_and_modify_payload_size(options)
-
             raygunMessage.set_error(error)
 
         json = jsonpickle.encode(raygunMessage, unpicklable=False)
@@ -364,7 +410,16 @@ class RaygunHandler(logging.Handler):
         version (str): Version for the RaygunSender.
     """
 
-    def __init__(self, api_key=None, version=None, level=logging.ERROR, sender=None):
+    sender: RaygunSender
+    version: str | None
+
+    def __init__(
+        self,
+        api_key: str | None = None,
+        version: str | None = None,
+        level: int = logging.ERROR,
+        sender: RaygunSender | None = None,
+    ) -> None:
         """
         Initialize a RaygunHandler for logging.
 
@@ -388,7 +443,9 @@ class RaygunHandler(logging.Handler):
             raise ValueError("Either 'api_key' or 'sender' must be provided.")
 
     @classmethod
-    def from_sender(cls, sender, level=logging.ERROR):
+    def from_sender(
+        cls, sender: RaygunSender, level: int = logging.ERROR
+    ) -> RaygunHandler:
         """
         Construct a RaygunHandler instance using an existing RaygunSender object.
 
@@ -405,7 +462,7 @@ class RaygunHandler(logging.Handler):
             )
         return cls(level=level, sender=sender)
 
-    def emit(self, record):
+    def emit(self, record: logging.LogRecord) -> None:
         # Use log level as a tag
         tag = self.get_tag_from_levelname(record.levelname)
         tags = [tag] if tag else []
@@ -422,7 +479,7 @@ class RaygunHandler(logging.Handler):
                 custom_message=record.getMessage(),
             )
         else:
-            # Proide a fallback error to use if exc_info cannot be obtained from sys
+            # Provide a fallback error to use if exc_info cannot be obtained from sys
             fallback_error = raygunmsgs.RaygunLoggerFallbackErrorMessage(
                 record.name,
                 record.getMessage(),
@@ -433,7 +490,7 @@ class RaygunHandler(logging.Handler):
             self.sender.send_exception(tags=tags, fallback_error=fallback_error)
 
     @staticmethod
-    def get_tag_from_levelname(levelname):
+    def get_tag_from_levelname(levelname: str) -> str | None:
         tag_map = {
             "DEBUG": "Debug Log",
             "INFO": "Info Log",

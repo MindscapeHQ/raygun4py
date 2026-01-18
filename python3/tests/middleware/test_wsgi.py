@@ -1,6 +1,6 @@
 import unittest
+from unittest import mock
 
-import mock
 from raygun4py.middleware.wsgi import Provider
 from webtest import TestApp
 from webtest.debugapp import debug_app

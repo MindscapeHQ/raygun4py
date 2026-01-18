@@ -31,14 +31,15 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "unittest2>=1.1.0",
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
     "coveralls>=1.5.1",
-    "mock>=2.0.0",
     "django>=1.8.8",
     "flask>=0.10",
     "WebTest>=2.0.32",
     "ruff",
-    "coverage",
+    "mypy>=1.0",
+    "types-requests",
 ]
 
 [project.scripts]
@@ -80,6 +81,27 @@ exclude_lines = [
     "except Exception as e:",
     "except Exception:",
 ]
+
+[tool.pytest.ini_options]
+testpaths = ["python3/tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_ignores = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+strict_optional = true
+files = ["python3/raygun4py"]
+exclude = ["python3/tests", "python3/raygun4py/middleware", "python3/raygun4py/cli.py"]
+
+[[tool.mypy.overrides]]
+module = ["jsonpickle", "blinker", "webtest.*", "django.*", "flask.*"]
+ignore_missing_imports = true
 
 [tool.ruff]
 target-version = "py39"
