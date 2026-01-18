@@ -1,5 +1,6 @@
+from unittest import mock
+
 import django
-import mock
 from django.conf import settings
 from django.test import SimpleTestCase
 from django.test.client import RequestFactory
