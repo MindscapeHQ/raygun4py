@@ -58,7 +58,9 @@ class TestFlaskMiddleware(unittest.TestCase):
 
         call_kwargs = self.provider.sender.send_exception.call_args[1]
         self.assertIn("extra_environment_data", call_kwargs)
-        self.assertEqual(call_kwargs["extra_environment_data"]["custom_key"], "custom_value")
+        self.assertEqual(
+            call_kwargs["extra_environment_data"]["custom_key"], "custom_value"
+        )
         self.assertIn("frameworkVersion", call_kwargs["extra_environment_data"])
 
     def test_exception_signal_triggers_send(self):
