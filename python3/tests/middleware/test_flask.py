@@ -2,7 +2,6 @@ import unittest
 from unittest import mock
 
 import flask
-
 from raygun4py.middleware.flask import Provider
 
 
