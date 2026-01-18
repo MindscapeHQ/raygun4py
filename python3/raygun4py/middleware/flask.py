@@ -15,7 +15,7 @@ class Provider(object):
         self.config = config if config is not None else {}
         self.sender = None
 
-        got_request_exception.connect(self.send_exception, sender=flaskApp)
+        got_request_exception.connect(self._handle_exception, sender=flaskApp)
 
         flaskApp.extensions["raygun"] = self
 
@@ -55,6 +55,10 @@ class Provider(object):
         self.sender.send_exception(
             exception=exception, exc_info=exc_info, user_override=user, **kwargs
         )
+
+    def _handle_exception(self, sender, exception, **kwargs):
+        """Signal handler for Flask's got_request_exception signal."""
+        self.send_exception(exception=exception)
 
     def _get_flask_environment(self):
         return {"frameworkVersion": "Flask " + getattr(flask, "__version__", "")}
