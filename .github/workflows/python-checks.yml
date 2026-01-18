@@ -40,8 +40,7 @@ jobs:
       env:
         RAYGUN_API_KEY: ${{ secrets.RAYGUN_API_KEY }}
       run: |
-        coverage run --source=python3 -m unittest discover python3/tests
-        coverage report -m
+        pytest --cov=python3/raygun4py --cov-report=term-missing
     
     - name: Build package
       run: |

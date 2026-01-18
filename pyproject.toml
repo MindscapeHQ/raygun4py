@@ -31,14 +31,13 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "unittest2>=1.1.0",
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
     "coveralls>=1.5.1",
-    "mock>=2.0.0",
     "django>=1.8.8",
     "flask>=0.10",
     "WebTest>=2.0.32",
     "ruff",
-    "coverage",
 ]
 
 [project.scripts]
@@ -80,6 +79,12 @@ exclude_lines = [
     "except Exception as e:",
     "except Exception:",
 ]
+
+[tool.pytest.ini_options]
+testpaths = ["python3/tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
 
 [tool.ruff]
 target-version = "py39"

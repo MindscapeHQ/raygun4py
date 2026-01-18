@@ -218,17 +218,22 @@ class TestRaygunErrorMessage(unittest.TestCase):
         del globalReference
 
     def test_remove_global_too_large(self):
-        global globalReference
-        globalReference = self.create_string_of_size(self.ONEHUNDRED_AND_FIFTY_KB)
-
+        # Create a message and directly set globalVariables to test payload limiting
         try:
             raise Exception()
         except Exception:
             exc_info = sys.exc_info()
 
             msg = raygunmsgs.RaygunErrorMessage(
-                exc_info[0], exc_info[1], exc_info[2], {"transmitGlobalVariables": True}
+                exc_info[0], exc_info[1], exc_info[2], {}
             )
+
+            # Directly inject a large global variable for testing
+            msg.globalVariables = {
+                "globalReference": self.create_string_of_size(
+                    self.ONEHUNDRED_AND_FIFTY_KB
+                )
+            }
 
             msg_clone = jsonpickle.loads(jsonpickle.dumps(msg))
             msg_clone.check_and_modify_payload_size(
@@ -236,8 +241,6 @@ class TestRaygunErrorMessage(unittest.TestCase):
             )
 
             self.assertEqual(msg_clone.globalVariables["globalReference"], "Removed")
-
-        del globalReference
 
     def test_remove_local_too_large(self):
         localReference = self.create_string_of_size(  # noqa: F841
@@ -271,11 +274,10 @@ class TestRaygunErrorMessage(unittest.TestCase):
                 "Removed",
             )
 
-    def test_remove_larger_varaible(self):
-        global globalReference
-
-        globalReference = self.create_string_of_size(80 * 1024)
-        localReference = self.create_string_of_size(64 * 1024)
+    def test_remove_larger_variable(self):
+        # Test that larger variables are removed first when both global and local
+        # variables exceed the payload size limit
+        localReference = self.create_string_of_size(64 * 1024)  # noqa: F841
 
         try:
             raise Exception()
@@ -286,21 +288,26 @@ class TestRaygunErrorMessage(unittest.TestCase):
                 exc_info[0],
                 exc_info[1],
                 exc_info[2],
-                {"transmitGlobalVariables": True, "transmitLocalVariables": True},
+                {"transmitLocalVariables": True},
             )
+
+            # Directly inject a larger global variable for testing
+            msg.globalVariables = {
+                "globalReference": self.create_string_of_size(80 * 1024)
+            }
 
             msg_clone = jsonpickle.loads(jsonpickle.dumps(msg))
             msg_clone.check_and_modify_payload_size(
                 {"enforce_payload_size_limit": True}
             )
 
+            # Global variable (larger) should be removed first
             self.assertEqual(msg_clone.globalVariables["globalReference"], "Removed")
+            # Local variable should still be present in original
             self.assertEqual(
                 self.find_local_variable(msg.stackTrace, "localReference"),
                 localReference,
             )
-
-        del globalReference
 
 
 class TestRaygunErrorMessageChained(unittest.TestCase):

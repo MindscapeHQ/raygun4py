@@ -11,7 +11,12 @@ Before starting, you'll need to ensure you have the appropriate version of Pytho
 5. Install the development dependencies and prepare local package: `python3 -m pip install -e .[dev]`
 6. Run tests with the command: 
 ```bash
-python3 -m unittest discover python3/tests
+pytest
+```
+
+To run tests with coverage:
+```bash
+pytest --cov=python3/raygun4py --cov-report=term-missing
 ```
 
 ### Code Quality
