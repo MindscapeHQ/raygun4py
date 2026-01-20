@@ -5,14 +5,17 @@ import os
 import sys
 import unittest
 
+import pytest
 from raygun4py import raygunprovider
 
 
+@pytest.mark.skipif(
+    not os.environ.get("RAYGUN_API_KEY"),
+    reason="RAYGUN_API_KEY environment variable is not set",
+)
 class TestRaygun4PyFunctional(unittest.TestCase):
     def setUp(self):
         self.apiKey = os.environ.get("RAYGUN_API_KEY")
-        if not self.apiKey:
-            raise ValueError("RAYGUN_API_KEY environment variable is not set")
 
     def test_python3_new_sending(self):
         client = raygunprovider.RaygunSender(self.apiKey)
