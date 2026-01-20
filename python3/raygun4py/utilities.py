@@ -1,15 +1,28 @@
+from __future__ import annotations
+
 import re
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from raygun4py import raygunmsgs
 
 
-def ignore_exceptions(ignored_exceptions, message):
-    classname = message.get_error().get_classname()
-    if classname and classname in ignored_exceptions:
+def ignore_exceptions(
+    ignored_exceptions: list[type[Exception]],
+    message: raygunmsgs.RaygunMessage,
+) -> raygunmsgs.RaygunMessage | None:
+    error = message.get_error()
+    if error is None:
+        return message
+    classname = error.get_classname()
+    if classname and classname in [e.__name__ for e in ignored_exceptions]:
         return None
 
     return message
 
 
-def filter_keys(filtered_keys, obj):
+def filter_keys(filtered_keys: list[str], obj: dict[str, Any]) -> dict[str, Any]:
     """
     Filter keys from a dictionary.
 
@@ -51,7 +64,10 @@ def filter_keys(filtered_keys, obj):
     return iteration_target
 
 
-def execute_grouping_key(grouping_key_callback, message):
+def execute_grouping_key(
+    grouping_key_callback: Callable[[raygunmsgs.RaygunMessage], str] | None,
+    message: raygunmsgs.RaygunMessage,
+) -> str | None:
     if grouping_key_callback is not None:
         grouping_key = grouping_key_callback(message)
 
@@ -65,11 +81,11 @@ def execute_grouping_key(grouping_key_callback, message):
     return None
 
 
-def camelcase_to_snakecase(key):
+def camelcase_to_snakecase(key: str) -> str:
     "Turns camelCaseStrings into snake_case_strings."
     s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", key)
     return re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
 
 
-def snakecase_dict(d):
+def snakecase_dict(d: dict[str, Any]) -> dict[str, Any]:
     return dict([(camelcase_to_snakecase(k), v) for k, v in d.items()])
