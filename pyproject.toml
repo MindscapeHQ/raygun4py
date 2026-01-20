@@ -34,12 +34,12 @@ dev = [
     "pytest>=7.0",
     "pytest-cov>=4.0",
     "coveralls>=1.5.1",
-    "django>=1.8.8",
-    "flask>=0.10",
     "WebTest>=2.0.32",
     "ruff",
     "mypy>=1.0",
     "types-requests",
+    "django>=3.2",
+    "flask>=2.0",
 ]
 
 [project.scripts]
