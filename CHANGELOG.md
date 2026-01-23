@@ -1,3 +1,20 @@
+## 7.0.0 (23/01/26):
+
+Potentially breaking changes:
+ - Update minimum Flask and Django versions (#132) (2026-01-20)
+
+Bug Fixes:
+  - Add Flask middleware tests and fix signal handler (#139) (2026-01-21)
+
+Improvements:
+  - Add type hints to public API for better IDE and AI support (#136) (2026-01-20)
+
+Internal changes:
+  - Migrate test infrastructure to pytest (#134) (2026-01-20)
+  - Use stable Python 3.14 instead of beta in CI (#133) (2026-01-20)
+  - Update GitHub Actions to latest versions (#130) (2026-01-20)
+  - Replace black and flake8 with ruff (#128) (2026-01-13)
+
 ## 6.0.2 (12/01/26):
 
 Internal changes:
