@@ -1,7 +1,7 @@
 raygun4py
 =========
 
-Official Raygun provider for **Python** and **PyPy**
+Official Raygun provider for **Python 3.10+** and **PyPy**
 
 **Python 2.7** is supported in versions <= 4.4.0
 
