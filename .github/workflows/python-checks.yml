@@ -62,6 +62,7 @@ jobs:
       run: |
         python -m pip install --upgrade "pip>=26.1"
         python -m pip install -r pylock.dev.toml
+        python -m pip install --no-deps -e .
 
     - name: Check formatting with ruff
       run: |

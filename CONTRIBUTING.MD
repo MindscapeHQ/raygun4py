@@ -29,9 +29,10 @@ To install from the lock file with pip 26.1 or newer:
 
 ```bash
 python3 -m pip install -r pylock.dev.toml
+python3 -m pip install --no-deps -e .
 ```
 
-The lock file is generated on Linux with Python 3.13, so prefer the dependency-group install above when validating compatibility across other Python versions or platforms.
+The lock file contains Raygun4Py's runtime and development dependencies, but not the local package itself. The second command installs the local package without re-resolving dependencies. The lock file is generated on Linux with Python 3.13, so prefer the dependency-group install above when validating compatibility across other Python versions or platforms.
 
 To run tests with coverage:
 ```bash

@@ -354,13 +354,6 @@ url = "https://files.pythonhosted.org/packages/9d/7a/d968e294073affff457b041c2be
 sha256 = "a0461110b7865f9a271aa1b51e516c9a95de9d696734a2f71e3e78f46e1d4678"
 
 [[packages]]
-name = "raygun4py"
-
-[packages.directory]
-path = "."
-editable = true
-
-[[packages]]
 name = "requests"
 version = "2.34.2"
 
