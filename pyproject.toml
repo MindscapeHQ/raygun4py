@@ -42,6 +42,32 @@ dev = [
     "flask>=2.0",
 ]
 
+[dependency-groups]
+test = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "WebTest>=2.0.32",
+    "django>=3.2",
+    "flask>=2.0",
+]
+lint = [
+    "ruff",
+]
+type = [
+    "mypy>=1.0",
+    "types-requests",
+]
+build = [
+    "build",
+]
+dev = [
+    { include-group = "test" },
+    { include-group = "lint" },
+    { include-group = "type" },
+    { include-group = "build" },
+    "coveralls>=1.5.1",
+]
+
 [project.scripts]
 raygun4py = "raygun4py.cli:main"
 
