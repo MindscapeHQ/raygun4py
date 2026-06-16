@@ -21,6 +21,18 @@ The legacy development extra is still available for older tooling that does not 
 python3 -m pip install -e .[dev]
 ```
 
+### Reproducible development install
+
+The repository includes `pylock.dev.toml` as a known-good development environment snapshot for contributors and CI. It is not part of Raygun4Py's public installation contract; applications that use Raygun4Py should manage their own lock files.
+
+To install from the lock file with pip 26.1 or newer:
+
+```bash
+python3 -m pip install -r pylock.dev.toml
+```
+
+The lock file is generated on Linux with Python 3.13, so prefer the dependency-group install above when validating compatibility across other Python versions or platforms.
+
 To run tests with coverage:
 ```bash
 pytest --cov=python3/raygun4py --cov-report=term-missing
