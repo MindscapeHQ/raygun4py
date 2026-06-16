@@ -95,7 +95,7 @@ Note that using a :code:`RaygunHandler` outside the scope of an :code:`except` b
 Web frameworks
 --------------
 
-Raygun4py includes dedicated middleware implementations for Django and Flask, as well as generic WSGI frameworks (Tornado, Bottle, Ginkgo etc). These are available for both Python 2.7 and Python 3.1+.
+Raygun4py includes dedicated middleware implementations for Django and Flask, as well as generic WSGI frameworks (Tornado, Bottle, Ginkgo etc). These are available for Python 3.10+.
 
 Django
 ++++++
