@@ -59,6 +59,8 @@ type = [
 ]
 build = [
     "build",
+    "editables",
+    "hatchling",
 ]
 dev = [
     { include-group = "test" },

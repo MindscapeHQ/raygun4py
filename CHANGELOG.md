@@ -1,4 +1,4 @@
-## 8.0.0 (16/06/26):
+## 8.0.0 (Unreleased):
 
 Breaking changes:
   - Drop support for Python 3.9. Raygun4Py now requires Python 3.10 or newer.
@@ -6,8 +6,8 @@ Breaking changes:
 Internal changes:
   - Add Python dependency groups for development, test, linting, typing, and build tooling.
   - Keep the existing `dev` extra for backwards-compatible contributor installs.
-  - Add an optional `pylock.dev.toml` development lockfile for reproducible contributor and CI installs.
-  - Add a locked development environment CI job while keeping the main Python matrix on unlocked dependency resolution.
+  - Add an optional `pylock.dev.toml` hash-verified dependency snapshot for the locked CI environment.
+  - Add a locked development environment CI job with locked build tooling and dependency consistency checks, while keeping the main Python matrix on unlocked dependency resolution.
 
 ## 7.0.0 (23/01/26):
 
