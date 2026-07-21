@@ -4,7 +4,8 @@ Breaking changes:
   - Drop support for Python 3.9. Raygun4Py now requires Python 3.10 or newer.
 
 Bug fixes:
-  - Preserve the existing jsonpickle payload wire format and use Flask's supported package metadata API ahead of upstream deprecations.
+  - Preserve the existing jsonpickle payload wire format while isolating jsonpickle 4.1.2's transitional warning.
+  - Use Flask's supported package metadata API, with a fallback when distribution metadata is unavailable so error reporting does not mask the original exception.
 
 Internal changes:
   - Add Python dependency groups for development, test, linting, typing, and build tooling.
