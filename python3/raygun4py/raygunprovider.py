@@ -8,7 +8,6 @@ from collections.abc import Callable
 from types import TracebackType
 from typing import Any, Optional, Union
 
-import jsonpickle
 import requests
 
 from raygun4py import raygunmsgs, utilities
@@ -380,7 +379,7 @@ class RaygunSender:
             error.check_and_modify_payload_size(options)
             raygunMessage.set_error(error)
 
-        json = jsonpickle.encode(raygunMessage, unpicklable=False, keys=False)
+        json = utilities.encode_jsonpickle(raygunMessage)
 
         try:
             headers = {

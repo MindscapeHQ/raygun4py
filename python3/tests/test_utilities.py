@@ -1,9 +1,18 @@
 import unittest
+import warnings
 
 from raygun4py import utilities
 
 
 class TestRaygunUtilities(unittest.TestCase):
+    def test_encode_jsonpickle_preserves_string_key_wire_format(self):
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always")
+            encoded = utilities.encode_jsonpickle({1: "one"})
+
+        self.assertEqual(encoded, '{"1": "one"}')
+        self.assertEqual(caught, [])
+
     def test_filter_keys(self):
         test_obj = {"foo": "bar", "baz": "qux"}
 

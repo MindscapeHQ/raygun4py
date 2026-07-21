@@ -1,11 +1,25 @@
 from __future__ import annotations
 
 import re
+import warnings
 from collections.abc import Callable
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
+
+import jsonpickle
 
 if TYPE_CHECKING:
     from raygun4py import raygunmsgs
+
+
+def encode_jsonpickle(value: Any, *, unpicklable: bool = False) -> str:
+    """Encode using Raygun4Py's established string-key JSON representation."""
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            "ignore",
+            message="keys will default to True in jsonpickle 5.0.0",
+            category=DeprecationWarning,
+        )
+        return cast(str, jsonpickle.encode(value, unpicklable=unpicklable, keys=False))
 
 
 def ignore_exceptions(
