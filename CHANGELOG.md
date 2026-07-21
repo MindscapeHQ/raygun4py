@@ -8,7 +8,7 @@ Bug fixes:
 
 Internal changes:
   - Add Python dependency groups for development, test, linting, typing, and build tooling.
-  - Keep the existing `dev` extra for backwards-compatible contributor installs.
+  - Keep the existing `dev` extra for backwards-compatible contributor installs and exercise it in the Python 3.10 CI job.
   - Add an optional `pylock.dev.toml` hash-verified dependency snapshot for the locked CI environment.
   - Add a locked development environment CI job with locked build tooling and dependency consistency checks, while keeping the main Python matrix on unlocked dependency resolution.
 

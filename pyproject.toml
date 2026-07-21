@@ -30,6 +30,8 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+# Compatibility interface for existing contributor tooling. Keep requirements
+# shared with the dependency groups below in sync when updating either list.
 dev = [
     "pytest>=7.0",
     "pytest-cov>=4.0",
@@ -42,6 +44,7 @@ dev = [
     "flask>=2.0",
 ]
 
+# Authoritative development environment, including the complete build toolchain.
 [dependency-groups]
 test = [
     "pytest>=7.0",

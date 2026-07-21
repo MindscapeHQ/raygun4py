@@ -21,6 +21,8 @@ The legacy development extra is still available for older tooling that does not 
 python3 -m pip install -e .[dev]
 ```
 
+The dependency groups are the authoritative definition of the complete contributor environment and include the build toolchain. The legacy `dev` extra remains a compatibility interface and is exercised by the Python 3.10 CI job. When changing a requirement shared by both declarations in `pyproject.toml`, update both lists together.
+
 ### Locked development install
 
 The repository includes `pylock.dev.toml` as a hash-verified Python dependency snapshot for the locked CI job. It is not part of Raygun4Py's public installation contract; applications that use Raygun4Py should manage their own lock files.
