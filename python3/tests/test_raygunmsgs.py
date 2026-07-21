@@ -235,7 +235,7 @@ class TestRaygunErrorMessage(unittest.TestCase):
                 )
             }
 
-            msg_clone = jsonpickle.loads(jsonpickle.dumps(msg))
+            msg_clone = jsonpickle.loads(jsonpickle.dumps(msg, keys=False))
             msg_clone.check_and_modify_payload_size(
                 {"enforce_payload_size_limit": True}
             )
@@ -256,7 +256,7 @@ class TestRaygunErrorMessage(unittest.TestCase):
                 exc_info[0], exc_info[1], exc_info[2], {"transmitLocalVariables": True}
             )
 
-            msg_clone = jsonpickle.loads(jsonpickle.dumps(msg))
+            msg_clone = jsonpickle.loads(jsonpickle.dumps(msg, keys=False))
             msg_clone.check_and_modify_payload_size(
                 {"enforce_payload_size_limit": True}
             )
@@ -296,7 +296,7 @@ class TestRaygunErrorMessage(unittest.TestCase):
                 "globalReference": self.create_string_of_size(80 * 1024)
             }
 
-            msg_clone = jsonpickle.loads(jsonpickle.dumps(msg))
+            msg_clone = jsonpickle.loads(jsonpickle.dumps(msg, keys=False))
             msg_clone.check_and_modify_payload_size(
                 {"enforce_payload_size_limit": True}
             )

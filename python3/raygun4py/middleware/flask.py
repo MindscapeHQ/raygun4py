@@ -1,6 +1,6 @@
 import logging
+from importlib.metadata import version
 
-import flask
 from flask.signals import got_request_exception
 
 from raygun4py import raygunprovider
@@ -61,4 +61,4 @@ class Provider(object):
         self.send_exception(exception=exception)
 
     def _get_flask_environment(self):
-        return {"frameworkVersion": "Flask " + getattr(flask, "__version__", "")}
+        return {"frameworkVersion": "Flask " + version("flask")}

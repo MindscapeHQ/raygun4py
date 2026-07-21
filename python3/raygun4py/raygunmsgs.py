@@ -255,13 +255,13 @@ class RaygunErrorMessage:
                 )
 
         try:
-            jsonpickle.encode(self, unpicklable=False)
+            jsonpickle.encode(self, unpicklable=False, keys=False)
         except Exception:
             if self.globalVariables:
                 self.globalVariables = None
 
                 try:
-                    jsonpickle.encode(self, unpicklable=False)
+                    jsonpickle.encode(self, unpicklable=False, keys=False)
                 except Exception:
                     for stack_entry in self.stackTrace:
                         if "localVariables" in stack_entry:
@@ -270,7 +270,7 @@ class RaygunErrorMessage:
     def check_and_modify_payload_size(
         self, options: dict[str, Any], max_size_kb: int = 128
     ) -> None:
-        payload = jsonpickle.encode(self, unpicklable=False)
+        payload = jsonpickle.encode(self, unpicklable=False, keys=False)
 
         while len(payload.encode("utf-8")) > max_size_kb * 1024:
             if not self._remove_largest_variable(
@@ -281,7 +281,7 @@ class RaygunErrorMessage:
                 )
                 break
 
-            payload = jsonpickle.encode(self, unpicklable=False)
+            payload = jsonpickle.encode(self, unpicklable=False, keys=False)
 
     def _remove_largest_variable(self, options: dict[str, Any]) -> bool:
         largest_global_var: str | None = None
@@ -397,7 +397,7 @@ class RaygunLoggerFallbackErrorMessage:
         self.data = ""
 
         try:
-            jsonpickle.encode(self, unpicklable=False)
+            jsonpickle.encode(self, unpicklable=False, keys=False)
         except Exception:
             for frame in self.stackTrace:
                 if "localVariables" in frame:

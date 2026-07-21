@@ -1,4 +1,5 @@
 import unittest
+from importlib.metadata import version
 from unittest import mock
 
 import flask
@@ -21,7 +22,7 @@ class TestFlaskMiddleware(unittest.TestCase):
 
     def test_get_flask_environment(self):
         env = self.provider._get_flask_environment()
-        self.assertEqual(env["frameworkVersion"], f"Flask {flask.__version__}")
+        self.assertEqual(env["frameworkVersion"], f"Flask {version('flask')}")
 
     def test_send_exception_calls_sender(self):
         self.provider.sender.send_exception = mock.MagicMock(return_value=True)

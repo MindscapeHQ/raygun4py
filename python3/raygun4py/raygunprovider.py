@@ -380,7 +380,7 @@ class RaygunSender:
             error.check_and_modify_payload_size(options)
             raygunMessage.set_error(error)
 
-        json = jsonpickle.encode(raygunMessage, unpicklable=False)
+        json = jsonpickle.encode(raygunMessage, unpicklable=False, keys=False)
 
         try:
             headers = {
