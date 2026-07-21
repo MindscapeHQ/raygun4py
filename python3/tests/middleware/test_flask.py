@@ -1,5 +1,5 @@
 import unittest
-from importlib.metadata import version
+from importlib.metadata import PackageNotFoundError, version
 from unittest import mock
 
 import flask
@@ -23,6 +23,14 @@ class TestFlaskMiddleware(unittest.TestCase):
     def test_get_flask_environment(self):
         env = self.provider._get_flask_environment()
         self.assertEqual(env["frameworkVersion"], f"Flask {version('flask')}")
+
+    @mock.patch(
+        "raygun4py.middleware.flask.version",
+        side_effect=PackageNotFoundError,
+    )
+    def test_get_flask_environment_without_distribution_metadata(self, _mock_version):
+        env = self.provider._get_flask_environment()
+        self.assertEqual(env["frameworkVersion"], "Flask ")
 
     def test_send_exception_calls_sender(self):
         self.provider.sender.send_exception = mock.MagicMock(return_value=True)

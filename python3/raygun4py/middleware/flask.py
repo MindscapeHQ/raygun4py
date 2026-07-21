@@ -1,5 +1,5 @@
 import logging
-from importlib.metadata import version
+from importlib.metadata import PackageNotFoundError, version
 
 from flask.signals import got_request_exception
 
@@ -61,4 +61,9 @@ class Provider(object):
         self.send_exception(exception=exception)
 
     def _get_flask_environment(self):
-        return {"frameworkVersion": "Flask " + version("flask")}
+        try:
+            flask_version = version("flask")
+        except PackageNotFoundError:
+            flask_version = ""
+
+        return {"frameworkVersion": "Flask " + flask_version}
