@@ -27,7 +27,7 @@ Update the `__version__` in the `python3/raygun4py/version.py` file.
 
 ### Update CHANGELOG.md
 
-Add a new entry in the `CHANGELOG.md` file.
+Add a new entry in the `CHANGELOG.md` file. Keep the release marked `Unreleased` while it is under review, then replace `Unreleased` with the publication date in the final release commit.
 
 Obtain a list of changes using the following git command:
 
@@ -46,6 +46,8 @@ Then push the branch and open a new PR, ask the team to review it.
 ### PR approval
 
 Once the PR has been approved, you can publish the provider.
+
+Before publishing, confirm that CI passes the unlocked Python compatibility matrix and the locked development job. If a test Raygun application is available, also run the functional tests described in `CONTRIBUTING.MD`.
 
 ### Publish to PyPi 
 

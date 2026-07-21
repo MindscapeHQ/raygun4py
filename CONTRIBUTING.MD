@@ -50,14 +50,25 @@ python3 -m pip lock \
 
 The explicit runtime requirements keep the local editable package out of the lock without manual lock-file edits. Review this command whenever `[project].dependencies` changes.
 
-To run tests with coverage:
+### Tests
+
+Run the unit and middleware tests with coverage:
+
 ```bash
 pytest --cov=python3/raygun4py --cov-report=term-missing
 ```
 
+The functional tests send deliberate test errors to Raygun and are skipped when `RAYGUN_API_KEY` is not set. Run them only against a non-production Raygun application:
+
+```bash
+RAYGUN_API_KEY="your_test_api_key" pytest python3/tests/test_functional.py -v
+```
+
+Do not commit the API key or store it in this repository.
+
 ### Code Quality
 
-This project uses [Ruff](https://docs.astral.sh/ruff/) for linting and formatting.
+This project uses [Ruff](https://docs.astral.sh/ruff/) for linting and formatting and mypy for static type checking.
 
 ```bash
 # Check formatting
@@ -71,6 +82,15 @@ ruff check python3/
 
 # Fix auto-fixable lint issues
 ruff check --fix python3/
+
+# Check types
+mypy python3/raygun4py
+```
+
+Build with the locked build toolchain after installing `pylock.dev.toml` as described above:
+
+```bash
+python3 -m build --no-isolation
 ```
 
 - Remember to deactivate the virtual environment when you're done: `deactivate`
