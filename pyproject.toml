@@ -10,17 +10,17 @@ description = "Official Raygun provider for Python"
 readme = "README.rst"
 license = "MIT"
 license-files = ["LICENSE"]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Communications",
 ]
 dependencies = [
@@ -30,6 +30,8 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+# Compatibility interface for existing contributor tooling. Keep requirements
+# shared with the dependency groups below in sync when updating either list.
 dev = [
     "pytest>=7.0",
     "pytest-cov>=4.0",
@@ -40,6 +42,35 @@ dev = [
     "types-requests",
     "django>=3.2",
     "flask>=2.0",
+]
+
+# Authoritative development environment, including the complete build toolchain.
+[dependency-groups]
+test = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "WebTest>=2.0.32",
+    "django>=3.2",
+    "flask>=2.0",
+]
+lint = [
+    "ruff",
+]
+type = [
+    "mypy>=1.0",
+    "types-requests",
+]
+build = [
+    "build",
+    "editables",
+    "hatchling",
+]
+dev = [
+    { include-group = "test" },
+    { include-group = "lint" },
+    { include-group = "type" },
+    { include-group = "build" },
+    "coveralls>=1.5.1",
 ]
 
 [project.scripts]
@@ -89,7 +120,7 @@ python_classes = ["Test*"]
 python_functions = ["test_*"]
 
 [tool.mypy]
-python_version = "3.9"
+python_version = "3.10"
 warn_return_any = true
 warn_unused_ignores = true
 disallow_untyped_defs = true
@@ -104,7 +135,7 @@ module = ["jsonpickle", "blinker", "webtest.*", "django.*", "flask.*"]
 ignore_missing_imports = true
 
 [tool.ruff]
-target-version = "py39"
+target-version = "py310"
 
 [tool.ruff.lint]
 select = [

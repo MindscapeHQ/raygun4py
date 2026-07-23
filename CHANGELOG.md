@@ -1,3 +1,18 @@
+## 8.0.0 (23/07/26):
+
+Breaking changes:
+  - Drop support for Python 3.9. Raygun4Py now requires Python 3.10 or newer.
+
+Bug fixes:
+  - Preserve the existing jsonpickle payload wire format while isolating jsonpickle 4.1.2's transitional warning.
+  - Use Flask's supported package metadata API, with a fallback when distribution metadata is unavailable so error reporting does not mask the original exception.
+
+Internal changes:
+  - Add Python dependency groups for development, test, linting, typing, and build tooling.
+  - Keep the existing `dev` extra for backwards-compatible contributor installs and exercise it in the Python 3.10 CI job.
+  - Add an optional `pylock.dev.toml` hash-verified dependency snapshot for the locked CI environment.
+  - Add a locked development environment CI job with locked build tooling and dependency consistency checks, while keeping the main Python matrix on unlocked dependency resolution.
+
 ## 7.0.0 (23/01/26):
 
 Potentially breaking changes:

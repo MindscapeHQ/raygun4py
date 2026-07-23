@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
 
     steps:
     - uses: actions/checkout@v4
@@ -22,11 +22,19 @@ jobs:
         python-version: ${{ matrix.python-version }}
         check-latest: true
     
-    - name: Install dependencies
+    - name: Install dependencies from legacy dev extra
+      if: matrix.python-version == '3.10'
       run: |
         python -m pip install --upgrade pip
-        pip install build
-        pip install -e .[dev]
+        python -m pip install build -e ".[dev]"
+        python -m pip check
+
+    - name: Install dependencies from dependency groups
+      if: matrix.python-version != '3.10'
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install -e . --group dev
+        python -m pip check
     
     - name: Check formatting with ruff
       run: |
@@ -45,3 +53,45 @@ jobs:
     - name: Build package
       run: |
         python -m build
+
+  locked-dev-install:
+    name: Locked dev install
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python 3.13
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.13"
+        check-latest: true
+
+    - name: Install locked development environment
+      run: |
+        python -m pip install --upgrade "pip==26.1.2"
+        python -m pip install -r pylock.dev.toml
+        python -m pip install --no-deps --no-build-isolation -e .
+        python -m pip check
+
+    - name: Check formatting with ruff
+      run: |
+        ruff format --check python3/
+
+    - name: Lint with ruff
+      run: |
+        ruff check python3/
+
+    - name: Check types with mypy
+      run: |
+        mypy python3/raygun4py
+
+    - name: Run tests with coverage
+      env:
+        RAYGUN_API_KEY: ${{ secrets.RAYGUN_API_KEY }}
+      run: |
+        pytest --cov=python3/raygun4py --cov-report=term-missing
+
+    - name: Build package
+      run: |
+        python -m build --no-isolation
