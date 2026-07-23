@@ -1,4 +1,4 @@
-## 8.0.0 (Unreleased):
+## 8.0.0 (23/07/26):
 
 Breaking changes:
   - Drop support for Python 3.9. Raygun4Py now requires Python 3.10 or newer.
